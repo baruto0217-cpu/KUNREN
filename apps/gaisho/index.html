@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<script>/* まとめアプリ内：オフライン保存はまとめアプリ側で行う */if('serviceWorker' in navigator){try{Object.defineProperty(navigator.serviceWorker,'register',{value:function(){return Promise.reject(new Error('suite'))}})}catch(e){}}</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>外傷観察評価</title>
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1f3a5f">
+<style>
+:root{
+  --bg:#f5f7fa; --card:#fff; --ink:#1d2733; --sub:#5b6878; --line:#d8dee6;
+  --navy:#1f3a5f; --navy2:#2d5585; --red:#c01e1e; --redbg:#fdeaea; --gray:#8a96a3;
+  --ok:#1f7a4a; --okbg:#e3f4ea; --mid:#a86b00; --midbg:#fdf2dc; --ngbg:#fde4e4;
+  --chip:#eef2f7;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"BIZ UDPGothic","BIZ UDPゴシック","Hiragino Sans","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;
+  font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
+header{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:10px 16px calc(10px) 16px;
+  padding-top:max(10px,env(safe-area-inset-top))}
+header .row{display:flex;align-items:center;gap:8px}
+header h1{font-size:17px;margin:0;flex:1;line-height:1.3}
+header button{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:8px;padding:8px 12px;font:inherit;font-size:14px}
+main{max-width:860px;margin:0 auto;padding:12px 16px 120px}
+h2{font-size:15px;color:var(--navy);margin:20px 0 8px}
+.grp{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.sc{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;text-align:left;font:inherit;color:var(--ink)}
+.sc b{display:block;font-size:15px}
+.sc small{color:var(--sub)}
+.tabs{display:flex;gap:4px;overflow-x:auto;background:var(--navy);padding:0 12px 8px;position:sticky;top:52px;z-index:19}
+.tabs button{flex:1 1 0;min-width:0;border:0;border-radius:8px 8px 0 0;padding:8px 4px;font:inherit;font-size:13px;line-height:1.25;background:rgba(255,255,255,.12);color:#dfe7f1}
+.tabs button.on{background:var(--bg);color:var(--navy);font-weight:700}
+.tabs .cnt{display:block;font-size:11px;opacity:.8}
+.info{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:10px 0;font-size:14px}
+.info .lbl{color:var(--red);font-weight:700}
+.toggle{color:var(--navy2);background:none;border:0;font:inherit;font-size:14px;padding:4px 0;text-decoration:underline}
+.item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0}
+.item.ari{border-left:5px solid var(--red)}
+.item.nashi{border-left:5px solid var(--gray)}
+.item.kakunin{border-left:5px solid var(--navy2)}
+.ihead{display:flex;align-items:flex-start;gap:8px}
+.iname{font-weight:700;flex:1}
+.chip{font-size:12px;border-radius:999px;padding:2px 8px;white-space:nowrap}
+.chip.ari{background:var(--redbg);color:var(--red)}
+.chip.nashi{background:var(--chip);color:var(--sub)}
+.chip.kakunin{background:#e6eef8;color:var(--navy2)}
+.edit{border:0;background:none;color:var(--sub);font-size:18px;padding:0 4px;line-height:1}
+.find{font-size:14px;margin-top:2px;white-space:pre-wrap}
+.find.ari{color:var(--red);font-weight:700}
+.find.nashi{color:var(--gray)}
+.find.kakunin{color:var(--sub)}
+.btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.btns .lab{font-size:12px;color:var(--sub);width:100%;margin-bottom:-2px}
+.b{flex:1;min-width:64px;min-height:44px;border:1.5px solid var(--line);border-radius:10px;background:#fff;font:inherit;font-size:18px;color:var(--ink)}
+.b.small{font-size:14px}
+.b.on.o{background:var(--okbg);border-color:var(--ok);color:var(--ok);font-weight:700}
+.b.on.t{background:var(--midbg);border-color:var(--mid);color:var(--mid);font-weight:700}
+.b.on.x{background:var(--ngbg);border-color:var(--red);color:var(--red);font-weight:700}
+.add{width:100%;border:1.5px dashed var(--navy2);background:none;color:var(--navy2);border-radius:10px;padding:12px;font:inherit;margin-top:8px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px 16px max(10px,env(safe-area-inset-bottom));display:flex;gap:8px;z-index:25}
+.bar button{flex:1;min-height:48px;border-radius:10px;border:0;font:inherit;font-size:16px}
+.primary{background:var(--navy);color:#fff}
+.secondary{background:var(--chip);color:var(--navy)}
+.danger{background:var(--redbg);color:var(--red)}
+.sum{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.sum .box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.sum .box b{display:block;color:var(--navy)}
+.list{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 12px}
+.list div{padding:6px 0;border-bottom:1px solid var(--line);font-size:15px}
+.list div:last-child{border:0}
+.list .t{color:var(--sub);font-size:12px;margin-right:6px}
+.empty{color:var(--sub);font-size:14px;padding:8px 0}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
+.ov .dlg{background:#fff;border-radius:14px;width:min(560px,100%);max-height:90vh;overflow:auto}
+.dlg{padding:16px}
+.dlg h3{margin:0 0 10px;font-size:16px;color:var(--navy)}
+.dlg label{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
+.dlg input,.dlg textarea,.dlg select{width:100%;font:inherit;font-size:16px;padding:10px;border:1px solid var(--line);border-radius:8px}
+.dlg textarea{min-height:90px}
+.dlg .acts{display:flex;gap:8px;margin-top:14px}
+.dlg .acts button{flex:1;min-height:44px;border:0;border-radius:10px;font:inherit}
+.note{font-size:12px;color:var(--sub);margin-top:16px}
+.teiji{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--navy);border-radius:10px;padding:10px 14px;margin:10px 0}
+.teiji h3{margin:0 0 6px;font-size:14px;color:var(--navy);display:flex;align-items:center;gap:8px}
+.teiji dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:14px}
+.teiji dt{color:var(--sub);white-space:nowrap}
+.teiji dd{margin:0;white-space:pre-wrap}
+.teiji .ph{background:#fff4e5;border-radius:4px}
+.pchip{font-size:11px;color:#8a4b00;background:#ffe9c7;border-radius:999px;padding:1px 7px;margin-left:4px;white-space:nowrap}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<header><div class="row"><button id="backBtn" class="hide">‹ 戻る</button><h1 id="hTitle">外傷観察評価</h1><button id="setBtn">設定</button></div></header>
+<nav class="tabs hide" id="tabs"></nav>
+<main id="main"></main>
+<div class="bar hide" id="bar"></div>
+
+<div class="ov hide" id="dlg"><div class="dlg" id="dlgForm"></div></div>
+<div class="ov hide" id="cdlg"><div class="dlg"><p id="cMsg" style="margin:4px 0 0;font-size:16px"></p><div class="acts"><button type="button" class="secondary" id="cNo">いいえ</button><button type="button" class="primary" id="cYes">はい</button></div></div></div>
+
+<script src="gaisho.enc.js"></script>
+<script>
+let BASE = /*__DATA__*/null;
+const TABS = ["状況評価","初期評価","全身観察","車内収容後"];
+const ORIG = "原本";
+const KEY = "jptec_obs_eval_v1";
+let DATA = null;
+let cur = null;        // 選んでいる想定
+let tab = TABS[0];
+let ev = {};           // 評価 {tab: [{obs, found}]}
+let showDisease = false;
+
+function openDlg(){ $("dlg").classList.remove("hide"); }
+function closeDlg(){ $("dlg").classList.add("hide"); }
+function ask(msg, yes){
+  $("cMsg").textContent = msg; $("cNo").classList.remove("hide"); $("cYes").textContent = "はい";
+  $("cdlg").classList.remove("hide");
+  $("cNo").onclick = () => $("cdlg").classList.add("hide");
+  $("cYes").onclick = () => { $("cdlg").classList.add("hide"); yes(); };
+}
+function tell(msg){
+  $("cMsg").textContent = msg; $("cNo").classList.add("hide"); $("cYes").textContent = "閉じる";
+  $("cdlg").classList.remove("hide");
+  $("cYes").onclick = () => $("cdlg").classList.add("hide");
+}
+function nextStudent(){ ask("評価を消して、次の受講者に進みますか？", () => start(cur)); }
+function fitTabs(){ const h = document.querySelector("header"); $("tabs").style.top = h.offsetHeight + "px"; }
+function load(){
+  try{ const s = localStorage.getItem(KEY); if(s){ const d = JSON.parse(s); if(d && d.scenarios) return d; } }catch(e){}
+  return JSON.parse(JSON.stringify(BASE));
+}
+function noImg(k, v){ return k === "orig" ? undefined : v; }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DATA, noImg)); }catch(e){} }
+function esc(s){ return String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function kindCls(k){ return k==="あり" ? "ari" : k==="なし" ? "nashi" : "kakunin"; }
+function kindLabel(k){ return k==="あり" ? "所見あり" : k==="なし" ? "所見なし" : "確認項目"; }
+const $ = id => document.getElementById(id);
+
+// ---------------- 画面：想定を選ぶ
+function home(){
+  cur = null; ev = {};
+  $("hTitle").textContent = "外傷観察評価"; $("backBtn").classList.add("hide");
+  $("tabs").classList.add("hide"); $("bar").classList.add("hide");
+  const groups = {};
+  DATA.scenarios.forEach((s,i) => (groups[s.group] = groups[s.group] || []).push([s,i]));
+  let h = `<div class="info">想定を選ぶと、状況評価・初期評価・全身観察・車内収容後の項目が出ます。項目ごとに<b>観察したか（○△×）</b>と、<b>所見を見つけたか</b>を記録します。結果は保存しません。</div>`;
+  for(const g in groups){
+    h += `<h2>${esc(g)}</h2><div class="grp">`;
+    groups[g].forEach(([s,i]) => {
+      const n = TABS.reduce((a,t)=>a+(s.sections[t]||[]).length,0);
+      h += `<button class="sc" onclick="start(${i})"><b>${esc(s.title)}</b><small>${n}項目</small></button>`;
+    });
+    h += `</div>`;
+  }
+  h += `<p class="note">出典：${esc(DATA.source||"")}</p>`;
+  $("main").innerHTML = h; window.scrollTo(0,0);
+}
+
+// ---------------- 画面：評価
+function start(i){
+  cur = i; ev = {}; showDisease = false;
+  const s = DATA.scenarios[i];
+  TABS.forEach(t => ev[t] = (s.sections[t]||[]).map(()=>({})));
+  tab = TABS.find(t => (s.sections[t]||[]).length) || TABS[0];
+  render(); window.scrollTo(0,0);
+}
+function counts(t){
+  const its = DATA.scenarios[cur].sections[t]||[], e = ev[t]||[];
+  return {n: its.length, done: e.filter(x=>x.obs).length};
+}
+function render(){
+  const s = DATA.scenarios[cur];
+  $("hTitle").textContent = s.title; $("backBtn").classList.remove("hide");
+  const tb = $("tabs"); tb.classList.remove("hide"); requestAnimationFrame(fitTabs);
+  tb.innerHTML = TABS.map(t => { const c = counts(t); return `<button class="${t===tab?"on":""}" onclick="go('${t}')">${t}<span class="cnt">${c.done}/${c.n}</span></button>`; }).join("")
+    + `<button class="${tab===ORIG?"on":""}" onclick="go('${ORIG}')">${ORIG}<span class="cnt">${(s.orig||[]).length ? "想定集" : "なし"}</span></button>`;
+  if(tab === ORIG){ renderOrig(s); return; }
+  let h = "";
+  if(s.teiji && s.teiji.length){
+    const open = tab === TABS[0] || tab === TABS.find(t => (s.sections[t]||[]).length);
+    h += `<details class="teiji" ${open ? "open" : ""}><summary style="cursor:pointer"><b style="color:var(--navy)">想定提示（想定集の原文）</b></summary>`;
+    if(s.photo) h += `<div style="font-size:12px;color:#8a4b00;margin:6px 0">［写真］の付いた欄の内容が分かる、状況評価の写真を見せる</div>`;
+    else h += `<div style="font-size:12px;color:var(--sub);margin:6px 0">このステーションでは状況評価の写真は使わない</div>`;
+    h += `<dl>` + s.teiji.map(([k,v,ph]) => `<dt>${esc(k)}${ph && s.photo ? '<span class="pchip">写真</span>' : ""}</dt><dd class="${ph && s.photo ? "ph" : ""}">${esc(v)}</dd>`).join("") + `</dl></details>`;
+  }
+  if(s.disease || s.point || s.teiji){
+    h += `<div class="info">`;
+    if(s.disease) h += showDisease ? `<div><span class="lbl">病態（受講者に見せない）：</span>${esc(s.disease)}</div>` : "";
+    if(s.disease) h += `<button class="toggle" onclick="showDisease=!showDisease;render()">${showDisease?"病態を隠す":"病態を表示"}</button>　`;
+    h += `<button class="toggle" onclick="editScenario()">想定名・ポイントを直す</button></div>`;
+  }
+  const its = s.sections[tab]||[];
+  if(!its.length) h += `<div class="empty">この想定には「${tab}」の項目がありません。必要なら下のボタンで追加できます。</div>`;
+  its.forEach((it,k) => {
+    const e = ev[tab][k]||{}, c = kindCls(it.kind);
+    h += `<div class="item ${c}"><div class="ihead"><div class="iname">${esc(it.name)}</div><span class="chip ${c}">${kindLabel(it.kind)}</span><button class="edit" title="直す" onclick="editItem(${k})">✎</button></div>`;
+    if(it.finding) h += `<div class="find ${c}">${esc(it.finding)}</div>`;
+    h += `<div class="btns"><span class="lab">観察したか</span>`;
+    [["○","o","観察した"],["△","t","不十分"],["×","x","観察せず"]].forEach(([m,cl,tt]) =>
+      h += `<button class="b ${cl} ${e.obs===m?"on":""}" title="${tt}" onclick="mark(${k},'obs','${m}')">${m}</button>`);
+    h += `</div>`;
+    if(it.kind==="あり"){
+      h += `<div class="btns"><span class="lab">所見を</span>`;
+      [["見つけた","o"],["見落とし","x"]].forEach(([m,cl]) =>
+        h += `<button class="b small ${cl} ${e.found===m?"on":""}" onclick="mark(${k},'found','${m}')">${m}</button>`);
+      h += `</div>`;
+    }
+    h += `</div>`;
+  });
+  h += `<button class="add" onclick="editItem(-1)">＋ ${tab}に項目を追加</button>`;
+  if(s.point) h += `<h2>ポイント（インストラクター用）</h2><div class="info" style="white-space:pre-wrap">${esc(s.point)}</div>`;
+  $("main").innerHTML = h;
+  const bar = $("bar"); bar.classList.remove("hide");
+  bar.innerHTML = `<button class="secondary" onclick="clearEval()">評価を消す</button><button class="primary" onclick="result()">結果を見る</button>`;
+}
+window.addEventListener("resize", fitTabs);
+function renderOrig(s){
+  const imgs = s.orig || [];
+  let h = `<div class="info">愛知シナリオ集（原本）のうち、この想定の部分だけを表示しています。指で広げると拡大できます。</div>`;
+  h += imgs.length ? imgs.map((src, i) => `<img src="${src}" alt="原本" onclick="bigImg(${i})" style="width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:8px;margin:6px 0;display:block;cursor:zoom-in">`).join("") + `<div class="note">画像を押すと大きく表示します。</div>`
+                   : `<div class="empty">この想定には原本がありません。</div>`;
+  $("main").innerHTML = h;
+  const bar = $("bar"); bar.classList.remove("hide");
+  bar.innerHTML = `<button class="secondary" onclick="clearEval()">評価を消す</button><button class="primary" onclick="result()">結果を見る</button>`;
+}
+function bigImg(i){
+  const src = (DATA.scenarios[cur].orig || [])[i]; if(!src) return;
+  const ov = document.createElement("div"); ov.className = "ov"; ov.style.cssText = "align-items:flex-start;overflow:auto;padding:0";
+  ov.innerHTML = `<div style="position:sticky;top:0;left:0;width:100%;display:flex;justify-content:flex-end;padding:10px"><button class="b primary" style="flex:0 0 auto;color:#fff;padding:0 18px">閉じる</button></div>`;
+  const im = new Image(); im.src = src; im.style.cssText = "width:200%;max-width:none;background:#fff;display:block";
+  ov.appendChild(im); ov.querySelector("button").onclick = () => ov.remove(); document.body.appendChild(ov);
+}
+function go(t){ tab = t; render(); window.scrollTo(0,0); }
+function mark(k, key, v){ const e = ev[tab][k]; e[key] = e[key]===v ? undefined : v; render(); }
+function clearEval(){ ask("この受講者の評価をすべて消しますか？", () => start(cur)); }
+
+// ---------------- 画面：結果
+function result(){
+  const s = DATA.scenarios[cur];
+  $("tabs").classList.add("hide");
+  let h = `<h2>${esc(s.title)}　結果</h2><div class="sum">`;
+  const miss = [], none = [], weak = [], todo = [];
+  TABS.forEach(t => {
+    const its = s.sections[t]||[]; if(!its.length) return;
+    let o=0,tr=0,x=0,f=0,fa=0;
+    its.forEach((it,k) => {
+      const e = ev[t][k]||{};
+      if(e.obs==="○") o++; else if(e.obs==="△"){tr++; weak.push([t,it]);} else if(e.obs==="×"){x++; none.push([t,it]);} else todo.push([t,it]);
+      if(it.kind==="あり"){ fa++; if(e.found==="見つけた") f++; else if(e.found==="見落とし" || e.obs==="×") miss.push([t,it]); }
+    });
+    h += `<div class="box"><b>${t}</b>○ ${o}　△ ${tr}　× ${x}${fa ? `<br><small>所見あり ${fa}項目中 ${f} 見つけた</small>` : ""}</div>`;
+  });
+  h += `</div>`;
+  const list = (title, arr, showFind) => {
+    h += `<h2>${title}（${arr.length}）</h2><div class="list">`;
+    h += arr.length ? arr.map(([t,it]) => `<div><span class="t">${t}</span><b>${esc(it.name)}</b>${showFind && it.finding ? "：" + esc(it.finding) : ""}</div>`).join("") : `<div class="empty">ありません</div>`;
+    h += `</div>`;
+  };
+  list("見落とした所見", miss, true);
+  list("観察しなかった項目（×）", none, false);
+  list("不十分だった項目（△）", weak, false);
+  if(todo.length) list("まだ評価していない項目", todo, false);
+  $("main").innerHTML = h; window.scrollTo(0,0);
+  $("bar").innerHTML = `<button class="secondary" onclick="render()">評価に戻る</button><button class="primary" onclick="nextStudent()">次の受講者へ</button>`;
+}
+
+// ---------------- 項目の追加・修正
+function editItem(k){
+  const s = DATA.scenarios[cur], its = s.sections[tab] = s.sections[tab] || [];
+  const it = k>=0 ? its[k] : {name:"", kind:"確認", finding:""};
+  $("dlgForm").innerHTML = `<h3>${k>=0?"項目を直す":"項目を追加"}（${tab}）</h3>
+    <label>項目名</label><input id="fName" value="${esc(it.name)}">
+    <label>種類</label><select id="fKind">${["あり","なし","確認"].map(v=>`<option value="${v}" ${it.kind===v?"selected":""}>${kindLabel(v)}</option>`).join("")}</select>
+    <label>所見・メモ</label><textarea id="fFind">${esc(it.finding)}</textarea>
+    <div class="acts">${k>=0?`<button type="button" class="danger" onclick="delItem(${k})">削除</button>`:""}
+    <button type="button" class="secondary" onclick="closeDlg()">やめる</button>
+    <button type="button" class="primary" onclick="saveItem(${k})">保存</button></div>`;
+  openDlg();
+}
+function saveItem(k){
+  const name = $("fName").value.trim(); if(!name){ tell("項目名を入れてください"); return; }
+  const it = {name, kind:$("fKind").value, finding:$("fFind").value.trim()};
+  const its = DATA.scenarios[cur].sections[tab];
+  if(k>=0) its[k] = it; else { its.push(it); ev[tab].push({}); }
+  save(); closeDlg(); render();
+}
+function delItem(k){
+  closeDlg();
+  ask("この項目を削除しますか？", () => { DATA.scenarios[cur].sections[tab].splice(k,1); ev[tab].splice(k,1); save(); render(); });
+}
+function editScenario(){
+  const s = DATA.scenarios[cur];
+  $("dlgForm").innerHTML = `<h3>想定を直す</h3>
+    <label>想定名</label><input id="fT" value="${esc(s.title)}">
+    <label>病態（受講者に見せない）</label><textarea id="fD">${esc(s.disease)}</textarea>
+    <label>ポイント</label><textarea id="fP">${esc(s.point)}</textarea>
+    <label>想定提示（1行に「見出し：本文」。写真に使う欄は先頭に［写真］）</label><textarea id="fTj" style="min-height:160px">${esc((s.teiji||[]).map(([k,v,ph]) => (ph ? "［写真］" : "") + k + "：" + String(v).replace(/\n/g, " ")).join("\n"))}</textarea>
+    <div class="acts"><button type="button" class="secondary" onclick="closeDlg()">やめる</button>
+    <button type="button" class="primary" onclick="saveScenario()">保存</button></div>`;
+  openDlg();
+}
+function saveScenario(){
+  const s = DATA.scenarios[cur];
+  s.title = $("fT").value.trim() || s.title; s.disease = $("fD").value.trim(); s.point = $("fP").value.trim();
+  s.teiji = $("fTj").value.split("\n").map(x => x.trim()).filter(Boolean).map(line => {
+    const ph = line.startsWith("［写真］"); const t = ph ? line.slice(4) : line; const i = t.indexOf("：");
+    return i > 0 ? [t.slice(0, i), t.slice(i + 1), ph] : ["", t, ph]; });
+  save(); closeDlg(); render();
+}
+
+// ---------------- 設定（元に戻す・書き出し・読み込み）
+function settings(){
+  $("dlgForm").innerHTML = `<h3>設定</h3>
+    <p style="font-size:14px">アプリ内で直した項目は、この端末のブラウザに保存されています。ほかの端末に渡すときは「書き出し」で保存したファイルを、相手の端末で「読み込み」してください。</p>
+    <div class="acts" style="flex-direction:column">
+      <button type="button" class="secondary" onclick="exportData()">項目を書き出す（ファイルに保存）</button>
+      <label class="secondary" style="display:flex;align-items:center;justify-content:center;min-height:44px;border-radius:10px;margin:0;color:var(--navy)">項目を読み込む<input type="file" accept=".json,application/json" style="display:none" onchange="importData(this)"></label>
+      <button type="button" class="danger" onclick="resetData()">すべて最初の状態に戻す</button>
+      <button type="button" class="primary" onclick="closeDlg()">閉じる</button>
+    </div>`;
+  openDlg();
+}
+function exportData(){
+  const blob = new Blob([JSON.stringify(DATA, noImg, 1)], {type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = "外傷観察評価_項目.json"; document.body.appendChild(a); a.click(); a.remove();
+}
+function importData(inp){
+  const f = inp.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () => { try{ const d = JSON.parse(r.result); if(!d.scenarios) throw 0; DATA = d; save(); closeDlg(); home(); tell("読み込みました"); }catch(e){ tell("このファイルは読み込めません"); } };
+  r.readAsText(f);
+}
+function resetData(){
+  closeDlg();
+  ask("直した項目・追加した項目をすべて消して、最初の状態に戻しますか？", () => {
+    try{ localStorage.removeItem(KEY); }catch(e){}
+    DATA = JSON.parse(JSON.stringify(BASE)); home(); });
+}
+
+$("backBtn").onclick = () => ask("想定の選択に戻りますか？（評価は消えます）", home);
+$("setBtn").onclick = settings;
+
+// ---------------- 起動（公開版は想定データが暗号化されているので、パスコードで開く）
+const PKEY = "jptec_obs_pass_v1";
+function b64(s){ return Uint8Array.from(atob(s), c => c.charCodeAt(0)); }
+async function decrypt(pass){
+  const e = window.GAISHO_ENC, sub = crypto.subtle;
+  const base = await sub.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+  const key = await sub.deriveKey({name:"PBKDF2", salt:b64(e.salt), iterations:e.iter, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+  const plain = await sub.decrypt({name:"AES-GCM", iv:b64(e.iv)}, key, b64(e.data));
+  return JSON.parse(new TextDecoder().decode(plain));
+}
+function opened(d){
+  BASE = d; DATA = load();
+  // 前の版で保存した修正には想定提示がないので、元のデータから補う
+  const byId = {}; BASE.scenarios.forEach(x => byId[x.id] = x);
+  DATA.scenarios.forEach(x => { const b = byId[x.id]; if(b && x.teiji === undefined){ x.teiji = b.teiji; x.photo = b.photo; } if(b) x.orig = b.orig; });
+  home();
+}
+function lockScreen(msg){
+  $("setBtn").classList.add("hide");
+  $("main").innerHTML = `<div class="info" style="margin-top:24px"><b>パスコードを入れてください</b><br>
+    <span style="font-size:13px;color:var(--sub)">一度開いた端末では、次から入力は要りません。</span>
+    <input id="passIn" type="password" autocomplete="off" style="width:100%;font:inherit;font-size:18px;padding:12px;margin:12px 0;border:1px solid var(--line);border-radius:8px">
+    <button class="b primary" style="width:100%;color:#fff" onclick="tryPass()">開く</button>
+    <p id="passMsg" style="color:var(--red);font-size:14px;margin:8px 0 0">${msg||""}</p></div>`;
+  $("passIn").addEventListener("keydown", e => { if(e.key==="Enter") tryPass(); });
+}
+async function tryPass(){
+  const p = $("passIn").value; if(!p) return;
+  $("passMsg").textContent = "確認しています…";
+  try{ const d = await decrypt(p); try{ localStorage.setItem(PKEY, p); }catch(e){} $("setBtn").classList.remove("hide"); opened(d); }
+  catch(e){ $("passMsg").textContent = "パスコードが違います"; }
+}
+(async function init(){
+  if(BASE){ opened(BASE); return; }
+  if(!window.GAISHO_ENC){ $("main").innerHTML = '<div class="info">想定データが読み込めませんでした。ネットにつないでから開き直してください。</div>'; return; }
+  if(!(window.crypto && crypto.subtle)){ $("main").innerHTML = '<div class="info">この開き方では使えません。Safariで開いてください。</div>'; return; }
+  let saved = null; try{ saved = localStorage.getItem(PKEY); }catch(e){}
+  if(saved){ try{ opened(await decrypt(saved)); return; }catch(e){} }
+  lockScreen();
+})();
+// GitHub Pages などで開いたときは、オフラインでも動くようにする
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
+</script>
+</body>
+</html>

@@ -1,0 +1,2090 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>/* まとめアプリ内：オフライン保存はまとめアプリ側で行う */if('serviceWorker' in navigator){try{Object.defineProperty(navigator.serviceWorker,'register',{value:function(){return Promise.reject(new Error('suite'))}})}catch(e){}}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>集団災害対応 | CSCATTT & METHANE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg: #0a0c0f;
+    --surface: #111318;
+    --surface2: #1a1d24;
+    --border: #2a2d36;
+    --text: #e8eaf0;
+    --text-muted: #e2e4ec;
+    --accent-red: #e53935;
+    --accent-orange: #ff6d00;
+    --accent-yellow: #ffd600;
+    --accent-green: #00c853;
+    --accent-blue: #0288d1;
+    --accent-teal: #00b8a9;
+    --accent-purple: #7c4dff;
+    --glow-red: rgba(229,57,53,0.15);
+    --glow-blue: rgba(2,136,209,0.15);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(180deg, #0d0f14 0%, #111318 100%);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+
+  .header-top {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    height: 48px;
+    padding: 0 1.5rem;
+    border-bottom: 1px solid rgba(42,45,54,0.6);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.12em;
+    background: linear-gradient(135deg, var(--accent-red), var(--accent-orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    flex-shrink: 0;
+  }
+
+  .header-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: #e2e4ec;
+    margin-left: 1rem;
+    letter-spacing: 0.08em;
+  }
+
+  /* NAV: two rows of tabs */
+  nav {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding: 0.4rem 1.5rem;
+  }
+
+  nav button {
+    background: none;
+    border: 1px solid transparent;
+    color: #e2e4ec;
+    padding: 5px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.82rem;
+    transition: all 0.18s;
+    white-space: nowrap;
+    line-height: 1.4;
+  }
+
+  nav button:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.04);
+    border-color: var(--border);
+  }
+
+  nav button.active {
+    background: var(--surface2);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    font-weight: 700;
+  }
+
+  /* give each tab a subtle category color accent on active */
+  nav button[data-cat="base"].active   { border-color: var(--accent-blue);   color: var(--accent-blue); }
+  nav button[data-cat="report"].active { border-color: var(--accent-orange);  color: var(--accent-orange); }
+  nav button[data-cat="tri"].active    { border-color: var(--accent-green);   color: var(--accent-green); }
+  nav button[data-cat="spec"].active   { border-color: var(--accent-purple);  color: var(--accent-purple); }
+
+  /* MAIN offset for taller header */
+  main { padding-top: 1.5rem; }
+
+  /* MAIN LAYOUT */
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: var(--bg);
+  }
+
+  .section { display: none; background: var(--bg); }
+  .section.active { display: block; background: var(--bg); }
+
+  /* HERO BANNER */
+  .hero {
+    background: linear-gradient(135deg, #0d0f14 0%, #12151c 50%, #0d0f14 100%);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: var(--glow-red);
+    border-radius: 50%;
+    filter: blur(60px);
+  }
+
+  .hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent-red);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    letter-spacing: 0.05em;
+    line-height: 1;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero p {
+    color: #e8eaef;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    max-width: 700px;
+  }
+
+  /* FRAMEWORK GRID */
+  .frameworks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 900px) {
+    .frameworks-grid { grid-template-columns: 1fr; }
+  }
+
+  .framework-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .framework-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .framework-card.cscattt:hover { border-color: var(--accent-blue); }
+  .framework-card.methane:hover { border-color: var(--accent-orange); }
+
+  .framework-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .framework-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  .icon-blue { background: rgba(2,136,209,0.15); }
+  .icon-orange { background: rgba(255,109,0,0.15); }
+
+  .framework-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.05em;
+  }
+
+  .framework-title.blue { color: var(--accent-blue); }
+  .framework-title.orange { color: var(--accent-orange); }
+
+  .framework-subtitle {
+    color: #e8eaef;
+    font-size: 0.8rem;
+    margin-top: 2px;
+  }
+
+  .framework-items {
+    padding: 1rem 1.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .item-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 6px;
+    background: var(--surface2);
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .item-row:hover { border-color: var(--border); }
+
+  .item-letter {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    width: 32px;
+    text-align: center;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .item-info { flex: 1; }
+
+  .item-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 1px;
+  }
+
+  .item-desc {
+    font-size: 0.75rem;
+    color: #e8eaef;
+    line-height: 1.4;
+  }
+
+  /* DETAIL SECTIONS */
+  .detail-grid {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .detail-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .detail-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .detail-letter {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    line-height: 1;
+    width: 50px;
+    text-align: center;
+  }
+
+  .detail-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .detail-sub {
+    font-size: 0.8rem;
+    color: #e8eaef;
+  }
+
+  .detail-body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .detail-body p {
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: #e8eaef;
+    margin-bottom: 0.75rem;
+  }
+
+  .detail-body p:last-child { margin-bottom: 0; }
+
+  .checklist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+
+  .checklist li {
+    display: block;
+    padding-left: 1.1rem;
+    position: relative;
+    font-size: 0.85rem;
+    color: #e8eaef;
+    line-height: 1.75;
+    margin-bottom: 0.35rem;
+  }
+
+  .checklist li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    top: 0.1em;
+    font-size: 0.65rem;
+    color: #5a6070;
+  }
+
+  .checklist li strong {
+    color: #f0f2f8;
+    white-space: nowrap;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+
+  /* METHANE FORM */
+  .methane-form {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .methane-form h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    color: var(--accent-orange);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.35rem;
+  }
+
+  .methane-form .form-subtitle {
+    font-size: 0.85rem;
+    color: #e2e4ec;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 700px) {
+    .form-grid { grid-template-columns: 1fr; }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .form-group.full { grid-column: 1 / -1; }
+
+  .form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.03em;
+  }
+
+  .form-label .ltr {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    line-height: 1;
+    width: 32px;
+    text-align: center;
+    background: rgba(255,109,0,0.12);
+    border: 1px solid rgba(255,109,0,0.3);
+    border-radius: 5px;
+    padding: 2px 4px;
+    flex-shrink: 0;
+  }
+
+  .form-control {
+    background: #0d0f14;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: none;
+    width: 100%;
+  }
+
+  .form-control::placeholder { color: #3a3e4a; }
+
+  .form-control:focus {
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 0 3px rgba(255,109,0,0.1);
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-primary {
+    background: var(--accent-orange);
+    color: white;
+    box-shadow: 0 4px 14px rgba(255,109,0,0.3);
+  }
+
+  .btn-primary:hover {
+    background: #e65c00;
+    box-shadow: 0 4px 20px rgba(255,109,0,0.45);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: #e2e4ec;
+    border: 1.5px solid var(--border);
+  }
+
+  .btn-secondary:hover { color: var(--text); border-color: #e2e4ec; }
+
+  /* REPORT OUTPUT */
+  .report-output {
+    background: #080a0d;
+    border: 1.5px solid rgba(0,184,169,0.3);
+    border-radius: 10px;
+    padding: 1.75rem;
+    margin-top: 1.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 2;
+    display: none;
+    white-space: pre-wrap;
+    color: #a8f0ea;
+    position: relative;
+  }
+
+  .report-output::before {
+    content: '生成された報告文';
+    position: absolute;
+    top: -0.65rem;
+    left: 1rem;
+    background: #080a0d;
+    padding: 0 0.5rem;
+    font-size: 0.7rem;
+    color: var(--accent-teal);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(0,184,169,0.3);
+    border-radius: 4px;
+  }
+
+  .report-output.show { display: block; }
+
+
+  /* CBRNE sub-tabs */
+  .cbrne-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .ctab {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: #e2e4ec;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.82rem;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+
+  .ctab:hover { color: var(--text); border-color: #444; }
+
+  .ctab.active {
+    background: var(--surface2);
+    border-color: var(--accent-purple);
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .cbrne-panel { display: none; }
+  .cbrne-panel.active { display: block; }
+
+  .cbrne-panel-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px 10px 0 0;
+  }
+
+  .cbrne-panel-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+
+  .cbrne-panel-sub {
+    font-size: 0.8rem;
+    color: #e8eaef;
+    line-height: 1.5;
+  }
+
+  .cbrne-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+
+  @media (max-width: 800px) {
+    .cbrne-body { grid-template-columns: 1fr; }
+  }
+
+  .cbrne-col {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .cbrne-col:first-child {
+    border-right: 1px solid var(--border);
+  }
+
+  @media (max-width: 800px) {
+    .cbrne-col:first-child {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+  }
+
+  .cbrne-group-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #e2e4ec;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* PPE rows */
+  .ppe-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.9rem 1.25rem;
+  }
+
+  .ppe-level {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    width: 72px;
+    flex-shrink: 0;
+    line-height: 1.2;
+  }
+
+  .ppe-info { flex: 1; }
+
+  .ppe-title {
+    font-weight: 700;
+    font-size: 0.88rem;
+    margin-bottom: 3px;
+  }
+
+  .ppe-scene {
+    font-size: 0.78rem;
+    color: #e8eaef;
+    margin-bottom: 3px;
+  }
+
+  .ppe-gear {
+    font-size: 0.78rem;
+    color: var(--accent-teal);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* TRIAGE QUICK REF */
+  .triage-section {
+    margin-bottom: 2rem;
+  }
+
+  .triage-section h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  .triage-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+
+  @media (max-width: 900px) {
+    .triage-cards { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .triage-card {
+    border-radius: 10px;
+    padding: 1.25rem;
+    border: 1px solid;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .triage-card.t1 { background: #1a0808; border-color: rgba(229,57,53,0.6); }
+  .triage-card.t2 { background: #1a1600; border-color: rgba(255,214,0,0.6); }
+  .triage-card.t3 { background: #071a0e; border-color: rgba(0,200,83,0.6); }
+  .triage-card.t4 { background: #111118; border-color: rgba(150,150,170,0.5); }
+
+  .triage-tag {
+    display: inline-block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.75rem;
+    padding: 2px 10px;
+    border-radius: 3px;
+    letter-spacing: 0.1em;
+    width: fit-content;
+  }
+
+  .triage-card.t1 .triage-tag { background: var(--accent-red); color: white; }
+  .triage-card.t2 .triage-tag { background: var(--accent-yellow); color: #000; }
+  .triage-card.t3 .triage-tag { background: var(--accent-green); color: white; }
+  .triage-card.t4 .triage-tag { background: #444; color: white; }
+
+  .triage-priority {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+
+  .t1 .triage-priority { color: var(--accent-red); }
+  .t2 .triage-priority { color: var(--accent-yellow); }
+  .t3 .triage-priority { color: var(--accent-green); }
+  .t4 .triage-priority { color: #c0c4d0; }
+
+  .triage-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #ffffff;
+  }
+
+  .triage-desc {
+    font-size: 0.78rem;
+    color: #e2e4ec;
+    line-height: 1.6;
+  }
+
+  /* SECTION HEADING */
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-heading h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.05em;
+    color: var(--text);
+  }
+
+  .section-heading .line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* COMPARISON TABLE */
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+  }
+
+  .comparison-table th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: #e2e4ec;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+  }
+
+  .comparison-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(42,45,54,0.5);
+    color: #e8eaef;
+    line-height: 1.5;
+  }
+
+  .comparison-table tr:hover td { background: var(--surface); }
+
+  .highlight-blue { color: var(--accent-blue); font-weight: 700; }
+  .highlight-orange { color: var(--accent-orange); font-weight: 700; }
+
+  /* ANIMATIONS */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section.active > * {
+    animation: fadeIn 0.3s ease forwards;
+  }
+
+  .section.active > *:nth-child(2) { animation-delay: 0.05s; }
+  .section.active > *:nth-child(3) { animation-delay: 0.10s; }
+  .section.active > *:nth-child(4) { animation-delay: 0.15s; }
+
+  /* PAT flow item rows */
+  .pat-item-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: #111318;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+  }
+
+  .pat-item-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+    width: 52px;
+    line-height: 1.4;
+  }
+
+  .pat-item-body {
+    font-size: 0.82rem;
+    color: #e2e4ec;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">MCI GUIDE</div>
+    <div class="header-desc">集団災害対応 クイックリファレンス</div>
+  </div>
+  <nav>
+    <button class="active" data-cat="base"   onclick="showSection('overview', this)">🏠 概要</button>
+    <button data-cat="base"   onclick="showSection('cscattt', this)">CSCATTT</button>
+    <button data-cat="base"   onclick="showSection('methane', this)">METHANE</button>
+    <button data-cat="report" onclick="showSection('report', this)">📋 報告作成</button>
+    <button data-cat="tri"    onclick="showSection('triage', this)">🏷 トリアージ</button>
+    <button data-cat="tri"    onclick="showSection('pat', this)">PAT法</button>
+    <button data-cat="spec"   onclick="showSection('cbrne', this)">☣ CBRNE対応</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- OVERVIEW -->
+  <section id="overview" class="section active">
+    <div class="hero">
+      <div class="hero-label">▸ Mass Casualty Incident Reference</div>
+      <h1>集団災害対応<br>フレームワーク</h1>
+      <p>CSCATTT（医療指揮・調整）と METHANE（初期報告）は、集団災害（MCI）対応における国際標準フレームワークです。本アプリは現場での迅速な参照と報告作成を支援します。</p>
+    </div>
+
+    <div class="frameworks-grid">
+      <div class="framework-card cscattt" onclick="showSection('cscattt', null, 1)">
+        <div class="framework-header">
+          <div class="framework-icon icon-blue">🏥</div>
+          <div>
+            <div class="framework-title blue">CSCATTT</div>
+            <div class="framework-subtitle">医療指揮・調整フレームワーク</div>
+          </div>
+        </div>
+        <div class="framework-items">
+          <div class="item-row">
+            <div class="item-letter" style="color:var(--accent-blue)">C</div>
+            <div class="item-info">
+              <div class="item-name">Command & Control</div>
+              <div class="item-desc">指揮統制 ─ 明確な指揮系統の確立</div>
+            </div>
+          </div>
+          <div class="item-row">
+            <div class="item-letter" style="color:var(--accent-blue)">S</div>
+            <div class="item-info">
+              <div class="item-name">Safety</div>
+              <div class="item-desc">安全確保 ─ 自己・現場・傷病者の安全</div>
+            </div>
+          </div>
+          <div class="item-row">
+            <div class="item-letter" style="color:var(--accent-blue)">C</div>
+            <div class="item-info">
+              <div class="item-name">Communication</div>
+              <div class="item-desc">情報伝達 ─ 院内外との連絡調整</div>
+            </div>
+          </div>
+          <div class="item-row">
+            <div class="item-letter" style="color:var(--accent-blue)">A</div>
+            <div class="item-info">
+              <div class="item-name">Assessment</div>
+              <div class="item-desc">評価 ─ 状況・資源・必要性の評価</div>
+            </div>
+          </div>
+          <div class="item-row">
+            <div class="item-letter" style="color:var(--accent-blue)">T</div>
+            <div class="item-info">
+              <div class="item-name">Triage</div>
+              <div class="item-desc">トリアージ ─ 重症度分類と優先順位</div>
+            </div>
+          </div>
+          <div class="item-row">
+            <div class="item-letter" style="color:var(--accent-blue)">T</div>
+            <div class="item-info">
+              <div class="item-name">Treatment</div>
+              <div class="item-desc">治療 ─ 優先度に応じた医療処置</div>
+            </div>
+          </div>
+          <div class="item-row">
+            <div class="item-letter" style="color:var(--accent-blue)">T</div>
+            <div class="item-info">
+              <div class="item-name">Transport</div>
+              <div class="item-desc">搬送 ─ 適切な医療機関への搬送</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="framework-card methane" onclick="showSection('methane', null, 2)">
+        <div class="framework-header">
+          <div class="framework-icon icon-orange">📡</div>
+          <div>
+            <div class="framework-title orange">METHANE</div>
+            <div class="framework-subtitle">初期状況報告フレームワーク</div>
+          </div>
+        </div>
+        <div class="framework-items">
+          <div class="item-row">
+            <div class="item-letter" style="color:var(--accent-orange)">M</div>
+            <div class="item-info">
+              <div class="item-name">My call sign</div>
+              <div class="item-desc">報告者の識別情報・コールサイン</div>
+            </div>
+          </div>
+          <div class="item-row">
+            <div class="item-letter" style="color:var(--accent-orange)">E</div>
+            <div class="item-info">
+              <div class="item-name">Exact location</div>
+              <div class="item-desc">現場の正確な位置情報</div>
+            </div>
+          </div>
+          <div class="item-row">
+            <div class="item-letter" style="color:var(--accent-orange)">T</div>
+            <div class="item-info">
+              <div class="item-name">Type of incident</div>
+              <div class="item-desc">事案の種類・発生状況</div>
+            </div>
+          </div>
+          <div class="item-row">
+            <div class="item-letter" style="color:var(--accent-orange)">H</div>
+            <div class="item-info">
+              <div class="item-name">Hazards</div>
+              <div class="item-desc">危険因子・二次災害リスク</div>
+            </div>
+          </div>
+          <div class="item-row">
+            <div class="item-letter" style="color:var(--accent-orange)">A</div>
+            <div class="item-info">
+              <div class="item-name">Access</div>
+              <div class="item-desc">アクセスルート・進入経路</div>
+            </div>
+          </div>
+          <div class="item-row">
+            <div class="item-letter" style="color:var(--accent-orange)">N</div>
+            <div class="item-info">
+              <div class="item-name">Number of casualties</div>
+              <div class="item-desc">傷病者数と重症度分類</div>
+            </div>
+          </div>
+          <div class="item-row">
+            <div class="item-letter" style="color:var(--accent-orange)">E</div>
+            <div class="item-info">
+              <div class="item-name">Emergency services</div>
+              <div class="item-desc">必要な緊急対応機関・資源</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- CSCATTT DETAIL -->
+  <section id="cscattt" class="section">
+    <div class="section-heading">
+      <h1 style="color:var(--accent-blue)">CSCATTT</h1>
+      <div class="line"></div>
+    </div>
+
+    <div class="detail-grid">
+
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-letter" style="color:var(--accent-blue)">C</div>
+          <div>
+            <div class="detail-title">Command & Control — 指揮統制</div>
+            <div class="detail-sub">明確なリーダーシップと指揮系統の確立</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <p>集団災害対応において最初に行うべきことは、明確な指揮命令系統の確立です。誰が現場の医療指揮を取るかを明確にし、全員がその指示に従う体制を作ります。</p>
+          <ul class="checklist">
+            <li>現場医療指揮官（Medical Incident Commander）を明確に指名</li>
+            <li>DMAT・救急隊・消防・警察との指揮系統の調整</li>
+            <li>指揮所（Command Post）の設置場所の決定</li>
+            <li>役割と責任の明確な割り当て</li>
+            <li>定期的な状況報告の仕組みの確立</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-letter" style="color:var(--accent-blue)">S</div>
+          <div>
+            <div class="detail-title">Safety — 安全</div>
+            <div class="detail-sub">3Sの原則：自己・現場・傷病者</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <p>安全確保は「自己（Self）→ 現場（Scene）→ 傷病者（Survivor）」の優先順位で行います。救助者自身が二次被害を受けることで、全体の対応能力が低下します。</p>
+          <ul class="checklist">
+            <li><strong>Self</strong>：個人防護具（PPE）の着用確認</li>
+            <li><strong>Scene</strong>：危険物・倒壊リスク・火災・ガス漏れの確認</li>
+            <li><strong>Survivor</strong>：傷病者の安全な場所への移動</li>
+            <li>ホットゾーン・ウォームゾーン・コールドゾーンの設定</li>
+            <li>安全ルートの確保と定期的な安全評価</li>
+          </ul>
+          <div style="margin-top:0.75rem">
+            <span class="tag" style="background:rgba(229,57,53,0.2);color:var(--accent-red)">ホットゾーン</span>
+            <span class="tag" style="background:rgba(255,214,0,0.2);color:var(--accent-yellow)">ウォームゾーン</span>
+            <span class="tag" style="background:rgba(0,200,83,0.2);color:var(--accent-green)">コールドゾーン</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-letter" style="color:var(--accent-blue)">C</div>
+          <div>
+            <div class="detail-title">Communication — 情報伝達</div>
+            <div class="detail-sub">効果的なコミュニケーション体制の確立</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <p>METHANEによる標準化された初期報告から始まり、継続的な情報共有体制を構築します。通信手段の確保と情報の正確な伝達が重要です。</p>
+          <ul class="checklist">
+            <li>METHANEによる初期報告の実施</li>
+            <li>無線・衛星電話等の通信手段の確保</li>
+            
+            <li>病院・DMAT・消防・警察との情報共有</li>
+            <li>メディア対応窓口の一元化</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-letter" style="color:var(--accent-blue)">A</div>
+          <div>
+            <div class="detail-title">Assessment — 評価</div>
+            <div class="detail-sub">継続的な状況・資源評価</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <p>現場の状況は常に変化します。傷病者数・重症度の変動、利用可能な資源、病院の受け入れ能力などを継続的に評価し、対応を柔軟に調整します。</p>
+          <ul class="checklist">
+            <li>傷病者数と重症度分布の把握・更新</li>
+            <li>現場での医療資源（人員・資器材・薬品）の評価</li>
+            <li>近隣病院の受け入れ可能数の確認</li>
+            <li>追加支援の必要性の判断</li>
+            <li>状況の悪化・好転の継続的モニタリング</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-letter" style="color:var(--accent-blue)">T</div>
+          <div>
+            <div class="detail-title">Triage — トリアージ</div>
+            <div class="detail-sub">START法・JumpSTARTによる重症度分類</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <p>最大多数の最大利益（Greatest Good for the Greatest Number）の原則に基づき、限られた資源を最も効果的に配分するための重症度分類を行います。</p>
+          <ul class="checklist">
+            <li><strong>赤（I）</strong>：生命危機あり、直ちに治療が必要</li>
+            <li><strong>黄（II）</strong>：重傷だが待機可能</li>
+            <li><strong>緑（III）</strong>：軽傷、独歩可能</li>
+            <li><strong>黒（0）</strong>：死亡または救命不能</li>
+            <li>START法（30秒/人）による迅速なトリアージ</li>
+            <li>状況変化に応じた再トリアージの実施</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-letter" style="color:var(--accent-blue)">T</div>
+          <div>
+            <div class="detail-title">Treatment — 治療</div>
+            <div class="detail-sub">優先度に応じた医療処置の提供</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <p>トリアージ区分に従い、治療エリアを設置して優先度の高い傷病者から処置を行います。現場での処置は生命維持に必要な最低限を行い、速やかに搬送します。</p>
+          <ul class="checklist">
+            <li>治療エリア（赤・黄・緑・黒）の設置</li>
+            <li>止血・気道確保・ショック対応を優先</li>
+            <li>止血・気道・呼吸・循環・低体温の順で処置を優先</li>
+            <li>医薬品・資器材の効率的配分</li>
+            <li>DMATや専門医チームとの連携</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-letter" style="color:var(--accent-blue)">T</div>
+          <div>
+            <div class="detail-title">Transport — 搬送</div>
+            <div class="detail-sub">適切な医療機関への効率的搬送</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <p>傷病者を適切な医療機関へ安全かつ迅速に搬送します。各病院の受け入れ能力を把握し、負荷が特定の病院に集中しないよう分散搬送を図ります。</p>
+          <ul class="checklist">
+            <li>搬送順位の決定（トリアージ区分に基づく）</li>
+            <li>救急車・ドクターヘリ・DMAT機材の効率的配置</li>
+            <li>搬送先病院との事前調整・受け入れ確認</li>
+            <li>分散搬送による特定病院への過負荷防止</li>
+            <li>搬送記録（誰が・いつ・どこへ）の管理</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- METHANE DETAIL -->
+  <section id="methane" class="section">
+    <div class="section-heading">
+      <h1 style="color:var(--accent-orange)">METHANE</h1>
+      <div class="line"></div>
+    </div>
+
+    <div class="detail-grid">
+
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-letter" style="color:var(--accent-orange)">M</div>
+          <div>
+            <div class="detail-title">My call sign — 報告者識別</div>
+            <div class="detail-sub">「私は〇〇です」から始める</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <p>報告の最初に自分のコールサイン・役職・所属を明確に述べます。受信側が誰からの報告かを即座に把握できることが重要です。</p>
+          <p>例：「こちらは〇〇救急隊、田中隊長です」</p>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-letter" style="color:var(--accent-orange)">E</div>
+          <div>
+            <div class="detail-title">Exact location — 正確な位置</div>
+            <div class="detail-sub">GPSや住所で特定できる情報を</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <p>現場の正確な位置を報告します。住所、交差点名、ランドマーク、GPS座標など、受信者が地図上で特定できる情報を伝えます。</p>
+          <p>例：「場所は〇〇市〇〇町1-2-3、〇〇駅南口前の広場です」</p>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-letter" style="color:var(--accent-orange)">T</div>
+          <div>
+            <div class="detail-title">Type of incident — 事案の種類</div>
+            <div class="detail-sub">何が起きているかを簡潔に</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <p>事案の種類と規模を報告します。交通事故・火災・爆発・建物崩壊・化学物質漏洩など、対応方針に影響する情報を簡潔に伝えます。</p>
+          <p>例：「大型バスと列車の衝突事故です」</p>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-letter" style="color:var(--accent-orange)">H</div>
+          <div>
+            <div class="detail-title">Hazards — 危険因子</div>
+            <div class="detail-sub">現在と潜在的なリスク</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <p>現在存在する危険と潜在的な危険の両方を報告します。これにより、支援隊員が適切なPPEや対応機材を準備できます。</p>
+          <ul class="checklist">
+            <li>火災・爆発リスク</li>
+            <li>化学物質・CBRN（化学・生物・放射線・核）汚染</li>
+            <li>建物崩壊・土砂崩れリスク</li>
+            <li>交通による二次事故リスク</li>
+            <li>「現在なし」も明示的に報告</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-letter" style="color:var(--accent-orange)">A</div>
+          <div>
+            <div class="detail-title">Access — アクセス</div>
+            <div class="detail-sub">最適な進入・退出ルート</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <p>支援隊員・資器材・救急車がどこから現場に入れるかを報告します。渋滞・通行止め・最適なルートを具体的に伝えます。</p>
+          <p>例：「北側の〇〇通りから進入可能、南側は通行止めです。救急車の待機場所は〇〇公園駐車場です」</p>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-letter" style="color:var(--accent-orange)">N</div>
+          <div>
+            <div class="detail-title">Number of casualties — 傷病者数</div>
+            <div class="detail-sub">重症度別の概数を報告</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <p>傷病者の総数と重症度別の概数を報告します。初期段階では概数で構いませんが、更新を続けます。</p>
+          <ul class="checklist">
+            <li>赤（重症）：〇名</li>
+            <li>黄（中等症）：〇名</li>
+            <li>緑（軽症）：〇名</li>
+            <li>黒（死亡/救命不能）：〇名</li>
+            <li>要救助者（閉じ込め等）：〇名</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-header">
+          <div class="detail-letter" style="color:var(--accent-orange)">E</div>
+          <div>
+            <div class="detail-title">Emergency services — 緊急対応機関</div>
+            <div class="detail-sub">必要な支援と現在の対応状況</div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <p>現在現場にいる機関と追加で必要な資源・機関を報告します。DMATの要請、特殊車両の必要性なども含めます。</p>
+          <ul class="checklist">
+            <li>現在対応中の機関（救急・消防・警察）の状況</li>
+            <li>追加要請が必要な機関・資源</li>
+            <li>DMATの要請の要否</li>
+            <li>ドクターヘリの要請の要否</li>
+            <li>特殊資器材（除染・化学・重機）の必要性</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- REPORT BUILDER -->
+  <section id="report" class="section">
+    <div class="section-heading">
+      <h1 style="color:var(--accent-orange)">METHANE 報告作成</h1>
+      <div class="line"></div>
+    </div>
+
+    <div class="methane-form">
+      <h2>現場報告フォーム</h2>
+      <div class="form-subtitle">各項目を入力して「報告文を生成」を押すと、METHANE形式の報告文が自動作成されます</div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">
+            <span class="ltr" style="color:var(--accent-orange)">M</span>
+            報告者・コールサイン
+          </label>
+          <input class="form-control" type="text" id="f_m" placeholder="例：〇〇救急隊 田中隊長">
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            <span class="ltr" style="color:var(--accent-orange)">E</span>
+            現場の正確な位置
+          </label>
+          <input class="form-control" type="text" id="f_e" placeholder="例：〇〇市〇〇町1-2-3、〇〇駅前広場">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">
+            <span class="ltr" style="color:var(--accent-orange)">T</span>
+            事案の種類・発生状況
+          </label>
+          <input class="form-control" type="text" id="f_t" placeholder="例：大型バスと列車の衝突事故">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">
+            <span class="ltr" style="color:var(--accent-orange)">H</span>
+            危険因子・二次災害リスク
+          </label>
+          <input class="form-control" type="text" id="f_h" placeholder="例：燃料漏れあり、火災リスク中程度（現時点で発火なし）">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">
+            <span class="ltr" style="color:var(--accent-orange)">A</span>
+            アクセスルート・進入経路
+          </label>
+          <input class="form-control" type="text" id="f_a" placeholder="例：北側〇〇通りから進入可、南側通行止め、救急車待機は〇〇公園駐車場">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">
+            <span class="ltr" style="color:var(--accent-orange)">N</span>
+            傷病者数（重症度別）
+          </label>
+          <input class="form-control" type="text" id="f_n" placeholder="例：赤5名、黄12名、緑20名、黒2名（計39名）">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">
+            <span class="ltr" style="color:var(--accent-orange)">E</span>
+            必要な緊急対応・支援機関
+          </label>
+          <input class="form-control" type="text" id="f_e2" placeholder="例：DMAT要請済、ドクターヘリ2機要請、除染チーム不要">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="generateReport()">📋 報告文を生成</button>
+        <button class="btn btn-secondary" onclick="clearForm()">クリア</button>
+      </div>
+
+      <div class="report-output" id="reportOutput"></div>
+    </div>
+  </section>
+
+  <!-- TRIAGE -->
+  <section id="triage" class="section">
+    <div class="section-heading">
+      <h1>トリアージ クイックリファレンス</h1>
+      <div class="line"></div>
+    </div>
+
+    <div class="triage-section">
+      <div class="triage-cards">
+        <div class="triage-card t1">
+          <div class="triage-tag">IMMEDIATE</div>
+          <div class="triage-priority">赤</div>
+          <div class="triage-title">第一優先（重症）</div>
+          <div class="triage-desc">生命に危機があり、直ちに処置が必要。処置により救命が見込まれる。</div>
+        </div>
+        <div class="triage-card t2">
+          <div class="triage-tag">DELAYED</div>
+          <div class="triage-priority">黄</div>
+          <div class="triage-title">第二優先（中等症）</div>
+          <div class="triage-desc">重傷だが直ちに生命危機はなく、一定時間の待機が可能。</div>
+        </div>
+        <div class="triage-card t3">
+          <div class="triage-tag">MINOR</div>
+          <div class="triage-priority">緑</div>
+          <div class="triage-title">第三優先（軽症）</div>
+          <div class="triage-desc">軽傷で自力歩行可能。最後に処置を行う。自傷でも基本的観察は必要。</div>
+        </div>
+        <div class="triage-card t4">
+          <div class="triage-tag">EXPECTANT</div>
+          <div class="triage-priority">黒</div>
+          <div class="triage-title">死亡・救命不能</div>
+          <div class="triage-desc">死亡、または現在利用可能な資源では救命が見込めない状態。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-heading">
+      <h1>START 法フロー</h1>
+      <div class="line"></div>
+    </div>
+
+    <div class="detail-card" style="margin-bottom:2rem">
+      <div class="detail-body" style="padding:1.5rem">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div style="background:#0d0f14;border:1px solid var(--border);border-radius:8px;padding:1rem">
+            <p style="font-weight:700;color:#f0f2f8;margin-bottom:0.5rem;font-size:0.9rem">① 歩行できるか？</p>
+            <p style="font-size:0.85rem;color:#e8eaef;line-height:1.7">「歩ける人はこちらへ」の呼びかけ<br>独歩可能 → <span style="color:var(--accent-green);font-weight:700">緑</span></p>
+          </div>
+          <div style="background:#0d0f14;border:1px solid var(--border);border-radius:8px;padding:1rem">
+            <p style="font-weight:700;color:#f0f2f8;margin-bottom:0.5rem;font-size:0.9rem">② 呼吸はあるか？（歩行不能者）</p>
+            <p style="font-size:0.85rem;color:#e8eaef;line-height:1.7">気道確保後も呼吸なし → <span style="color:#aaaaaa;font-weight:700">黒</span><br>呼吸あり → ③へ</p>
+          </div>
+          <div style="background:#0d0f14;border:1px solid var(--border);border-radius:8px;padding:1rem">
+            <p style="font-weight:700;color:#f0f2f8;margin-bottom:0.5rem;font-size:0.9rem">③ 呼吸数は？</p>
+            <p style="font-size:0.85rem;color:#e8eaef;line-height:1.7">30回/分超 → <span style="color:var(--accent-red);font-weight:700">赤</span><br>正常（10〜29回）→ ④へ</p>
+          </div>
+          <div style="background:#0d0f14;border:1px solid var(--border);border-radius:8px;padding:1rem">
+            <p style="font-weight:700;color:#f0f2f8;margin-bottom:0.5rem;font-size:0.9rem">④ 末梢循環・意識</p>
+            <p style="font-size:0.85rem;color:#e8eaef;line-height:1.7">橈骨動脈触知なし / CRT 2秒超 → <span style="color:var(--accent-red);font-weight:700">赤</span><br>正常かつ指示に従える → <span style="color:var(--accent-yellow);font-weight:700">黄</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- PAT SECTION -->
+  <section id="pat" class="section">
+    <div class="section-heading">
+      <h1 style="color:var(--accent-teal)">PAT法</h1>
+      <div class="line"></div>
+    </div>
+
+    <!-- overview banner -->
+    <div style="background:rgba(0,184,169,0.07);border:1px solid rgba(0,184,169,0.3);border-radius:10px;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <div style="font-size:1.8rem">🔍</div>
+      <div>
+        <div style="font-weight:700;font-size:0.95rem;margin-bottom:0.3rem">PAT = 二次トリアージ（個別詳細評価）</div>
+        <div style="font-size:0.82rem;color:#e2e4ec">一次トリアージ（START法）で赤・黄タグを付けた傷病者に対し、処置優先度と搬送先を決定するために行う系統的評価。</div>
+      </div>
+    </div>
+
+    <!-- サブタブ -->
+    <div class="cbrne-tabs">
+      <button class="ctab active" style="border-color:var(--accent-teal);color:var(--accent-teal)" onclick="showPat('secondary', this)">🔄 二次トリアージ</button>
+      <button class="ctab" onclick="showPat('flow', this)">📊 判断フロー</button>
+
+    </div>
+
+    <!-- 二次トリアージ -->
+    <div id="pat-secondary" class="cbrne-panel active">
+      <div class="cbrne-panel-header" style="border-left:4px solid var(--accent-purple)">
+        <div style="font-size:2rem;width:60px;text-align:center">🔄</div>
+        <div>
+          <div class="cbrne-panel-title">二次トリアージのポイント</div>
+          <div class="cbrne-panel-sub">STARTは30秒/人の一次評価。PATで詳細評価し、タグを随時更新する。</div>
+        </div>
+      </div>
+      <div class="cbrne-body">
+        <div class="cbrne-col">
+          <div class="cbrne-group-label">📌 一次 vs 二次の違い</div>
+          <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.5rem">
+            <div style="padding:0.6rem 0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px">
+              <div style="font-size:0.75rem;font-weight:700;color:#e2e4ec;margin-bottom:0.25rem">一次トリアージ（START）</div>
+              <div style="font-size:0.82rem">目標30秒/人。歩行・呼吸・循環の3項目のみで迅速分類。資源配分の大枠を決める。</div>
+            </div>
+            <div style="padding:0.6rem 0.75rem;background:rgba(0,184,169,0.06);border:1px solid rgba(0,184,169,0.25);border-radius:6px">
+              <div style="font-size:0.75rem;font-weight:700;color:var(--accent-teal);margin-bottom:0.25rem">二次トリアージ（PAT）</div>
+              <div style="font-size:0.82rem">詳細評価。処置しながら再評価。搬送先・処置内容を決定する。</div>
+            </div>
+          </div>
+          <ul class="checklist" style="margin-top:1rem">
+            <li>一次で緑タグでも症状悪化 → 直ちに再評価・タグ変更</li>
+            <li>一次で黒タグでも資源余裕があれば再評価を検討</li>
+            <li>処置後に必ずバイタルサインを再確認</li>
+          </ul>
+        </div>
+        <div class="cbrne-col">
+          <div class="cbrne-group-label">🔁 再トリアージのタイミング</div>
+          <ul class="checklist">
+            <li>処置（止血・気道確保）後</li>
+            <li>搬送前（状態が変わっていないか）</li>
+            <li>待機中に定期的に（目安：5〜10分ごと）</li>
+            <li>患者自身が「悪化した」と訴えたとき</li>
+            <li>救助者が異変に気づいたとき（呼吸変化・意識変化）</li>
+          </ul>
+          <div class="cbrne-group-label" style="margin-top:1rem">📝 タグ記録の注意点</div>
+          <ul class="checklist">
+            <li>変更時は旧タグを切り取り新タグを追加（積み重ね可）</li>
+            <li>記録：評価者名・評価時刻・変更理由を記入</li>
+            <li>薬剤投与した場合は必ずタグに記載</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Flow -->
+    <div id="pat-flow" class="cbrne-panel">
+      <div class="cbrne-panel-header" style="border-left:4px solid var(--accent-teal)">
+        <div style="font-size:1.8rem;width:44px;text-align:center;flex-shrink:0">📊</div>
+        <div>
+          <div class="cbrne-panel-title">PAT 判断フロー（二次トリアージ）</div>
+          <div class="cbrne-panel-sub">4段階で系統的に評価。目標：<strong style="color:#fff">2分以内</strong>に完了。</div>
+        </div>
+      </div>
+      <div style="padding:1rem;background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;margin-bottom:1rem">
+        <div style="display:flex;flex-direction:column;gap:0">
+
+          <!-- 開始 -->
+          <div style="background:#0d0f14;border:1px solid rgba(0,184,169,0.5);border-radius:10px;padding:0.85rem 1rem;display:flex;align-items:center;gap:0.75rem">
+            <div style="width:40px;height:40px;border-radius:50%;background:rgba(0,184,169,0.15);border:2px solid var(--accent-teal);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:var(--accent-teal);flex-shrink:0;text-align:center;line-height:1.3">開始</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:0.88rem;color:#fff">一次トリアージ（START法）完了後</div>
+              <div style="font-size:0.78rem;color:#e2e4ec;margin-top:2px">赤・黄タグの傷病者にPAT法を開始</div>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--accent-teal);white-space:nowrap;flex-shrink:0">目標2分</div>
+          </div>
+
+          <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
+
+          <!-- STEP 1 -->
+          <div style="background:#0d0f14;border:2px solid #e53935;border-radius:10px;overflow:hidden">
+            <div style="background:rgba(229,57,53,0.15);padding:0.65rem 1rem;display:flex;align-items:center;gap:0.6rem">
+              <div style="width:26px;height:26px;border-radius:50%;background:#e53935;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:#fff;flex-shrink:0">①</div>
+              <div style="font-weight:700;color:#fff;font-size:0.9rem">生理学的評価</div>
+            </div>
+            <div style="padding:0.85rem 1rem;display:flex;flex-direction:column;gap:0.5rem">
+              <div style="font-size:0.72rem;color:#e2e4ec;margin-bottom:0.1rem">以下の項目を確認する</div>
+              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+                <div class="pat-item-label" style="color:#e53935">気道</div>
+                <div class="pat-item-body">開通しているか・異常呼吸音（喘鳴・いびき）</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+                <div class="pat-item-label" style="color:#e53935">呼吸</div>
+                <div class="pat-item-body">呼吸数（正常10〜29回/分）・胸郭の動き・左右差</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+                <div class="pat-item-label" style="color:#e53935">循環</div>
+                <div class="pat-item-body">橈骨動脈触知・CRT 2秒以内・外出血の有無</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+                <div class="pat-item-label" style="color:#e53935">意識</div>
+                <div class="pat-item-body">JCS / GCS・指示に従えるか</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+                <div class="pat-item-label" style="color:#e53935">体温</div>
+                <div class="pat-item-body">低体温の有無・皮膚冷感・湿潤</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+                <div class="pat-item-label" style="color:#e53935">SpO₂</div>
+                <div class="pat-item-body">測定可能なら確認（90%未満は要注意）</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
+
+          <!-- STEP 2 -->
+          <div style="background:#0d0f14;border:2px solid #e53935;border-radius:10px;overflow:hidden">
+            <div style="background:rgba(229,57,53,0.15);padding:0.65rem 1rem;display:flex;align-items:center;gap:0.6rem">
+              <div style="width:26px;height:26px;border-radius:50%;background:#e53935;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:#fff;flex-shrink:0">②</div>
+              <div style="font-weight:700;color:#fff;font-size:0.9rem">全身観察による解剖学的評価</div>
+            </div>
+            <div style="padding:0.85rem 1rem;display:flex;flex-direction:column;gap:0.5rem">
+              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+                <div class="pat-item-label" style="color:#e53935">頭頸部</div>
+                <div class="pat-item-body">頭部外傷・変形・頸静脈怒張・気管偏位</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+                <div class="pat-item-label" style="color:#e53935">胸部</div>
+                <div class="pat-item-body">開放性損傷・奇異呼吸・フレイルチェスト</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+                <div class="pat-item-label" style="color:#e53935">腹・骨盤</div>
+                <div class="pat-item-body">腹部膨満・圧痛・骨盤不安定性</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+                <div class="pat-item-label" style="color:#e53935">四肢</div>
+                <div class="pat-item-body">骨折・変形・開放創・末梢循環・感覚障害</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+                <div class="pat-item-label" style="color:#e53935">背部</div>
+                <div class="pat-item-body">脊椎変形・圧痛・出血・開放創</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+                <div class="pat-item-label" style="color:#e53935">体表</div>
+                <div class="pat-item-body">熱傷の範囲・深度・貫通創・挫滅創</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ①②判定バナー -->
+          <div style="margin:0.4rem 0;padding:0.8rem 1rem;background:#1a0808;border:2px solid #e53935;border-radius:8px;display:flex;align-items:center;gap:0.75rem">
+            <div style="font-size:1.3rem;flex-shrink:0">🔴</div>
+            <div style="font-size:0.85rem;color:#fff;line-height:1.5"><strong style="color:#ff6b6b">①・② いずれか1つでも異常あり</strong><br>→ <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#e53935">赤タグ</span> に変更・確定</div>
+          </div>
+
+          <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
+
+          <!-- STEP 3 -->
+          <div style="background:#0d0f14;border:2px solid #ffd600;border-radius:10px;overflow:hidden">
+            <div style="background:rgba(255,214,0,0.12);padding:0.65rem 1rem;display:flex;align-items:center;gap:0.6rem">
+              <div style="width:26px;height:26px;border-radius:50%;background:#ffd600;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:#000;flex-shrink:0">③</div>
+              <div style="font-weight:700;color:#fff;font-size:0.9rem">受傷機転の確認</div>
+            </div>
+            <div style="padding:0.85rem 1rem;display:flex;flex-direction:column;gap:0.5rem">
+              <div class="pat-item-row" style="border-color:rgba(255,214,0,0.3)">
+                <div class="pat-item-label" style="color:#ffd600;font-size:0.7rem">高エネルギー</div>
+                <div class="pat-item-body">時速50km超の交通事故・車外放出・3m超の墜落・爆発・建物崩壊</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(255,214,0,0.3)">
+                <div class="pat-item-label" style="color:#ffd600;font-size:0.7rem">特殊受傷</div>
+                <div class="pat-item-body">溺水・感電・絞扼・刺傷/銃創（頭頸部・体幹）・爆傷（一次〜四次）</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
+
+          <!-- STEP 4 -->
+          <div style="background:#0d0f14;border:2px solid #ffd600;border-radius:10px;overflow:hidden">
+            <div style="background:rgba(255,214,0,0.12);padding:0.65rem 1rem;display:flex;align-items:center;gap:0.6rem">
+              <div style="width:26px;height:26px;border-radius:50%;background:#ffd600;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:#000;flex-shrink:0">④</div>
+              <div style="font-weight:700;color:#fff;font-size:0.9rem">要配慮者・災害弱者の評価</div>
+            </div>
+            <div style="padding:0.85rem 1rem;display:flex;flex-direction:column;gap:0.5rem">
+              <div class="pat-item-row" style="border-color:rgba(255,214,0,0.3)">
+                <div class="pat-item-label" style="color:#ffd600">小児</div>
+                <div class="pat-item-body">15歳以下（JumpSTART使用）・体重・解剖学的差異に注意</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(255,214,0,0.3)">
+                <div class="pat-item-label" style="color:#ffd600">高齢者</div>
+                <div class="pat-item-body">65歳以上・代償能力低下・多臓器不全リスク</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(255,214,0,0.3)">
+                <div class="pat-item-label" style="color:#ffd600">妊婦</div>
+                <div class="pat-item-body">胎児・母体の両方を評価・左側臥位（大静脈圧迫防止）</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(255,214,0,0.3)">
+                <div class="pat-item-label" style="color:#ffd600">基礎疾患</div>
+                <div class="pat-item-body">心疾患・糖尿病・血液凝固障害・抗凝固薬・免疫抑制薬内服</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(255,214,0,0.3)">
+                <div class="pat-item-label" style="color:#ffd600">障害者</div>
+                <div class="pat-item-body">コミュニケーション困難・自力移動・避難が困難</div>
+              </div>
+              <div class="pat-item-row" style="border-color:rgba(255,214,0,0.3)">
+                <div class="pat-item-label" style="color:#ffd600">その他</div>
+                <div class="pat-item-body">透析患者・在宅医療依存者・言語・文化的障壁のある外国人</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ③④判定バナー -->
+          <div style="margin:0.4rem 0;padding:0.8rem 1rem;background:#1a1600;border:2px solid #ffd600;border-radius:8px;display:flex;align-items:center;gap:0.75rem">
+            <div style="font-size:1.3rem;flex-shrink:0">🟡</div>
+            <div style="font-size:0.85rem;color:#fff;line-height:1.5"><strong style="color:#ffd600">③・④ いずれか該当あり</strong>（①②で赤でない場合）<br>→ <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#ffd600">黄タグ</span> への変更を検討</div>
+          </div>
+
+          <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
+
+          <!-- 完了 -->
+          <div style="background:#0d0f14;border:1px solid rgba(0,200,83,0.5);border-radius:10px;padding:0.85rem 1rem;display:flex;align-items:center;gap:0.75rem">
+            <div style="width:40px;height:40px;border-radius:50%;background:rgba(0,200,83,0.15);border:2px solid #00c853;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">✅</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:0.88rem;color:#fff;margin-bottom:0.35rem">PAT法 完了 → 処置・搬送へ</div>
+              <ul class="checklist" style="margin:0">
+                <li>タグを確定・記録（評価者名・時刻）</li>
+                <li>薬剤投与はタグに必ず記載</li>
+                <li>状態変化があれば再評価・タグ更新</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- CBRNE SECTION -->
+  <section id="cbrne" class="section">
+    <div class="section-heading">
+      <h1 style="color:var(--accent-purple)">CBRNE 対応</h1>
+      <div class="line"></div>
+    </div>
+
+    <!-- 基本原則バナー -->
+    <div style="background:#1e0e0e;border:2px solid #e53935;border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;">
+      <div style="font-size:0.7rem;font-weight:700;color:#ff6b6b;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.6rem">⚠ CBRNE 基本原則</div>
+      <div style="font-size:1.05rem;font-weight:700;color:#ffffff;margin-bottom:0.6rem">近づかない・触らない・吸わない</div>
+      <div style="font-size:0.88rem;color:#ffffff;line-height:1.8">通常のMCI対応に加え、<strong style="color:#ff6b6b">汚染拡大防止</strong>と<strong style="color:#ff6b6b">救助者の二次汚染防止</strong>が最優先事項。専門チーム到着まで待機が原則。</div>
+    </div>
+
+    <!-- サブタブ -->
+    <div class="cbrne-tabs">
+      <button class="ctab active" onclick="showCbrne('c', this)"><span style="color:#e53935">C</span> 化学</button>
+      <button class="ctab" onclick="showCbrne('b', this)"><span style="color:#00c853">B</span> 生物</button>
+      <button class="ctab" onclick="showCbrne('r', this)"><span style="color:#ffd600">R</span> 放射線</button>
+      <button class="ctab" onclick="showCbrne('ne', this)"><span style="color:#7c4dff">N/E</span> 核・爆発</button>
+      <button class="ctab" onclick="showCbrne('triage', this)">🏷 トリアージ修正</button>
+      <button class="ctab" onclick="showCbrne('decon', this)">🚿 除染</button>
+      <button class="ctab" onclick="showCbrne('ppe', this)">🦺 PPE</button>
+    </div>
+
+    <!-- C: 化学 -->
+    <div id="cbrne-c" class="cbrne-panel active">
+      <div class="cbrne-panel-header" style="border-left:4px solid #e53935">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#e53935;line-height:1">C</div>
+        <div>
+          <div class="cbrne-panel-title">Chemical — 化学剤</div>
+          <div class="cbrne-panel-sub">神経剤（サリン・VX）・びらん剤（マスタード）・窒息剤（塩素）・血液剤（青酸）</div>
+        </div>
+      </div>
+      <div class="cbrne-body">
+        <div class="cbrne-col">
+          <div class="cbrne-group-label">🔍 識別・症状</div>
+          <ul class="checklist">
+            <li><strong>神経剤</strong>：縮瞳・流涎・気管支痙攣・筋肉痙攣・意識消失（SLUDGE症状）</li>
+            <li><strong>びらん剤</strong>：皮膚水疱・眼痛・遅発性（数時間後に出現）</li>
+            <li><strong>窒息剤</strong>：咳・チアノーゼ・肺水腫（塩素特有の刺激臭）</li>
+            <li><strong>血液剤</strong>：頭痛・痙攣・急速な意識消失（アーモンド臭）</li>
+            <li>HAZCHEM（危険物標識・オレンジパネル）を確認</li>
+          </ul>
+        </div>
+        <div class="cbrne-col">
+          <div class="cbrne-group-label">🚨 対応手順</div>
+          <ul class="checklist">
+            <li>専門チーム（Level A/B PPE）が対応するまで近づかない</li>
+            <li>風上・高台への避難誘導（風下は汚染リスク大）</li>
+            <li>除染ライン設置：乾式（衣服除去）→ 湿式（流水15分）</li>
+            <li>除染前に病院へ搬送しない（病院汚染防止）</li>
+          </ul>
+          <div class="cbrne-group-label" style="margin-top:1rem">💊 治療（専門医指示下）</div>
+          <ul class="checklist">
+            <li>神経剤：アトロピン（繰り返し投与）＋ PAM（プラリドキシム）</li>
+            <li>青酸系血液剤：ヒドロキソコバラミン（シアノキット）</li>
+            <li>窒息剤：酸素投与・PEEP換気・安静保持</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- B: 生物 -->
+    <div id="cbrne-b" class="cbrne-panel">
+      <div class="cbrne-panel-header" style="border-left:4px solid #00c853">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#00c853;line-height:1">B</div>
+        <div>
+          <div class="cbrne-panel-title">Biological — 生物剤</div>
+          <div class="cbrne-panel-sub">炭疽菌・天然痘・ペスト・ボツリヌス毒素・ウイルス性出血熱</div>
+        </div>
+      </div>
+      <div class="cbrne-body">
+        <div class="cbrne-col">
+          <div class="cbrne-group-label">🔍 特徴・識別</div>
+          <ul class="checklist">
+            <li>化学剤と違い潜伏期間あり（数時間〜数週間）</li>
+            <li>多数者の同時・類似症状発症が手がかり</li>
+            <li>感染経路：接触感染・飛沫感染・空気感染（種類による）</li>
+            <li>炭疽菌：皮膚型（黒色痂皮）・肺炎型（高致死率）</li>
+            <li>天然痘：発疹の分布（全身均一、四肢に多い）</li>
+          </ul>
+        </div>
+        <div class="cbrne-col">
+          <div class="cbrne-group-label">🚨 対応手順</div>
+          <ul class="checklist">
+            <li>N95以上のマスク・ゴーグル・ガウン着用（Level C以上）</li>
+            <li>患者の隔離・コホーティング（感染経路別）</li>
+            <li>保健所・感染症指定医療機関へ即時報告</li>
+            <li>曝露者リストの作成と追跡調査（接触者追跡）</li>
+            <li>ワクチン・抗生物質の予防投与（専門機関指示）</li>
+            <li>廃棄物・遺体の特殊管理（バイオハザード袋）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- R: 放射線 -->
+    <div id="cbrne-r" class="cbrne-panel">
+      <div class="cbrne-panel-header" style="border-left:4px solid #ffd600">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#ffd600;line-height:1">R</div>
+        <div>
+          <div class="cbrne-panel-title">Radiological — 放射線</div>
+          <div class="cbrne-panel-sub">RDD（ダーティボム）・放射性物質漏洩・原子炉事故</div>
+        </div>
+      </div>
+      <div class="cbrne-body">
+        <div class="cbrne-col">
+          <div class="cbrne-group-label">🔍 被曝低減の3原則</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.5rem">
+            <div style="background:rgba(255,214,0,0.08);border:1px solid rgba(255,214,0,0.25);border-radius:8px;padding:0.75rem;text-align:center">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#ffd600">距離</div>
+              <div style="font-size:0.75rem;color:#e2e4ec;margin-top:0.25rem">線源から遠ざかる<br>距離²に反比例</div>
+            </div>
+            <div style="background:rgba(255,214,0,0.08);border:1px solid rgba(255,214,0,0.25);border-radius:8px;padding:0.75rem;text-align:center">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#ffd600">遮蔽</div>
+              <div style="font-size:0.75rem;color:#e2e4ec;margin-top:0.25rem">コンクリート<br>鉛・土砂で遮蔽</div>
+            </div>
+            <div style="background:rgba(255,214,0,0.08);border:1px solid rgba(255,214,0,0.25);border-radius:8px;padding:0.75rem;text-align:center">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#ffd600">時間</div>
+              <div style="font-size:0.75rem;color:#e2e4ec;margin-top:0.25rem">作業時間を<br>最短に</div>
+            </div>
+          </div>
+          <ul class="checklist" style="margin-top:1rem">
+            <li>サーベイメータによる線量・汚染確認（専門要員が実施）</li>
+            <li>衣服除去で約80%の汚染を除去できる</li>
+          </ul>
+        </div>
+        <div class="cbrne-col">
+          <div class="cbrne-group-label">🚨 対応・治療</div>
+          <ul class="checklist">
+            <li>甲状腺内部被曝：安定ヨウ素剤（医師指示下・曝露前後24時間以内が有効）</li>
+            <li>ARS（急性放射線症候群）監視：嘔吐発症時間が重症度指標（30分以内→最重症）</li>
+            <li>皮膚紅斑・脱毛・出血傾向は重症ARSのサイン</li>
+            <li>リンパ球数の経時測定（48〜72時間後が重要）</li>
+            <li>原子力規制委員会・保健所への通報義務</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- NE: 核・爆発 -->
+    <div id="cbrne-ne" class="cbrne-panel">
+      <div class="cbrne-panel-header" style="border-left:4px solid #7c4dff">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#7c4dff;line-height:1">NE</div>
+        <div>
+          <div class="cbrne-panel-title">Nuclear / Explosive — 核・爆発物</div>
+          <div class="cbrne-panel-sub">核爆発・爆発物（IED）・テロ・建物崩壊を伴う爆発</div>
+        </div>
+      </div>
+      <div class="cbrne-body">
+        <div class="cbrne-col">
+          <div class="cbrne-group-label">💥 爆傷（Blast Injury）の分類</div>
+          <ul class="checklist">
+            <li><strong>一次爆傷</strong>：爆風（blast wave）→ 鼓膜穿孔・肺挫傷・腸管損傷（外見上わかりにくい）</li>
+            <li><strong>二次爆傷</strong>：飛散物による刺傷・切創・眼球損傷</li>
+            <li><strong>三次爆傷</strong>：吹き飛ばされることによる鈍的外傷・骨折</li>
+            <li><strong>四次爆傷</strong>：熱傷・有毒ガス・建物崩壊による圧挫</li>
+            <li>複合損傷が多い → 体表の傷に惑わされず全身を評価</li>
+          </ul>
+        </div>
+        <div class="cbrne-col">
+          <div class="cbrne-group-label">🚨 対応手順</div>
+          <ul class="checklist">
+            <li>二次爆発リスクに注意：現場に安易に近づかない</li>
+            <li>爆発物処理班（EOD）確認後に救助活動開始</li>
+            <li>フラッシュバーン（熱線熱傷）・眼球損傷の評価</li>
+            <li><strong>核爆発</strong>：EMP（電磁パルス）による通信・医療機器障害に備える</li>
+            <li>核爆発の場合：爆心地から直ちに避難（距離優先）</li>
+            <li>警察・自衛隊・原子力規制委員会との連携必須</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- トリアージ修正 -->
+    <div id="cbrne-triage" class="cbrne-panel">
+      <div class="cbrne-panel-header" style="border-left:4px solid var(--accent-orange)">
+        <div style="font-size:2rem;width:60px;text-align:center">🏷</div>
+        <div>
+          <div class="cbrne-panel-title">CBRNE 災害トリアージの修正</div>
+          <div class="cbrne-panel-sub">汚染環境下では優先順位・搬送判断の考え方が変わる</div>
+        </div>
+      </div>
+      <div class="cbrne-body">
+        <div class="cbrne-col">
+          <div class="cbrne-group-label">📌 通常との主な違い</div>
+          <ul class="checklist">
+            <li>「救命可能性」に加え<strong>汚染状況・除染完了の有無</strong>が判断軸に加わる</li>
+            <li>除染前の傷病者は医療機関への搬送が原則禁止</li>
+            <li>汚染タグ（赤/黄/緑/黒 × 汚染あり/なし）を組み合わせて管理</li>
+          </ul>
+          <div class="cbrne-group-label" style="margin-top:1rem">🏷 汚染タグの運用</div>
+          <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.5rem">
+            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0.75rem;background:rgba(229,57,53,0.08);border:1px solid rgba(229,57,53,0.3);border-radius:6px">
+              <span style="color:#e53935;font-weight:700;width:60px;flex-shrink:0">赤＋汚染</span>
+              <span style="font-size:0.82rem;color:#e2e4ec">除染ライン最優先通過 → 除染後に治療</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0.75rem;background:rgba(255,214,0,0.08);border:1px solid rgba(255,214,0,0.3);border-radius:6px">
+              <span style="color:#ffd600;font-weight:700;width:60px;flex-shrink:0">黄＋汚染</span>
+              <span style="font-size:0.82rem;color:#e2e4ec">除染ライン → 処置エリアへ順次移動</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0.75rem;background:rgba(0,200,83,0.08);border:1px solid rgba(0,200,83,0.3);border-radius:6px">
+              <span style="color:#00c853;font-weight:700;width:60px;flex-shrink:0">緑＋汚染</span>
+              <span style="font-size:0.82rem;color:#e2e4ec">歩行除染（自己除染）ラインへ誘導</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0.75rem;background:rgba(80,80,90,0.15);border:1px solid rgba(100,100,120,0.3);border-radius:6px">
+              <span style="color:#888;font-weight:700;width:60px;flex-shrink:0">黒＋汚染</span>
+              <span style="font-size:0.82rem;color:#e2e4ec">汚染遺体管理区域で個別に汚染管理継続</span>
+            </div>
+          </div>
+        </div>
+        <div class="cbrne-col">
+          <div class="cbrne-group-label">⚗️ 化学剤特有の修正</div>
+          <ul class="checklist">
+            <li>神経剤大量曝露 → 痙攣・無呼吸でも除染＋アトロピン投与で回復の可能性あり（<span style="color:#888">黒タグ</span>を急がない）</li>
+            <li>歩行可能でも縮瞳・流涎があれば「<span style="color:#ffd600">黄</span>」以上に変更</li>
+            <li>症状なしでも曝露確認者は「<span style="color:#00c853">緑</span>」として経過観察</li>
+            <li>びらん剤：受傷後数時間で症状悪化（遅発性）→ 再トリアージ必須</li>
+          </ul>
+          <div class="cbrne-group-label" style="margin-top:1rem">☢️ 放射線特有の修正（ARS）</div>
+          <ul class="checklist">
+            <li>嘔吐発症時間が重症度指標（30分以内→最重症）</li>
+            <li>外見正常でも高線量曝露者は「<span style="color:#ffd600">黄</span>」として管理</li>
+            <li>外傷＋放射線の複合損傷は両方を同時評価</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 除染 -->
+    <div id="cbrne-decon" class="cbrne-panel">
+      <div class="cbrne-panel-header" style="border-left:4px solid var(--accent-teal)">
+        <div style="font-size:2rem;width:60px;text-align:center">🚿</div>
+        <div>
+          <div class="cbrne-panel-title">除染ラインの設置と運用</div>
+          <div class="cbrne-panel-sub">ウォームゾーン内に設置。除染完了前の搬送禁止。</div>
+        </div>
+      </div>
+      <div class="cbrne-body">
+        <div class="cbrne-col">
+          <div class="cbrne-group-label">① 乾式除染（全員に最初に実施）</div>
+          <ul class="checklist">
+            <li>衣服・装備の除去で約80%の汚染を除去</li>
+            <li>除去した衣服はビニール袋に密封して保管</li>
+            <li>皮膚の粉塵・液滴はタオルや布で拭き取る（こすらない）</li>
+            <li>時間が許せば直ちに湿式除染へ移行</li>
+          </ul>
+          <div class="cbrne-group-label" style="margin-top:1rem">② 湿式除染（乾式後に実施）</div>
+          <ul class="checklist">
+            <li>大量の流水で全身を洗浄（最低15分間）</li>
+            <li>眼・鼻・口腔内も流水でよく洗う</li>
+            <li>歩行可能者：自己除染ライン（シャワー型）</li>
+            <li>歩行不能者：担架・ストレッチャー除染ライン</li>
+            <li>除染廃液の流出防止措置（土嚢・シート）が必要</li>
+          </ul>
+        </div>
+        <div class="cbrne-col">
+          <div class="cbrne-group-label">🏷 除染完了の確認と搬送</div>
+          <ul class="checklist">
+            <li>除染完了後に「除染済タグ／リストバンド」を装着</li>
+            <li>タグなし傷病者の搬送・病院受け入れは原則拒否</li>
+            <li>再汚染防止のため清潔毛布・タオルで体を保護してから搬送</li>
+          </ul>
+          <div class="cbrne-group-label" style="margin-top:1rem">🗺 ゾーニング（除染配置）</div>
+          <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.5rem">
+            <div style="padding:0.5rem 0.75rem;background:rgba(229,57,53,0.1);border-left:3px solid #e53935;border-radius:4px;font-size:0.82rem"><strong style="color:#e53935">ホット</strong>：汚染源・救助不可エリア</div>
+            <div style="padding:0.5rem 0.75rem;background:rgba(255,214,0,0.1);border-left:3px solid #ffd600;border-radius:4px;font-size:0.82rem"><strong style="color:#ffd600">ウォーム</strong>：除染ライン設置エリア</div>
+            <div style="padding:0.5rem 0.75rem;background:rgba(0,200,83,0.1);border-left:3px solid #00c853;border-radius:4px;font-size:0.82rem"><strong style="color:#00c853">コールド</strong>：除染完了者・指揮所・救護所</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PPE -->
+    <div id="cbrne-ppe" class="cbrne-panel">
+      <div class="cbrne-panel-header" style="border-left:4px solid var(--accent-blue)">
+        <div style="font-size:2rem;width:60px;text-align:center">🦺</div>
+        <div>
+          <div class="cbrne-panel-title">PPE レベル早見表</div>
+          <div class="cbrne-panel-sub">状況に応じた適切な防護具の選択が二次被害防止の鍵</div>
+        </div>
+      </div>
+      <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.75rem">
+        <div class="ppe-row" style="border-left:4px solid #e53935">
+          <div class="ppe-level" style="color:#e53935">Level A</div>
+          <div class="ppe-info">
+            <div class="ppe-title">最高レベル（皮膚・呼吸器・眼を完全保護）</div>
+            <div class="ppe-scene">化学剤ホットゾーン内での救助・サンプリング</div>
+            <div class="ppe-gear">全身封入型化学防護服（SCBA内蔵）＋化学防護手袋・ブーツ</div>
+          </div>
+        </div>
+        <div class="ppe-row" style="border-left:4px solid #ff6d00">
+          <div class="ppe-level" style="color:#ff6d00">Level B</div>
+          <div class="ppe-info">
+            <div class="ppe-title">呼吸器：最高 / 皮膚：中程度</div>
+            <div class="ppe-scene">化学剤ウォームゾーン・蒸気圧低い液体化学剤</div>
+            <div class="ppe-gear">化学防護服（非封入型）＋ SCBA ＋ 防護手袋・ブーツ</div>
+          </div>
+        </div>
+        <div class="ppe-row" style="border-left:4px solid #ffd600">
+          <div class="ppe-level" style="color:#ffd600">Level C</div>
+          <div class="ppe-info">
+            <div class="ppe-title">呼吸器：中程度 / 皮膚：中程度</div>
+            <div class="ppe-scene">除染後エリア・生物剤対応・放射線コールドゾーン</div>
+            <div class="ppe-gear">防護服 ＋ PAPR（電動ファン付）または N95 ＋ 防護手袋</div>
+          </div>
+        </div>
+        <div class="ppe-row" style="border-left:4px solid #00c853">
+          <div class="ppe-level" style="color:#00c853">Level D</div>
+          <div class="ppe-info">
+            <div class="ppe-title">最低限（通常作業服レベル）</div>
+            <div class="ppe-scene">汚染なし確認済みコールドゾーン・指揮所</div>
+            <div class="ppe-gear">標準的な救急隊装備 ＋ サージカルマスク ＋ 手袋</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+
+</main>
+<script>
+  function showPat(id, btn) {
+    document.querySelectorAll('#pat .cbrne-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('#pat .ctab').forEach(b => b.classList.remove('active'));
+    const el = document.getElementById('pat-' + id);
+    if (el) el.classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function showCbrne(id, btn) {
+    document.querySelectorAll('.cbrne-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
+    document.getElementById('cbrne-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function showSection(id, btn, navIndex) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    if (btn) {
+      btn.classList.add('active');
+    } else if (navIndex !== undefined) {
+      document.querySelectorAll('nav button')[navIndex].classList.add('active');
+    }
+  }
+
+  function generateReport() {
+    const m = document.getElementById('f_m').value || '（未入力）';
+    const e = document.getElementById('f_e').value || '（未入力）';
+    const t = document.getElementById('f_t').value || '（未入力）';
+    const h = document.getElementById('f_h').value || '（未入力）';
+    const a = document.getElementById('f_a').value || '（未入力）';
+    const n = document.getElementById('f_n').value || '（未入力）';
+    const e2 = document.getElementById('f_e2').value || '（未入力）';
+
+    const now = new Date();
+    const timeStr = now.toLocaleString('ja-JP');
+
+    const report = [
+      '╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏',
+      'METHANE 現場報告',
+      '生成日時：' + timeStr,
+      '╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏',
+      '',
+      '[M] 報告者',
+      '　' + m,
+      '',
+      '[E] 位置',
+      '　' + e,
+      '',
+      '[T] 事案種別',
+      '　' + t,
+      '',
+      '[H] 危険因子',
+      '　' + h,
+      '',
+      '[A] アクセス',
+      '　' + a,
+      '',
+      '[N] 傷病者数',
+      '　' + n,
+      '',
+      '[E] 必要な緊急対応・機関',
+      '　' + e2,
+      '',
+      '╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏',
+      '※ 本報告は随時更新が必要です',
+      '╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏'
+    ].join('\n');
+
+    const out = document.getElementById('reportOutput');
+    out.textContent = report;
+    out.classList.add('show');
+  }
+
+  function clearForm() {
+    ['f_m','f_e','f_t','f_h','f_a','f_n','f_e2'].forEach(function(id) {
+      document.getElementById(id).value = '';
+    });
+    const out = document.getElementById('reportOutput');
+    out.textContent = '';
+    out.classList.remove('show');
+  }
+</script>
+</body>
+</html>

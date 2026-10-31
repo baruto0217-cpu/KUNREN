@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="訓練・現場">
+<meta name="theme-color" content="#14213d">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>救急 訓練・現場ツール</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI',sans-serif;background:#0d1321;color:#f0f0f0;font-size:15px;}
+#launcher{position:fixed;inset:0;background:linear-gradient(135deg,#0d1321 0%,#14213d 55%,#0d1117 100%);
+  display:flex;flex-direction:column;align-items:center;overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:1000;
+  padding:calc(env(safe-area-inset-top) + 28px) env(safe-area-inset-right) calc(env(safe-area-inset-bottom) + 16px) env(safe-area-inset-left);
+  transition:opacity .4s,transform .4s;}
+#launcher.hidden{opacity:0;pointer-events:none;transform:scale(.96);}
+.launcher-header{text-align:center;margin-bottom:18px;}
+.launcher-title{font-size:22px;font-weight:800;background:linear-gradient(135deg,#fca311,#ff6b6b);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.launcher-sub{font-size:12px;color:rgba(255,255,255,.45);margin-top:4px;letter-spacing:.05em;}
+.group{width:100%;max-width:420px;padding:0 16px;margin-bottom:14px;}
+.group-title{font-size:13px;font-weight:700;color:rgba(255,255,255,.7);margin:6px 2px 8px;letter-spacing:.1em;}
+.app-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.app-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-left:4px solid var(--c);
+  border-radius:16px;padding:13px;cursor:pointer;transition:transform .2s,background .2s;
+  display:flex;flex-direction:column;align-items:flex-start;gap:7px;}
+.app-card:active{transform:scale(.96);background:rgba(255,255,255,.12);}
+.app-icon{font-size:26px;line-height:1;}
+.app-name{font-size:13px;font-weight:700;color:#fff;line-height:1.3;}
+.app-desc{font-size:10px;color:rgba(255,255,255,.5);line-height:1.5;}
+.app-tag{font-size:9px;font-weight:700;letter-spacing:.08em;padding:2px 7px;border-radius:20px;color:#fff;background:var(--c);opacity:.85;}
+.launcher-footer{margin-top:6px;font-size:11px;color:rgba(255,255,255,.3);text-align:center;padding:0 16px;}
+.app-frame{position:fixed;inset:0;z-index:500;display:none;flex-direction:column;background:#f0f0ee;
+  transition:opacity .3s,transform .3s;opacity:0;transform:translateY(20px);}
+.app-frame.visible{display:flex;opacity:1;transform:translateY(0);}
+.frame-header{display:flex;align-items:center;padding:12px 16px 10px;padding-top:calc(12px + env(safe-area-inset-top));color:#fff;flex-shrink:0;}
+.back-btn{width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.2);color:#fff;font-size:18px;flex-shrink:0;margin-right:12px;font-family:inherit;}
+.back-btn:active{background:rgba(255,255,255,.35);}
+.frame-title{font-size:16px;font-weight:700;flex:1;}
+.frame-body{flex:1;overflow:hidden;}
+.frame-body iframe{width:100%;height:100%;border:none;display:block;}
+</style>
+</head>
+<body>
+<div id="launcher">
+  <div class="launcher-header">
+    <div class="launcher-title">救急<br>訓練・現場ツール</div>
+    <div class="launcher-sub">Training &amp; Field Tools</div>
+  </div>
+  <div class="group">
+    <div class="group-title">訓練・評価</div>
+    <div class="app-grid">
+    <div class="app-card" style="--c:#1D9E75" onclick="openApp('simulator')">
+      <div class="app-icon">🩺</div>
+      <div class="app-name">救急シミュレーション<br>管理</div>
+      <div class="app-desc">想定編集・モニター・評価の記録</div>
+      <div class="app-tag">SIMULATOR</div>
+    </div>
+    <div class="app-card" style="--c:#0e7490" onclick="openApp('pemec')">
+      <div class="app-icon">🏥</div>
+      <div class="app-name">PEMEC<br>シミュレーション</div>
+      <div class="app-desc">通報の吹き出しつき・想定と評価</div>
+      <div class="app-tag">PEMEC</div>
+    </div>
+    <div class="app-card" style="--c:#b91c1c" onclick="openApp('cpa')">
+      <div class="app-icon">❤️</div>
+      <div class="app-name">CPA Training</div>
+      <div class="app-desc">愛知県第18版・タイマー・評価・PDF</div>
+      <div class="app-tag">CPA</div>
+    </div>
+    <div class="app-card" style="--c:#7c3aed" onclick="openApp('jitsugi')">
+      <div class="app-icon">📝</div>
+      <div class="app-name">実技試験評価</div>
+      <div class="app-desc">ショック・低血糖 ○△×（パスコード）</div>
+      <div class="app-tag">EXAM</div>
+    </div>
+    <div class="app-card" style="--c:#c2410c" onclick="openApp('gaisho')">
+      <div class="app-icon">🦴</div>
+      <div class="app-name">外傷観察評価</div>
+      <div class="app-desc">見つけた／見落とし（パスコード）</div>
+      <div class="app-tag">TRAUMA</div>
+    </div>
+    <div class="app-card" style="--c:#1a4a7c" onclick="openApp('time')">
+      <div class="app-icon">⏱️</div>
+      <div class="app-name">タイムスタンプ記録</div>
+      <div class="app-desc">活動の時刻を記録・PDF出力</div>
+      <div class="app-tag">TIME</div>
+    </div>
+    </div>
+  </div>
+  <div class="group">
+    <div class="group-title">現場・参照</div>
+    <div class="app-grid">
+    <div class="app-card" style="--c:#15803d" onclick="openApp('check')">
+      <div class="app-icon">✅</div>
+      <div class="app-name">活動記録票<br>チェック</div>
+      <div class="app-desc">記入漏れの確認リスト</div>
+      <div class="app-tag">CHECK</div>
+    </div>
+    <div class="app-card" style="--c:#be185d" onclick="openApp('drag')">
+      <div class="app-icon">💊</div>
+      <div class="app-name">薬剤逆引き警戒</div>
+      <div class="app-desc">お薬手帳から疾患と注意点</div>
+      <div class="app-tag">DRUG</div>
+    </div>
+    <div class="app-card" style="--c:#b45309" onclick="openApp('tasuu')">
+      <div class="app-icon">🚨</div>
+      <div class="app-name">集団災害対応</div>
+      <div class="app-desc">CSCATTT・METHANE</div>
+      <div class="app-tag">MCI</div>
+    </div>
+    <div class="app-card" style="--c:#9f1239" onclick="openApp('jikahou')">
+      <div class="app-icon">🔔</div>
+      <div class="app-name">自火報対応ガイド</div>
+      <div class="app-desc">感知器の種類と対応</div>
+      <div class="app-tag">FIRE ALARM</div>
+    </div>
+    <div class="app-card" style="--c:#1d4ed8" onclick="openApp('hansou')">
+      <div class="app-icon">🚑</div>
+      <div class="app-name">搬送先検索</div>
+      <div class="app-desc">愛知県R6 搬送・受入実施基準</div>
+      <div class="app-tag">HOSPITAL</div>
+    </div>
+    </div>
+  </div>
+  <div class="launcher-footer">各アプリをタップして起動</div>
+</div>
+
+<div class="app-frame" id="frame-simulator">
+  <div class="frame-header" style="background:#1D9E75">
+    <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
+    <span class="frame-title">🩺 救急シミュレーション管理</span>
+  </div>
+  <div class="frame-body"><iframe id="iframe-simulator" src="" title="救急シミュレーション管理"></iframe></div>
+</div>
+
+<div class="app-frame" id="frame-pemec">
+  <div class="frame-header" style="background:#0e7490">
+    <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
+    <span class="frame-title">🏥 PEMECシミュレーション</span>
+  </div>
+  <div class="frame-body"><iframe id="iframe-pemec" src="" title="PEMECシミュレーション"></iframe></div>
+</div>
+
+<div class="app-frame" id="frame-cpa">
+  <div class="frame-header" style="background:#b91c1c">
+    <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
+    <span class="frame-title">❤️ CPA Training</span>
+  </div>
+  <div class="frame-body"><iframe id="iframe-cpa" src="" title="CPA Training"></iframe></div>
+</div>
+
+<div class="app-frame" id="frame-jitsugi">
+  <div class="frame-header" style="background:#7c3aed">
+    <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
+    <span class="frame-title">📝 実技試験評価</span>
+  </div>
+  <div class="frame-body"><iframe id="iframe-jitsugi" src="" title="実技試験評価"></iframe></div>
+</div>
+
+<div class="app-frame" id="frame-gaisho">
+  <div class="frame-header" style="background:#c2410c">
+    <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
+    <span class="frame-title">🦴 外傷観察評価</span>
+  </div>
+  <div class="frame-body"><iframe id="iframe-gaisho" src="" title="外傷観察評価"></iframe></div>
+</div>
+
+<div class="app-frame" id="frame-time">
+  <div class="frame-header" style="background:#1a4a7c">
+    <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
+    <span class="frame-title">⏱️ タイムスタンプ記録</span>
+  </div>
+  <div class="frame-body"><iframe id="iframe-time" src="" title="タイムスタンプ記録"></iframe></div>
+</div>
+
+<div class="app-frame" id="frame-check">
+  <div class="frame-header" style="background:#15803d">
+    <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
+    <span class="frame-title">✅ 活動記録票チェック</span>
+  </div>
+  <div class="frame-body"><iframe id="iframe-check" src="" title="活動記録票チェック"></iframe></div>
+</div>
+
+<div class="app-frame" id="frame-drag">
+  <div class="frame-header" style="background:#be185d">
+    <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
+    <span class="frame-title">💊 薬剤逆引き警戒</span>
+  </div>
+  <div class="frame-body"><iframe id="iframe-drag" src="" title="薬剤逆引き警戒"></iframe></div>
+</div>
+
+<div class="app-frame" id="frame-tasuu">
+  <div class="frame-header" style="background:#b45309">
+    <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
+    <span class="frame-title">🚨 集団災害対応</span>
+  </div>
+  <div class="frame-body"><iframe id="iframe-tasuu" src="" title="集団災害対応"></iframe></div>
+</div>
+
+<div class="app-frame" id="frame-jikahou">
+  <div class="frame-header" style="background:#9f1239">
+    <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
+    <span class="frame-title">🔔 自火報対応ガイド</span>
+  </div>
+  <div class="frame-body"><iframe id="iframe-jikahou" src="" title="自火報対応ガイド"></iframe></div>
+</div>
+
+<div class="app-frame" id="frame-hansou">
+  <div class="frame-header" style="background:#1d4ed8">
+    <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
+    <span class="frame-title">🚑 搬送先検索</span>
+  </div>
+  <div class="frame-body"><iframe id="iframe-hansou" src="" title="搬送先検索"></iframe></div>
+</div>
+
+<script>
+const APP_SRCS = {
+  simulator: 'apps/simulator/index.html',
+  pemec: 'apps/pemec/index.html',
+  cpa: 'apps/cpa/index.html',
+  jitsugi: 'apps/jitsugi/index.html',
+  gaisho: 'apps/gaisho/index.html',
+  time: 'apps/time/index.html',
+  check: 'apps/check/index.html',
+  drag: 'apps/drag/index.html',
+  tasuu: 'apps/tasuu/index.html',
+  jikahou: 'apps/jikahou/index.html',
+  hansou: 'apps/hansou/index.html',
+};
+const loaded = {};
+let current = null;
+
+function openApp(name) {
+  const frame = document.getElementById('frame-' + name);
+  const iframe = document.getElementById('iframe-' + name);
+  if (!loaded[name]) { iframe.src = APP_SRCS[name]; loaded[name] = true; }
+  current = name;
+  document.getElementById('launcher').classList.add('hidden');
+  frame.style.display = 'flex';
+  requestAnimationFrame(() => requestAnimationFrame(() => frame.classList.add('visible')));
+}
+
+// ?app=simulator などの直行リンク（旧リポジトリの移転案内から）
+(function () {
+  const q = new URLSearchParams(location.search).get('app');
+  if (q && Object.prototype.hasOwnProperty.call(APP_SRCS, q)) openApp(q);
+})();
+
+function closeApp() {
+  if (!current) return;
+  const frame = document.getElementById('frame-' + current);
+  frame.classList.remove('visible');
+  setTimeout(() => {
+    frame.style.display = 'none';
+    document.getElementById('launcher').classList.remove('hidden');
+    current = null;
+  }, 300);
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>

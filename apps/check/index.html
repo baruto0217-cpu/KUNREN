@@ -5,465 +5,368 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>活動記録票チェックリスト</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--border:#30363d;
-  --text:#e6edf3;--text2:#8b949e;--text3:#484f58;
-  --done:#3fb950;--done-bg:rgba(63,185,80,0.1);--done-border:rgba(63,185,80,0.35);
+  --text:#e6edf3;--text2:#9da7b3;--text3:#6e7681;
+  --ok:#3fb950;--ng:#ff4d6a;--na:#5a6a8a;--warn:#d29922;
   --accent:#58a6ff;--r:8px;--r-lg:12px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:14px;min-height:100vh;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI','Meiryo',sans-serif;font-size:16px;line-height:1.6;min-height:100vh;}
+button,textarea{font-family:inherit;}
 
-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:14px;height:56px;position:sticky;top:0;z-index:100;}
-.hd-icon{font-size:22px;}
-.hd-main{font-size:15px;font-weight:700;}
-.hd-sub{font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace;}
-.hd-badge{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);border-radius:99px;padding:4px 12px;color:var(--text2);}
-.hd-badge span{color:var(--done);font-weight:600;}
+header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:12px;height:56px;position:sticky;top:0;z-index:100;}
+.hd-main{font-size:17px;font-weight:700;}
+.hd-badge{margin-left:auto;font-size:13px;background:var(--bg3);border:1px solid var(--border);border-radius:99px;padding:4px 12px;color:var(--text2);white-space:nowrap;}
+.hd-badge b{color:var(--ok);}
 
-.tab-bar{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;padding:0 24px;position:sticky;top:56px;z-index:99;overflow-x:auto;}
-.tab-bar::-webkit-scrollbar{height:4px;}
-.tab-bar::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
-.tab-btn{padding:10px 18px;font-size:13px;font-weight:700;font-family:'Noto Sans JP',sans-serif;color:var(--text2);background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
-.tab-btn:hover{color:var(--text);}
+.tab-bar{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;padding:0 12px;position:sticky;top:56px;z-index:99;overflow-x:auto;}
+.tab-btn{padding:12px 16px;font-size:15px;font-weight:700;color:var(--text2);background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;}
 .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
 
-.app{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 96px);}
-
-aside{background:var(--bg2);border-right:1px solid var(--border);padding:14px 0;position:sticky;top:96px;height:calc(100vh - 96px);overflow-y:auto;}
-.side-label{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--text3);text-transform:uppercase;padding:0 14px 8px;}
-.side-item{display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:12px;color:var(--text2);cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;line-height:1.4;}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 106px);}
+aside{background:var(--bg2);border-right:1px solid var(--border);padding:14px 0;position:sticky;top:106px;height:calc(100vh - 106px);overflow-y:auto;}
+.side-items{display:flex;flex-direction:column;}
+.side-item{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:14px;color:var(--text2);cursor:pointer;border-left:3px solid transparent;line-height:1.4;background:none;border-top:none;border-right:none;border-bottom:none;text-align:left;}
 .side-item:hover{background:var(--bg3);color:var(--text);}
-.side-item.active{color:var(--text);background:rgba(88,166,255,0.06);border-left-color:var(--accent);}
-.side-pct{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);flex-shrink:0;}
-.side-pct.done{color:var(--done);}
-.side-divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
-.reset-btn-side{margin:6px 14px 0;width:calc(100% - 28px);padding:8px;background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:var(--r);font-size:12px;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all 0.15s;}
-.reset-btn-side:hover{border-color:var(--text2);color:var(--text);}
+.side-item.active{color:var(--text);background:rgba(88,166,255,0.08);border-left-color:var(--accent);}
+.side-pct{margin-left:auto;font-size:12px;color:var(--text3);flex-shrink:0;}
+.side-pct.done{color:var(--ok);}
+.side-divider{border:none;border-top:1px solid var(--border);margin:12px 0;}
+.reset-btn{margin:4px 14px 0;width:calc(100% - 28px);padding:10px;background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:var(--r);font-size:14px;cursor:pointer;}
+.reset-btn:hover{border-color:var(--text2);color:var(--text);}
 
-main{padding:24px;}
+.sum{margin:0 14px 10px;border-radius:var(--r);overflow:hidden;border:1px solid var(--bdc);}
+.sum.ng{--c:var(--ng);--bdc:rgba(255,77,106,0.35);--hb:rgba(255,77,106,0.12);}
+.sum.pb{--c:var(--warn);--bdc:rgba(210,153,34,0.4);--hb:rgba(210,153,34,0.12);}
+.sum-head{background:var(--hb);padding:9px 12px;font-size:14px;font-weight:700;color:var(--c);cursor:pointer;user-select:none;width:100%;border:none;text-align:left;}
+.sum-body{background:var(--bg);max-height:320px;overflow-y:auto;}
+.sum-item{padding:8px 12px;font-size:13px;color:var(--text2);border-bottom:1px solid var(--border);line-height:1.5;cursor:pointer;}
+.sum-item:last-child{border-bottom:none;}
+.sum-item:hover{background:var(--bg3);color:var(--text);}
+.sum-item .memo{display:block;color:var(--text);margin-top:2px;}
+.sum-empty{padding:10px 12px;font-size:13px;color:var(--text3);text-align:center;}
+
+main{padding:20px;max-width:900px;}
 .tab-panel{display:none;}
 .tab-panel.active{display:block;}
-.section-block{margin-bottom:20px;}
-.sec-title{font-size:13px;font-weight:700;color:var(--text2);letter-spacing:0.06em;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.section-block{margin-bottom:24px;scroll-margin-top:116px;}
+.sec-title{font-size:16px;font-weight:700;color:var(--text2);padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:12px;}
 
-.section-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:10px;overflow:hidden;transition:border-color 0.2s;}
-.section-card.all-done{border-color:var(--done-border);}
-.section-head{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;user-select:none;transition:background 0.15s;}
-.section-head:hover{background:var(--bg3);}
-.sec-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
-.sec-name{font-size:13px;font-weight:700;flex:1;}
-.sec-badge{font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 8px;border-radius:99px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);}
-.sec-badge.done{background:var(--done-bg);color:var(--done);border-color:var(--done-border);}
-.chevron{color:var(--text3);font-size:11px;transition:transform 0.2s;}
-.section-card.collapsed .chevron{transform:rotate(-90deg);}
-.section-card.collapsed .section-body{display:none;}
-.section-body{border-top:1px solid var(--border);}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:12px;overflow:hidden;}
+.card.all-done{border-color:rgba(63,185,80,0.4);}
+.card-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none;width:100%;background:none;border:none;color:var(--text);text-align:left;}
+.card-head:hover{background:var(--bg3);}
+.card-name{font-size:15px;font-weight:700;flex:1;}
+.card-kind{font-size:12px;color:var(--text3);font-weight:400;margin-left:6px;}
+.card-badge{font-size:12px;padding:2px 9px;border-radius:99px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);}
+.card-badge.done{color:var(--ok);border-color:rgba(63,185,80,0.4);}
+.chev{color:var(--text3);font-size:12px;transition:transform .2s;}
+.card.collapsed .chev{transform:rotate(-90deg);}
+.card.collapsed .card-body{display:none;}
+.card-body{border-top:1px solid var(--border);}
 
-.check-item{display:flex;align-items:center;border-bottom:1px solid var(--border);transition:background 0.1s;min-height:52px;}
-.check-item:last-child{border-bottom:none;}
-.check-item.st-ok{background:rgba(63,185,80,0.06);}
-.check-item.st-ng{background:rgba(255,77,106,0.06);}
-.check-item.st-na{background:rgba(90,106,138,0.06);}
+.item{padding:12px 14px;border-bottom:1px solid var(--border);scroll-margin-top:116px;}
+.item:last-child{border-bottom:none;}
+.item.st-ok{background:rgba(63,185,80,0.06);}
+.item.st-ng{background:rgba(255,77,106,0.07);}
+.item.st-pb{background:rgba(210,153,34,0.08);}
+.item.st-na{background:rgba(90,106,138,0.07);}
+.item.flash{outline:2px solid var(--accent);outline-offset:-2px;}
+.label{font-size:16px;line-height:1.65;}
+.item.st-ok .label,.item.st-na .label{color:var(--text2);}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:4px;padding:0 6px;margin-left:6px;vertical-align:2px;white-space:nowrap;}
+.tag.add{background:rgba(88,166,255,0.15);color:var(--accent);}
+.tag.local{background:rgba(210,153,34,0.15);color:var(--warn);}
+.tag.q{background:rgba(110,118,129,0.25);color:var(--text2);}
+.btns{display:flex;gap:8px;margin-top:10px;}
+.sbtn{flex:1;min-height:44px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg3);color:var(--text2);font-size:14px;font-weight:700;cursor:pointer;}
+.sbtn.on-ok{background:var(--ok);border-color:var(--ok);color:#fff;}
+.sbtn.on-ng{background:var(--ng);border-color:var(--ng);color:#fff;}
+.sbtn.on-pb{background:var(--warn);border-color:var(--warn);color:#111;}
+.sbtn.on-na{background:var(--na);border-color:var(--na);color:#fff;}
+.memo-in{display:block;width:100%;margin-top:10px;min-height:44px;padding:8px 10px;font-size:15px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:var(--r);resize:vertical;}
+.memo-in:focus{outline:none;border-color:var(--accent);}
+.note{font-size:13px;color:var(--text3);margin:0 0 16px;line-height:1.6;}
 
-.state-btns{display:flex;flex-direction:row;flex-shrink:0;border-right:1px solid var(--border);align-self:stretch;}
-.sbtn{width:66px;border:none;border-right:1px solid var(--border);background:var(--bg3);color:var(--text3);font-size:12px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all 0.15s;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:4px;}
-.sbtn:last-child{border-right:none;}
-.sbtn:hover{filter:brightness(1.2);}
-.sbtn.active-ok{background:#3fb950;color:#fff;}
-.sbtn.active-ng{background:#ff4d6a;color:#fff;}
-.sbtn.active-na{background:#5a6a8a;color:#fff;}
-
-.check-label{flex:1;font-size:13px;color:var(--text);line-height:1.65;padding:10px 14px;}
-.check-item.st-ok .check-label{color:var(--text3);text-decoration:line-through;}
-.check-item.st-na .check-label{color:var(--text3);}
-
-/* NG Summary */
-.ng-summary{margin:0 14px 12px;border-radius:var(--r);overflow:hidden;border:1px solid rgba(255,77,106,0.3);}
-.ng-summary-header{background:rgba(255,77,106,0.12);padding:8px 12px;font-size:12px;font-weight:700;color:#ff4d6a;display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;}
-.ng-summary-body{background:var(--bg);max-height:300px;overflow-y:auto;}
-.ng-item{padding:7px 12px;font-size:11px;color:var(--text2);border-bottom:1px solid var(--border);line-height:1.5;cursor:pointer;}
-.ng-item:last-child{border-bottom:none;}
-.ng-item:hover{background:var(--bg3);color:var(--text);}
-.ng-empty{padding:10px 12px;font-size:11px;color:var(--text3);text-align:center;}
-
-@media(max-width:640px){
+@media(max-width:760px){
+  header{padding:0 14px;}
+  .hd-main{font-size:15px;}
+  .tab-btn{padding:11px 12px;font-size:14px;}
   .app{grid-template-columns:1fr;}
-  aside{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border);}
+  aside{position:sticky;top:104px;height:auto;z-index:50;border-right:none;border-bottom:1px solid var(--border);padding:8px 0;}
+  .side-items{flex-direction:row;overflow-x:auto;gap:6px;padding:0 12px;}
+  .side-item{flex-shrink:0;border:1px solid var(--border);border-radius:99px;padding:6px 12px;font-size:13px;}
+  .side-item.active{border-color:var(--accent);}
+  .side-label,.side-divider,.side-extra{display:none;}
+  .mobile-extra{display:block;}
   main{padding:14px;}
-  .tab-btn{padding:10px 10px;font-size:11px;}
+  .section-block,.item{scroll-margin-top:160px;}
 }
+@media(min-width:761px){.mobile-extra{display:none;}}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="hd-icon">🚑</div>
-  <div>
-    <div class="hd-main">活動記録票チェックリスト</div>
-    <div class="hd-sub">Verification Checklist</div>
-  </div>
-  <div class="hd-badge">全体 <span id="g-done">0</span> / <span id="g-total">0</span></div>
+  <div class="hd-main">🚑 活動記録票チェックリスト</div>
+  <div class="hd-badge">確認済み <b id="g-done">0</b> / <span id="g-total">0</span></div>
 </header>
 
-<div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('cpa',this)">🫀 心肺停止症例（CPA）</button>
-  <button class="tab-btn" onclick="switchTab('liq',this)">💉 心肺停止前症例（ショック）</button>
-  <button class="tab-btn" onclick="switchTab('glu',this)">🍬 ブドウ糖溶液投与症例</button>
-  <button class="tab-btn" onclick="switchTab('dnar',this)">📋 DNAR症例</button>
-</div>
-
+<div class="tab-bar" id="tab-bar"></div>
 <div class="app">
-  <aside id="sidebar-cpa">
-    <div class="side-label">セクション</div>
-    <div class="side-item active" onclick="jumpTo('cpa','s1',this)">📋 記載状況・内容<span class="side-pct" id="pct-cpa-s1">0%</span></div>
-    <div class="side-item" onclick="jumpTo('cpa','s2',this)">🚑 救急隊 活動内容<span class="side-pct" id="pct-cpa-s2">0%</span></div>
-    <div class="side-item" onclick="jumpTo('cpa','s3',this)">👁 目撃CPA（追加）<span class="side-pct" id="pct-cpa-s3">0%</span></div>
-    <div class="side-item" onclick="jumpTo('cpa','s4',this)">🚒 消防支援隊<span class="side-pct" id="pct-cpa-s4">0%</span></div>
-    <hr class="side-divider">
-    <div class="ng-summary" id="ng-cpa">
-      <div class="ng-summary-header" onclick="toggleNg('cpa')">✖ 未記載一覧 <span id="ng-cnt-cpa">0</span>件</div>
-      <div class="ng-summary-body" id="ng-body-cpa"><div class="ng-empty">未記載項目はありません</div></div>
-    </div>
-    <hr class="side-divider">
-    <button class="reset-btn-side" onclick="resetAll()">↺ 一括リセット</button>
-  </aside>
-  <aside id="sidebar-liq" style="display:none">
-    <div class="side-label">セクション</div>
-    <div class="side-item active" onclick="jumpTo('liq','s1',this)">📋 記載状況・内容<span class="side-pct" id="pct-liq-s1">0%</span></div>
-    <div class="side-item" onclick="jumpTo('liq','s2',this)">🚑 救急隊 活動内容<span class="side-pct" id="pct-liq-s2">0%</span></div>
-    <div class="side-item" onclick="jumpTo('liq','s3',this)">🚒 消防支援隊<span class="side-pct" id="pct-liq-s3">0%</span></div>
-    <hr class="side-divider">
-    <div class="ng-summary" id="ng-liq">
-      <div class="ng-summary-header" onclick="toggleNg('liq')">✖ 未記載一覧 <span id="ng-cnt-liq">0</span>件</div>
-      <div class="ng-summary-body" id="ng-body-liq"><div class="ng-empty">未記載項目はありません</div></div>
-    </div>
-    <hr class="side-divider">
-    <button class="reset-btn-side" onclick="resetAll()">↺ 一括リセット</button>
-  </aside>
-  <aside id="sidebar-glu" style="display:none">
-    <div class="side-label">セクション</div>
-    <div class="side-item active" onclick="jumpTo('glu','s1',this)">📋 記載状況・内容<span class="side-pct" id="pct-glu-s1">0%</span></div>
-    <div class="side-item" onclick="jumpTo('glu','s2',this)">🚑 救急隊 活動内容<span class="side-pct" id="pct-glu-s2">0%</span></div>
-    <div class="side-item" onclick="jumpTo('glu','s3',this)">🚒 消防支援隊<span class="side-pct" id="pct-glu-s3">0%</span></div>
-    <hr class="side-divider">
-    <div class="ng-summary" id="ng-glu">
-      <div class="ng-summary-header" onclick="toggleNg('glu')">✖ 未記載一覧 <span id="ng-cnt-glu">0</span>件</div>
-      <div class="ng-summary-body" id="ng-body-glu"><div class="ng-empty">未記載項目はありません</div></div>
-    </div>
-    <hr class="side-divider">
-    <button class="reset-btn-side" onclick="resetAll()">↺ 一括リセット</button>
-  </aside>
-  <aside id="sidebar-dnar" style="display:none">
-    <div class="side-label">セクション</div>
-    <div class="side-item active" onclick="jumpTo('dnar','s1',this)">📋 記載状況・内容<span class="side-pct" id="pct-dnar-s1">0%</span></div>
-    <div class="side-item" onclick="jumpTo('dnar','s2',this)">📄 DNAR関連記載<span class="side-pct" id="pct-dnar-s2">0%</span></div>
-    <div class="side-item" onclick="jumpTo('dnar','s3',this)">🚑 救急隊 活動内容<span class="side-pct" id="pct-dnar-s3">0%</span></div>
-    <div class="side-item" onclick="jumpTo('dnar','s4',this)">🚒 消防支援隊<span class="side-pct" id="pct-dnar-s4">0%</span></div>
-    <hr class="side-divider">
-    <div class="ng-summary" id="ng-dnar">
-      <div class="ng-summary-header" onclick="toggleNg('dnar')">✖ 未記載一覧 <span id="ng-cnt-dnar">0</span>件</div>
-      <div class="ng-summary-body" id="ng-body-dnar"><div class="ng-empty">未記載項目はありません</div></div>
-    </div>
-    <hr class="side-divider">
-    <button class="reset-btn-side" onclick="resetAll()">↺ 一括リセット</button>
-  </aside>
-
-  <main>
-    <div class="tab-panel active" id="panel-cpa">
-      <div class="section-block" id="cpa-s1"></div>
-      <div class="section-block" id="cpa-s2"></div>
-      <div class="section-block" id="cpa-s3"></div>
-      <div class="section-block" id="cpa-s4"></div>
-    </div>
-    <div class="tab-panel" id="panel-liq">
-      <div class="section-block" id="liq-s1"></div>
-      <div class="section-block" id="liq-s2"></div>
-      <div class="section-block" id="liq-s3"></div>
-    </div>
-    <div class="tab-panel" id="panel-glu">
-      <div class="section-block" id="glu-s1"></div>
-      <div class="section-block" id="glu-s2"></div>
-      <div class="section-block" id="glu-s3"></div>
-    </div>
-    <div class="tab-panel" id="panel-dnar">
-      <div class="section-block" id="dnar-s1"></div>
-      <div class="section-block" id="dnar-s2"></div>
-      <div class="section-block" id="dnar-s3"></div>
-      <div class="section-block" id="dnar-s4"></div>
-    </div>
-  </main>
+  <aside id="aside"></aside>
+  <main id="main"></main>
 </div>
 
 <script>
-const ALL_SECTIONS = {
+// 項目の書き方：文字列、または { t:文, add:追加した項目, local:地域MCの決まりで要確認, q:言葉の意味が要確認 }
+// 群の kind：'rec'＝記載の確認（記載あり／記載なし／該当なし）、'act'＝活動の評価（問題なし／問題あり／該当なし）
+const TABS = [
+  { id:'cpa', name:'🫀 心肺停止（CPA）' },
+  { id:'liq', name:'💉 心肺停止前（ショック）' },
+  { id:'glu', name:'🍬 ブドウ糖溶液投与' },
+  { id:'dnar', name:'📋 DNAR' },
+];
+const KIND = {
+  rec: { name:'記載の確認', btn:[['ok','記載あり'],['ng','記載なし'],['na','該当なし']] },
+  act: { name:'活動の評価', btn:[['ok','問題なし'],['pb','問題あり'],['na','該当なし']] },
+};
+
+// ── 共通の項目 ──
+const BASIC_COMMON = ['救急隊名','記載者名','指令日時を始めとした各時刻','傷病者情報','発生場所','事故原因','主訴'];
+const REC_HEAD = [
+  '現着時刻など各時刻が正確であるか。',
+  '出場場所までの距離などから誤った記載と思われる箇所はないか。',
+  '活動中に聴取した情報が発生場所・事故原因・発生形態・主訴欄または備考欄に十分記載されているか。',
+];
+const REC_SHOCK_OBS = [
+  '意識の状態が分かる記載となっているか。',
+  '呼吸の状態が分かる記載となっているか。',
+  '脈拍の状態が分かる記載となっているか。',
+  '顔色・皮膚の状態（色調・冷感・湿潤）が分かる記載となっているか。',
+];
+const REC_CPA_PROC = [
+  '口頭指導が実施されなかった場合、その理由が記載されているか。',
+  '接触時CPAの場合、呼吸の状態が分かる記載となっているか。',
+  '接触時CPAの場合、脈の状態が分かる記載となっているか。',
+  'ピリオド毎の活動が分かる記載となっているか。',
+  { t:'調整確認時の観察結果が記載されているか。', q:true },
+  '特定行為（器具による気道確保・静脈路確保・薬剤投与）について、医師の具体的指示があるか。',
+  '指示した医師・指示の内容・指示を受けた時刻が分かる記載となっているか。',
+  '処置を行った救急救命士が分かる記載となっているか。',
+  '行った処置（除細動）が記載されているか。',
+  '行った処置（気道確保）が記載されているか。',
+  '行った処置（静脈路確保）が記載されているか。',
+  '行った処置（薬剤投与）が記載されているか。',
+  { t:'薬剤を投与した場合、投与時刻・投与量・投与間隔が記載されているか。', add:true },
+  '吸引を行った場合、吸引物の性状・量が記載されているか。',
+  '処置の結果・効果が記載されているか。',
+  '処置が不良の場合の対処は記載されているか。',
+  'BVM等での換気状況は記載されているか。',
+  'チューブサイズの記載がされているか。',
+  { t:'気道確保器具を使った場合、位置確認の方法（ETCO₂波形など）と、移動後の再確認が記載されているか。', add:true },
+  '除細動のエネルギー量の記載がされているか。',
+  '胸骨圧迫と人工呼吸の同期・非同期の別が記載されているか。',
+  '心拍が再開した場合、それが分かる記載となっているか。',
+];
+const REC_TEAM = [
+  '消防隊など先着隊から引き継いだ場合、先着隊の活動が記載されているか。',
+  '支援隊の活動が記載されているか。',
+];
+const SUPPORT = { title:'🚒 消防支援隊', groups:[
+  { name:'支援隊の活動', kind:'act', items:[
+    '消防隊など先着隊の活動は適切であったか。',
+    '先着隊からの引き継ぎにおいて、必要な情報伝達がされていたか。',
+  ]},
+]};
+const WITNESSED = [
+  '心停止前にショックの状態ではなかったか。',
+  '心停止前の時点で、心肺停止前の静脈路確保・輸液の対象かを評価し、所見を医師に報告して具体的指示を受けたか。',
+];
+const LINK = [
+  '救急隊による事前管制は迅速に行われたか。',
+  '救急隊による消防隊の応援・増隊の時期は適切であったか。',
+  '救急隊による救助隊等の応援・増隊の時期は適切であったか。',
+];
+const PUNCTURE = { t:'静脈路確保にいたずらに時間を費やしておらず、穿刺回数は原則２回までとしているか。', local:true };
+const PROC_COMMON = [
+  '医師からの指示を受けてから、処置を実施するまでに時間がかかりすぎていないか。',
+  '医療機関との電話連絡で不都合は無かったか。',
+];
+const RESULT = [
+  '実施した処置に対する結果・効果が正しく把握されていたか。',
+  '処置の結果が不良の場合の対応は適切であったか。',
+];
+const NO_GEAR = '必要な資機材を現場に携行しなかったことにより、時間が延長したり処置が実施されなかった活動でないか。';
+const TO_DEPART = '傷病者接触から現場出発（現場処置終了後〜救急車内収容〜現場出発）まで時間がかかりすぎていないか。';
+
+const DATA = {
   cpa: {
     s1: { title:'📋 記載状況・記載内容', groups:[
-      { name:'基本記載項目', icon:'📄', basic:true, items:[
-        '救急隊名','記載者名','指令日時を始めとした各時刻','傷病者情報',
-        '発生場所','事故原因','主訴','心停止目撃の有無','目撃者',
-        '心停止の推定原因','初期ECG','口頭指導の実施状況',
-        'バイスタンダーCPRの実施状況',
-        '活動方針',
-        'PADについて','処置経過','備考欄','収容医療機関情報等',
+      { name:'基本記載項目', kind:'rec', items:[
+        ...BASIC_COMMON,'心停止目撃の有無','目撃者','心停止の推定原因','初期ECG','口頭指導の実施状況',
+        'バイスタンダーCPRの実施状況','活動方針','PADについて','処置経過','備考欄','収容医療機関情報等',
       ]},
-      { name:'記載内容の確認', icon:'🔍', basic:true, items:[
-        '現着時刻など各時刻が正確であるか。',
-        '出場場所までの距離などから誤った記載と思われる箇所はないか。',
-        '活動中に聴取した情報が発生場所・事故原因・発生形態・主訴欄または備考欄に十分記載されているか。',
-        '活動隊の聴取事項として十分なものであるか。',
-        '口頭指導が実施されなかった場合、その理由が記載されているか。',
-        '接触時CPAの場合、呼吸の状態が分かる記載となっているか。',
-        '接触時CPAの場合、脈の状態が分かる記載となっているか。',
-        'ピリオド毎の活動が分かる記載となっているか。',
-        '調整確認時の観察結果が記載されているか。',
-        '特定行為について医師の指示があるか。',
-        '特定行為の医師指示が分かる記載となっているか。',
-        '処置を行った救急救命士が分かる記載となっているか。',
-        '行った処置（除細動）が記載されているか。',
-        '行った処置（気道確保）が記載されているか。',
-        '行った処置（静脈路確保）が記載されているか。',
-        '行った処置（薬剤投与）が記載されているか。',
-        '行った処置（吸引物）が記載されているか。',
-        '処置の結果・効果が記載されているか。',
-        '処置が不良の場合の対処は記載されているか。',
-        'BVM等での換気状況は記載されているか。',
-        'チューブサイズの記載がされているか。',
-        '除細動のエネルギー量の記載がされているか。',
-        'CPRの同期・非同期の別が記載されているか。',
-        '心拍が再開した場合、それが分かる記載となっているか。',
-        '消防隊など先着隊から引き継いだ場合、先着隊の活動が記載されているか。',
-        '支援隊の活動が記載されているか。',
-      ]},
+      { name:'記載内容', kind:'rec', items:[ ...REC_HEAD, '活動隊の聴取事項として十分なものであるか。', ...REC_CPA_PROC, ...REC_TEAM ]},
     ]},
-    s2: { title:'🚑 活動内容について【救急隊】', groups:[
-      { name:'時間・プロトコール（問題があれば記載する）', icon:'⏱', items:[
+    s2: { title:'🚑 活動内容【救急隊】', groups:[
+      { name:'時間・プロトコール', kind:'act', items:[
         'プロトコールに沿った活動となっているか。',
-        '現場活動時間が、薬剤投与実施症例で５ピリオド（10分）、その他の活動で３ピリオド（6分）を目途に、これより大幅に延長していないか。',
+        { t:'現場活動時間が、薬剤投与実施症例で５ピリオド（10分）、その他の活動で３ピリオド（6分）を目途に、これより大幅に延長していないか。延長した場合、その理由（救出困難・安全確保など）が妥当か。', local:true },
         '傷病者接触から現場出発までの時間がかかりすぎていないか。',
         '２分のピリオドが守られているか。',
         'ＣＰＲが10秒以上中断されていないか。',
       ]},
-      { name:'処置・資機材（問題があれば記載する）', icon:'🩺', items:[
+      { name:'処置・資機材', kind:'act', items:[
         '実施した処置は適切であったか。',
-        '必要な資機材を現場に携行しなかったことにより、時間が延長したり処置が実施されなかった活動でないか。',
+        NO_GEAR,
         'アドレナリンの投与は、適応に合致しているか。',
         '気管挿管は、適応に合致しているか。',
-        '医師からの指示を受けてから、処置を実施するまでに時間がかかりすぎていないか。',
-        '医療機関との電話連絡で不都合は無かったか。',
-        '静脈路の確保は、１ピリオド内で完了しているか。',
-        '気道確保手技は、１ピリオド内で完了しているか。',
+        ...PROC_COMMON,
+        { t:'静脈路の確保は、１ピリオド内で完了しているか。', local:true },
+        { t:'気道確保手技は、１ピリオド内で完了しているか。', local:true },
         '気道確保と薬剤投与の優先順位の判断は適切であったか。',
-        '気道確保器具による気道確保を実施後、直ちにETCO₂モニターを装着したか。',
-        'ETCO₂モニターによる継続的な評価を実施したか。',
-        '実施した処置に対する結果・効果が正しく把握されていたか。',
-        '処置の結果が不良の場合の対応は適切であったか。',
+        '気道確保器具による気道確保を実施後、直ちにETCO₂モニターを装着し、波形で位置を確認したか。',
+        'ETCO₂モニターで継続的に評価し、移動の後にもチューブの位置を確かめたか。',
+        ...RESULT,
       ]},
-      { name:'AED・DC・CPR（問題があれば記載する）', icon:'⚡', items:[
-        'AED装着後、直ちに波形を確認したか。',
+      { name:'AED・DC・CPR', kind:'act', items:[
+        'AED・除細動器の手順に従って速やかに解析・除細動し、胸骨圧迫の中断を最小限にしたか。',
         'ＤＣが必要な状態に対してＤＣが適切に実施されているか。',
+        { t:'ショックの前後で胸骨圧迫の中断が短く、ショック後すぐに圧迫を再開したか。', add:true },
+        { t:'胸骨圧迫の質（速さ・深さ・圧迫の解除）は保たれていたか。', add:true },
+        { t:'過換気になっていなかったか。', add:true },
         '現場活動ピリオド終了から救急車内までの間、有効なＣＰＲが実施されているか。',
+        { t:'心拍再開後の呼吸・循環の管理（換気・酸素化・血圧の観察）は適切だったか。', add:true },
       ]},
-      { name:'連携・指令（問題があれば記載する）', icon:'📡', items:[
+      { name:'連携・指令', kind:'act', items:[
         '救急隊によるトリアージプロトコールは適切であったか。',
         '救急隊による口頭指導は適切であったか。',
-        '救急隊による事前管制は迅速に行われたか。',
-        '救急隊による消防隊の応援・増隊の時期は適切であったか。',
-        '救急隊による救助隊等の応援・増隊の時期は適切であったか。',
+        ...LINK,
         '救急隊による医師要請の時期は適切であったか。',
       ]},
     ]},
-    s3: { title:'👁 救急隊目撃心停止症例（追加チェック）', groups:[
-      { name:'目撃CPA 追加確認', icon:'➕', items:[
-        '心停止前のショック症例ではないか。',
-        '傷病者の意識状態が悪くショックの原因が鑑別できなかった場合、静脈路確保の実施を考慮し、医師に輸液速度の指示を受けたか。',
-      ]},
+    s3: { title:'👁 救急隊目撃の心停止（追加の確認）', groups:[
+      { name:'救急隊目撃の心停止（心停止前に観察・介入できた場合のみ）', kind:'act', items: WITNESSED },
     ]},
-    s4: { title:'🚒 消防支援隊', groups:[
-      { name:'支援隊の活動確認', icon:'🔎', items:[
-        '消防隊など先着隊の活動は適切であったか。',
-        '先着隊からの引き継ぎにおいて、必要な情報伝達がされていたか。',
-      ]},
-    ]},
+    s4: SUPPORT,
   },
 
   liq: {
     s1: { title:'📋 記載状況・記載内容', groups:[
-      { name:'基本記載項目', icon:'📄', basic:true, items:[
-        '救急隊名','記載者名','指令日時を始めとした各時刻','傷病者情報',
-        '発生場所','事故原因','主訴','活動方針','処置経過','備考欄','収容医療機関情報等',
-      ]},
-      { name:'記載内容の確認', icon:'🔍', basic:true, items:[
-        '現着時刻など各時刻が正確な時刻であるか。',
-        '出場場所までの距離などから誤った記載と思われる箇所はないか。',
-        '活動中に聴取した情報が発生場所・事故原因・発生形態・主訴欄または備考欄に十分記載されているか。',
+      { name:'基本記載項目', kind:'rec', items:[ ...BASIC_COMMON,'活動方針','処置経過','備考欄','収容医療機関情報等' ]},
+      { name:'記載内容', kind:'rec', items:[
+        ...REC_HEAD,
         '活動隊の聴取事項として十分なものであるか。',
         '現場の状況・観察項目・傷病者の評価が記載されているか。',
-        '意識の状態が分かる記載となっているか。',
-        '呼吸の状態が分かる記載となっているか。',
-        '脈拍の状態が分かる記載となっているか。',
-        '顔色の状態が分かる記載となっているか。',
-        '皮膚色調の状態が分かる記載となっているか。',
+        ...REC_SHOCK_OBS,
+        { t:'血圧の実測値と、その推移が記載されているか。', add:true },
+        { t:'年齢（15歳以上・推定を含む）が分かる記載があるか。', add:true },
         '可能性の高いショックの病態について記載があるか。',
         'クラッシュ症候群（それに至る可能性を含む）の判断が記載されているか。',
         '現場で処置を実施した場合、その理由が記載されているか。',
         '処置を実施しなかった理由の記載があるか。',
         '説示についての記載があるか。',
         '了解が得られなかった場合、その理由の記載があるか。',
-        '特定行為について医師の指示があるか。',
-        '特定行為の医師指示が分かる記載となっているか。',
+        '静脈路確保・輸液について、医師の具体的指示があるか。',
+        '指示した医師・指示の内容・指示を受けた時刻が分かる記載となっているか。',
         '処置を行った救急救命士が分かる記載となっているか。',
-        '処置が不良の場合の対処は記載されているか。',
         '留置針のゲージサイズの記載がされているか。',
+        { t:'輸液の種類（製剤名）が記載されているか。', add:true },
         '滴下速度の記載がされているか。',
-        '輸液量の記載がされているか。',
-        '消防隊など先着隊から引き継いだ場合、先着隊の活動が記載されているか。',
-        '支援隊の活動が記載されているか。',
+        '医師の指示量と、実際の輸液量が記載されているか。',
+        { t:'穿刺部の腫れ・痛み・漏れの有無と、その対応が記載されているか。', add:true },
+        { t:'輸液後の血圧・呼吸・循環・意識の変化が、時刻とともに記載されているか。', add:true },
+        '処置が不良の場合の対処は記載されているか。',
+        ...REC_TEAM,
       ]},
     ]},
-    s2: { title:'🚑 活動内容について【救急隊】', groups:[
-      { name:'時間・活動方針（問題があれば記載する）', icon:'⏱', items:[
+    s2: { title:'🚑 活動内容【救急隊】', groups:[
+      { name:'時間・活動方針', kind:'act', items:[
         '処置の時間と医療機関までの時間を考慮した活動となっているか。',
         '現場にて処置を実施した場合、その判断は適切か。',
-        '現場にて処置を実施した場合、現場活動時間が10分を目途として大幅に延長していないか。',
-        '傷病者接触から現場出発（現場処置終了後〜救急車内収容〜現場出発）まで時間がかかりすぎていないか。',
-        '必要な資機材を現場に携行しなかったことにより、時間が延長したり処置が実施されなかった活動でないか。',
+        { t:'現場にて処置を実施した場合、現場活動時間が10分を目途として大幅に延長していないか。', local:true },
+        TO_DEPART,
+        NO_GEAR,
       ]},
-      { name:'処置・対応（問題があれば記載する）', icon:'🩺', items:[
+      { name:'処置・対応', kind:'act', items:[
+        { t:'処置の対象（15歳以上・推定を含む／増悪するショック、またはクラッシュ症候群・それに至る可能性が高い状態）に合致していたか。', add:true },
+        { t:'心原性ショックを強く疑う所見がないことを確かめたか。', add:true },
         '実施した処置は適切であったか。',
-        '医師からの指示を受けてから、処置を実施するまでに時間がかかりすぎていないか。',
-        '医療機関との電話連絡で不都合は無かったか。',
-        '静脈路確保にいたずらに時間を費やしておらず、穿刺回数は原則２回までとしているか。',
-        '実施した処置に対する結果・効果が正しく把握されていたか。',
-        '処置の結果が不良の場合の対応は適切であったか。',
+        ...PROC_COMMON,
+        PUNCTURE,
+        ...RESULT,
       ]},
-      { name:'連携・指令（問題があれば記載する）', icon:'📡', items:[
-        '救急隊による事前管制は迅速に行われたか。',
-        '救急隊による消防隊の応援・増隊の時期は適切であったか。',
-        '救急隊による救助隊等の応援・増隊の時期は適切であったか。',
-        '救急隊による医師要請の時期は適切であったか。',
-      ]},
+      { name:'連携・指令', kind:'act', items:[ ...LINK, '救急隊による医師要請の時期は適切であったか。' ]},
     ]},
-    s3: { title:'🚒 消防支援隊', groups:[
-      { name:'支援隊の活動確認', icon:'🔎', items:[
-        '消防隊など先着隊の活動は適切であったか。',
-        '先着隊からの引き継ぎにおいて、必要な情報伝達がされていたか。',
-      ]},
-    ]},
+    s3: SUPPORT,
   },
 
   glu: {
     s1: { title:'📋 記載状況・記載内容', groups:[
-      { name:'基本記載項目', icon:'📄', basic:true, items:[
-        '救急隊名','記載者名','指令日時を始めとした各時刻','傷病者情報',
-        '発生場所','事故原因','主訴','活動方針','処置経過','備考欄','収容医療機関情報等',
-      ]},
-      { name:'記載内容の確認', icon:'🔍', basic:true, items:[
-        '現着時刻など各時刻が正確な時刻であるか。',
-        '出場場所までの距離などから誤った記載と思われる箇所はないか。',
-        '活動中に聴取した情報が発生場所・事故原因・発生形態・主訴欄または備考欄に十分記載されているか。',
-        '活動隊の聴取事項として十分なものであるか。',
+      { name:'基本記載項目', kind:'rec', items:[ ...BASIC_COMMON,'活動方針','処置経過','備考欄','収容医療機関情報等' ]},
+      { name:'記載内容', kind:'rec', items:[
+        ...REC_HEAD,
         '救急活動の判断理由となる現場状況・観察項目・傷病者の評価が記載されているか。',
         '活動隊の聴取事項（現場状況・観察項目）として十分なものであるか。',
-        '意識の状態が分かる記載となっているか。',
-        '呼吸の状態が分かる記載となっているか。',
-        '脈拍の状態が分かる記載となっているか。',
-        '顔色の状態が分かる記載となっているか。',
-        '皮膚色調の状態が分かる記載となっているか。',
+        ...REC_SHOCK_OBS,
+        { t:'年齢（15歳以上・推定を含む）が分かる記載があるか。', add:true },
         '説示についての記載があるか。',
         '了解が得られなかった場合、その理由の記載があるか。',
         '血糖測定の際、穿刺した部位が記載されているか。',
+        { t:'投与前の血糖値と、測った時刻が記載されているか。', add:true },
         '血糖測定を実施した場合に、測定結果等の報告が記載されているか。',
-        '特定行為について医師の指示があるか。',
-        '特定行為の医師指示が分かる記載となっているか。',
+        '静脈路確保・ブドウ糖溶液投与について、医師の具体的指示があるか。',
+        '指示した医師・指示の内容・指示を受けた時刻が分かる記載となっているか。',
         '処置を行った救急救命士が分かる記載となっているか。',
         '留置針のゲージサイズの記載があるか。',
         '投与時間の記載があるか。',
-        '投与量の記載があるか。',
+        'ブドウ糖溶液の濃度と、投与量（医師の指示量と実際の量）の記載があるか。',
         '滴下速度の記載があるか。',
         '行った処置の結果・効果が記載されているか。（意識レベルの変化や血管痛の出現など）',
+        { t:'医師の指示で血糖を測り直した場合、その時刻・値・報告が記載されているか。', add:true },
         '処置が不良の場合の対処は記載されているか。',
-        '消防隊など先着隊から引き継いだ場合、先着隊の活動が記載されているか。',
-        '支援隊の活動が記載されているか。',
+        ...REC_TEAM,
       ]},
     ]},
-    s2: { title:'🚑 活動内容について【救急隊】', groups:[
-      { name:'時間・活動方針（問題があれば記載する）', icon:'⏱', items:[
-        '傷病者接触から現場出発（現場処置終了後〜救急車内収容〜現場出発）まで時間がかかりすぎていないか。',
-        '必要な資機材を現場に携行しなかったことにより、時間が延長したり処置が実施されなかった活動でないか。',
-      ]},
-      { name:'処置・対応（問題があれば記載する）', icon:'🩺', items:[
+    s2: { title:'🚑 活動内容【救急隊】', groups:[
+      { name:'時間・活動方針', kind:'act', items:[ TO_DEPART, NO_GEAR ]},
+      { name:'処置・対応', kind:'act', items:[
+        { t:'血糖測定の対象（意識障害（JCS10以上が目安）があり、測ることが鑑別や搬送先の選定に役立つ）に合致していたか。穿刺の痛み刺激が不適切な場合を除いたか。', add:true },
+        { t:'ブドウ糖溶液投与の対象（15歳以上・推定を含む／血糖値50mg/dL未満）に合致していたか。', add:true },
         '実施した処置は適切であったか。',
-        '医師からの指示を受けてから、処置を実施するまでに時間がかかりすぎていないか。',
-        '医療機関との電話連絡で不都合は無かったか。',
-        '静脈路確保にいたずらに時間を費やしておらず、穿刺回数は原則２回までとしているか。',
-        '実施した処置に対する結果・効果が正しく把握されていたか。',
-        '処置の結果が不良の場合の対応は適切であったか。',
+        ...PROC_COMMON,
+        PUNCTURE,
+        ...RESULT,
         'ブドウ糖溶液投与後、傷病者の容態変化等が報告されているか。',
+        { t:'投与後も意識・気道の状態を観察し、再び低血糖になる変化に注意したか。', add:true },
       ]},
-      { name:'連携・指令（問題があれば記載する）', icon:'📡', items:[
-        '救急隊による事前管制は迅速に行われたか。',
-        '救急隊による消防隊の応援・増隊の時期は適切であったか。',
-        '救急隊による救助隊等の応援・増隊の時期は適切であったか。',
-      ]},
+      { name:'連携・指令', kind:'act', items: LINK },
     ]},
-    s3: { title:'🚒 消防支援隊', groups:[
-      { name:'支援隊の活動確認', icon:'🔎', items:[
-        '消防隊など先着隊の活動は適切であったか。',
-        '先着隊からの引き継ぎにおいて、必要な情報伝達がされていたか。',
-      ]},
-    ]},
+    s3: SUPPORT,
   },
+
   dnar: {
-    s1: { title:'📋 記載状況・記載内容（基本項目）', groups:[
-      { name:'基本記載項目', icon:'📄', basic:true, items:[
-        '救急隊名','記載者名','指令日時を始めとした各時刻','傷病者情報',
-        '発生場所','事故原因','主訴',
-        '心停止目撃の有無','目撃者',
-        '心停止の推定原因','初期ECG',
-        '口頭指導の実施状況','バイスタンダーCPRの実施状況',
-        '処置経過','備考欄','収容医療機関情報等',
+    s1: { title:'📋 記載状況・記載内容', groups:[
+      { name:'基本記載項目', kind:'rec', items:[
+        ...BASIC_COMMON,'心停止目撃の有無','目撃者','心停止の推定原因','初期ECG',
+        '口頭指導の実施状況','バイスタンダーCPRの実施状況','処置経過','備考欄','収容医療機関情報等',
       ]},
-      { name:'記載内容の確認', icon:'🔍', basic:true, items:[
-        '現着時刻など各時刻が正確であるか。',
-        '出場場所までの距離などから誤った記載と思われる箇所はないか。',
-        '活動中に聴取した情報が発生場所・事故原因・発生形態・主訴欄または備考欄に十分記載されているか。',
-        '活動隊の聴取事項として十分なものであるか。',
-        '口頭指導が実施されなかった場合、その理由が記載されているか。',
-        '接触時CPAの場合、呼吸の状態が分かる記載となっているか。',
-        '接触時CPAの場合、脈の状態が分かる記載となっているか。',
-        'ピリオド毎の活動が分かる記載となっているか。',
-        '調整確認時の観察結果が記載されているか。',
-        '特定行為について医師の指示があるか。',
-        '特定行為の医師指示が分かる記載となっているか。',
-        '処置を行った救急救命士が分かる記載となっているか。',
-        '行った処置（除細動）が記載されているか。',
-        '行った処置（気道確保）が記載されているか。',
-        '行った処置（静脈路確保）が記載されているか。',
-        '行った処置（薬剤投与）が記載されているか。',
-        '行った処置（吸引物）が記載されているか。',
-        '処置の結果・効果が記載されているか。',
-        '処置が不良の場合の対処は記載されているか。',
-        'BVM等での換気状況は記載されているか。',
-        'チューブサイズの記載がされているか。',
-        '除細動のエネルギー量の記載がされているか。',
-        'CPRの同期・非同期の別が記載されているか。',
-        '心拍が再開した場合、それが分かる記載となっているか。',
-      ]},
+      { name:'記載内容', kind:'rec', items:[ ...REC_HEAD, '活動隊の聴取事項として十分なものであるか。', ...REC_CPA_PROC ]},
     ]},
-    s2: { title:'📄 DNAR関連の記載確認', groups:[
-      { name:'意思表示・書面確認', icon:'📝', items:[
+    s2: { title:'📄 DNAR関連の記載', groups:[
+      { name:'意思表示・書面', kind:'rec', items:[
         '家族等からの傷病者自身の心肺蘇生を望まない意思等の提示方法（書面又は家族等の申出等）の記録がされているか。',
         '傷病者自身の心肺蘇生を望まない意思等を提示した者の氏名が記載されているか。',
         '傷病者自身の心肺蘇生を望まない意思等を提示した者と傷病者との関係性が記載されているか。',
         '書面がある場合、書面の患者名と傷病者が同一人であることを確認した方法（家族等への口頭確認等）の記載があるか。',
         '書面又は家族等の申出等により、傷病者自身の心肺蘇生を望まない意思等を確認した隊員の氏名が記載されているか。',
         '家族等の心肺蘇生中止に関する同意の有無・その時刻の記載があるか。',
+        { t:'心肺蘇生の中止の指示を受けた時刻と、実際に中止した時刻が記載されているか。', add:true },
       ]},
-      { name:'かかりつけ医との連携', icon:'🏥', items:[
+      { name:'かかりつけ医との連携', kind:'rec', items:[
         'かかりつけ医への連絡の有無・その時刻の記載があるか。',
         'かかりつけ医の所属医療機関の名称の記載があるか。',
         'かかりつけ医師の氏名の記載があるか。',
@@ -474,12 +377,13 @@ const ALL_SECTIONS = {
         'かかりつけ医に引き継ぐ場合、かかりつけ医が現場に到着した時刻の記載があるか。',
         '家族等に引き継ぐ場合、かかりつけ医が現場に到着するまでに要する時間の確認の有無の記載があるか。',
         '家族等に引き継ぐ場合、その際に確認した到着までに要する時間の記載があるか。',
-        '家族に引き継ぐ場合、家族等に傷病者を引き継ぐ現場を引き揚げることに関する家族等の同意の有無の記載があるか。',
-        '家族に引き継ぐ場合、その時刻の記載があるか。',
+        '家族等に引き継ぐ場合、家族等への引き継ぎと救急隊の現場引き揚げについて、家族等の同意の有無の記載があるか。',
+        '家族等に引き継ぐ場合、同意を得た時刻の記載があるか。',
         '家族等に引き継ぐ場合、家族等に引き継いだ時刻の記載があるか。',
+        { t:'救急隊が現場を引き揚げた時刻の記載があるか。', add:true },
         'かかりつけ医・家族等傷病者を引き継いだ者への説明内容の記載があるか。',
       ]},
-      { name:'指導医師への連絡', icon:'📡', items:[
+      { name:'指導医師への連絡', kind:'rec', items:[
         '指導医師への連絡の有無の記載があるか。',
         '指導医師への連絡の時刻の記載があるか。',
         '指導医師の所属医療機関の名称の記載があるか。',
@@ -487,196 +391,212 @@ const ALL_SECTIONS = {
         '指導医師からの指示の記載があるか。',
         '指導医師からの指導・助言内容の記載があるか。',
         '指導医師からの指示・助言の時刻の記載があるか。',
+      ]},
+      { name:'処置経過・隊の連携', kind:'rec', items:[
         '救急隊の処置内容の記載があるか。（中止した処置も含めて記載）',
-        '消防隊など先着隊から引き継いだ場合、先着隊の活動が記載されているか。',
-        '支援隊の活動が記載されているか。',
+        ...REC_TEAM,
       ]},
     ]},
-    s3: { title:'🚑 活動内容について【救急隊】', groups:[
-      { name:'DNAR確認・判断', icon:'✅', items:[
+    s3: { title:'🚑 活動内容【救急隊】', groups:[
+      { name:'DNARの確認・判断', kind:'act', items:[
         '尾張北部地区MC協議会の定めに則った活動となっているか。',
         '傷病者自身の心肺蘇生を望まない意思等の書面提示が家族等からあったか。',
         '傷病者自身の心肺蘇生を望まない意思等を記載した書面について、現場の書面現物にて確認したか、又は書面が傷病者及びかかりつけ医により作成されていることを家族等に確認したか。',
         '傷病者が外因性の心肺停止でないことを確認したか。',
         '家族等が心肺蘇生の中止に反対していないことを確認したか。',
-        '傷病者接触からかかりつけ医への連絡までに時間がかかりすぎていないか（10分程度以上）。',
+        { t:'意思の確認や医師への連絡をしている間も、心肺蘇生を続けていたか。', add:true },
+        { t:'傷病者接触からかかりつけ医への連絡までに時間がかかりすぎていないか（10分程度以上）。', local:true },
         'かかりつけ医へ連絡がついたか。',
+        { t:'中止の条件がそろわない場合（医師に連絡がつかない・本人の意思が不明・家族等が反対など）、心肺蘇生を続けて搬送するなど、地域の決まりに沿って対応したか。', add:true },
+        { t:'DNARを理由に、心肺蘇生以外の必要な処置まで控えていないか。', add:true },
       ]},
-      { name:'かかりつけ医対応', icon:'🏥', items:[
+      { name:'かかりつけ医対応', kind:'act', items:[
         'かかりつけ医に、傷病者が人生の最終段階にあること・心肺蘇生の実施を望んでいないこと・傷病者本人の意思決定に際し想定された症状と現在の症状とが合致していることを確認できたか。',
         '心肺蘇生の中止指示は、看護師等ではなくかかりつけ医から直接受けたか。',
-        'かかりつけ医に現場で傷病者を引き継いだ場合、かかりつけ医が40分程度で現場に到着できることを確認したか。',
-        'かかりつけ医に現場で傷病者を引き継いだ場合、40分程度で引き継げたか。引き継ぎまでに時間がかかりすぎていないか。',
-        '家族等に傷病者を引き継いだ場合、かかりつけ医が12時間程度で現場に到着できることを確認したか。',
+        { t:'かかりつけ医に現場で傷病者を引き継いだ場合、かかりつけ医が40分程度で現場に到着できることを確認したか。', local:true },
+        { t:'かかりつけ医に現場で傷病者を引き継いだ場合、40分程度で引き継げたか。引き継ぎまでに時間がかかりすぎていないか。', local:true },
+        { t:'家族等に傷病者を引き継いだ場合、かかりつけ医が12時間程度で現場に到着できることを確認したか。', local:true },
         '家族等に傷病者を引き継いだ場合、家族等の同意書を得たか。',
       ]},
-      { name:'処置・連携', icon:'🩺', items:[
+      { name:'処置・連携', kind:'act', items:[
         '実施した処置は適切であったか。',
-        '必要な資機材を現場に携行しなかったことにより、時間が延長したり処置が実施されなかった活動でないか。',
+        NO_GEAR,
         '医療機関との電話連絡で不都合は無かったか。',
-        '静脈路の確保や気道確保手技など、１ピリオド内で処置が完了しているか。',
+        { t:'静脈路の確保や気道確保手技など、１ピリオド内で処置が完了しているか。', local:true },
         '救急隊によるトリアージプロトコールは適切であったか。',
         '救急隊による口頭指導は適切であったか。',
-        '救急隊による事前管制は迅速に行われたか。',
-        '救急隊による消防隊の応援・増隊の時期は適切であったか。',
-        '救急隊による救助隊等の応援・増隊の時期は適切であったか。',
+        ...LINK,
         '救急隊による医師要請の時期は適切であったか。',
       ]},
-      { name:'目撃CPA（追加確認）', icon:'👁', items:[
-        '心停止前のショック症例ではないか。',
-        '傷病者の意識状態が悪くショックの原因が鑑別できなかった場合、静脈路確保の実施を考慮し、医師に輸液速度の指示を受けたか。',
-      ]},
+      { name:'救急隊目撃の心停止（心停止前に観察・介入できた場合のみ）', kind:'act', items: WITNESSED },
     ]},
-    s4: { title:'🚒 消防支援隊', groups:[
-      { name:'支援隊の活動確認', icon:'🔎', items:[
-        '消防隊など先着隊の活動は適切であったか。',
-        '先着隊からの引き継ぎにおいて、必要な情報伝達がされていたか。',
-      ]},
-    ]},
+    s4: SUPPORT,
   },
 };
-const state = {};
-let currentTab = 'cpa';
 
-function countSec(tab, secId) {
-  const sec = ALL_SECTIONS[tab][secId];
+// ── 状態（この端末に保存） ──
+const LS = 'check_v2';
+let store = { state:{}, memo:{}, tab:'cpa' };
+try { const s = JSON.parse(localStorage.getItem(LS)); if (s && s.state) store = Object.assign(store, s); } catch (e) {}
+function save() { try { localStorage.setItem(LS, JSON.stringify(store)); } catch (e) {} }
+const collapsed = {};
+let saveTimer = null;
+
+const txt = it => typeof it === 'string' ? it : it.t;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const key = (tab, sec, gi, ii) => tab + '-' + sec + '-' + gi + '-' + ii;
+const isBad = v => v === 'ng' || v === 'pb';
+
+function eachItem(tab, fn) {
+  Object.keys(DATA[tab]).forEach(sec => DATA[tab][sec].groups.forEach((g, gi) =>
+    g.items.forEach((it, ii) => fn(sec, g, gi, it, ii, key(tab, sec, gi, ii)))));
+}
+function count(tab, sec) {
   let total = 0, done = 0;
-  sec.groups.forEach((g, gi) => {
-    g.items.forEach((_, ii) => {
-      total++;
-      if (state[tab+'-'+secId+'-'+gi+'-'+ii] === 'ok' || state[tab+'-'+secId+'-'+gi+'-'+ii] === 'na') done++;
-    });
-  });
+  eachItem(tab, (s, g, gi, it, ii, k) => { if (sec && s !== sec) return; total++; if (store.state[k]) done++; });
   return { total, done };
 }
 
-function renderSec(tab, secId) {
-  const sec = ALL_SECTIONS[tab][secId];
-  const el = document.getElementById(tab+'-'+secId);
+function tags(it) {
+  if (typeof it === 'string') return '';
+  return (it.add ? '<span class="tag add">追加</span>' : '')
+    + (it.local ? '<span class="tag local">地域MCの決まり（要確認）</span>' : '')
+    + (it.q ? '<span class="tag q">言葉の意味は要確認</span>' : '');
+}
+
+function itemHtml(tab, g, it, k) {
+  const v = store.state[k] || '';
+  let h = '<div class="item' + (v ? ' st-' + v : '') + '" id="it-' + k + '">'
+    + '<div class="label">' + esc(txt(it)) + tags(it) + '</div><div class="btns">';
+  KIND[g.kind].btn.forEach(([val, lab]) => {
+    h += '<button class="sbtn' + (v === val ? ' on-' + val : '') + '" onclick="setState(\'' + k + '\',\'' + val + '\')">' + lab + '</button>';
+  });
+  h += '</div>';
+  if (isBad(v)) h += '<textarea class="memo-in" rows="1" placeholder="ひと言メモ（気づいたこと）" oninput="setMemo(\'' + k + '\',this.value)">' + esc(store.memo[k] || '') + '</textarea>';
+  return h + '</div>';
+}
+
+function renderSec(tab, sec) {
+  const S = DATA[tab][sec];
+  let h = '<div class="sec-title">' + S.title + '</div>';
+  S.groups.forEach((g, gi) => {
+    const ck = tab + '-' + sec + '-' + gi;
+    const n = g.items.length;
+    const d = g.items.filter((_, ii) => store.state[key(tab, sec, gi, ii)]).length;
+    h += '<div class="card' + (d === n ? ' all-done' : '') + (collapsed[ck] ? ' collapsed' : '') + '">'
+      + '<button class="card-head" onclick="toggleGroup(\'' + tab + '\',\'' + sec + '\',' + gi + ')">'
+      + '<span class="card-name">' + g.name + '<span class="card-kind">' + KIND[g.kind].name + '</span></span>'
+      + '<span class="card-badge' + (d === n ? ' done' : '') + '">' + d + '/' + n + '</span><span class="chev">▾</span></button>'
+      + '<div class="card-body">';
+    g.items.forEach((it, ii) => { h += itemHtml(tab, g, it, key(tab, sec, gi, ii)); });
+    h += '</div></div>';
+  });
+  document.getElementById(tab + '-' + sec).innerHTML = h;
+}
+
+function summaryHtml(tab, kind) {
+  const list = [];
+  eachItem(tab, (sec, g, gi, it, ii, k) => {
+    if (g.kind === kind && isBad(store.state[k])) list.push({ k, sec, t: txt(it), m: store.memo[k] || '' });
+  });
+  const cls = kind === 'rec' ? 'ng' : 'pb';
+  const label = kind === 'rec' ? '✖ 記載なし' : '⚠ 問題あり';
+  let h = '<div class="sum ' + cls + '"><button class="sum-head" onclick="toggleSum(this)">' + label + ' ' + list.length + '件</button><div class="sum-body">';
+  h += list.length ? list.map(x => '<div class="sum-item" onclick="goItem(\'' + tab + '\',\'' + x.sec + '\',\'' + x.k + '\')">'
+      + esc(x.t) + (x.m ? '<span class="memo">📝 ' + esc(x.m) + '</span>' : '') + '</div>').join('')
+    : '<div class="sum-empty">ありません</div>';
+  return h + '</div></div>';
+}
+
+function renderAside() {
+  const tab = store.tab;
+  let h = '<div class="side-items">';
+  Object.keys(DATA[tab]).forEach(sec => {
+    const c = count(tab, sec);
+    const pct = c.total ? Math.round(c.done / c.total * 100) : 0;
+    h += '<button class="side-item' + (sec === activeSec ? ' active' : '') + '" onclick="goSec(\'' + sec + '\')">'
+      + DATA[tab][sec].title + '<span class="side-pct' + (pct === 100 ? ' done' : '') + '">' + pct + '%</span></button>';
+  });
+  h += '</div><div class="side-extra"><hr class="side-divider">' + summaryHtml(tab, 'rec') + summaryHtml(tab, 'act')
+    + '<hr class="side-divider"><button class="reset-btn" onclick="resetTab()">↺ この症例をリセット</button></div>';
+  document.getElementById('aside').innerHTML = h;
+  // スマホでは一覧とリセットを本文の上に出す
+  const mx = document.getElementById('mx-' + tab);
+  if (mx) mx.innerHTML = summaryHtml(tab, 'rec') + summaryHtml(tab, 'act')
+    + '<button class="reset-btn" style="margin:0 14px 16px" onclick="resetTab()">↺ この症例をリセット</button>';
+  const g = count(tab);
+  document.getElementById('g-done').textContent = g.done;
+  document.getElementById('g-total').textContent = g.total;
+}
+
+let activeSec = 's1';
+function setState(k, val) {
+  const tab = k.split('-')[0], sec = k.split('-')[1];
+  if (store.state[k] === val) delete store.state[k]; else store.state[k] = val;
+  if (!isBad(store.state[k])) delete store.memo[k];
+  save(); renderSec(tab, sec); renderAside();
+}
+function setMemo(k, v) {
+  if (v) store.memo[k] = v; else delete store.memo[k];
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => { save(); renderAside(); }, 400);
+}
+function toggleGroup(tab, sec, gi) {
+  const ck = tab + '-' + sec + '-' + gi;
+  collapsed[ck] = !collapsed[ck];
+  renderSec(tab, sec);
+}
+function toggleSum(btn) {
+  const b = btn.nextElementSibling;
+  b.style.display = b.style.display === 'none' ? '' : 'none';
+}
+function goSec(sec) {
+  activeSec = sec;
+  document.getElementById(store.tab + '-' + sec).scrollIntoView({ behavior:'smooth', block:'start' });
+  renderAside();
+}
+function goItem(tab, sec, k) {
+  activeSec = sec;
+  const gi = k.split('-')[2];
+  const ck = tab + '-' + sec + '-' + gi;
+  if (collapsed[ck]) { collapsed[ck] = false; renderSec(tab, sec); }
+  renderAside();
+  const el = document.getElementById('it-' + k);
   if (!el) return;
-  const { total, done } = countSec(tab, secId);
-  const pct = total ? Math.round(done/total*100) : 0;
-
-  let html = '<div class="sec-title">'+sec.title+'</div>';
-
-  sec.groups.forEach((g, gi) => {
-    const gTotal = g.items.length;
-    const gDone = g.items.filter((_,ii) => { const v=state[tab+'-'+secId+'-'+gi+'-'+ii]; return v==='ok'||v==='na'; }).length;
-    const allDone = gDone === gTotal;
-    const col = g._collapsed ? 'collapsed' : '';
-    html += '<div class="section-card '+(allDone?'all-done ':'')+col+'">'
-      +'<div class="section-head" onclick="toggleGroup(\''+tab+'\',\''+secId+'\','+gi+')">'
-      +'<span class="sec-icon">'+g.icon+'</span>'
-      +'<span class="sec-name">'+g.name+'</span>'
-      +'<span class="sec-badge '+(allDone?'done':'')+'">'+gDone+'/'+gTotal+'</span>'
-      +'<span class="chevron">▾</span>'
-      +'</div><div class="section-body">';
-
-    g.items.forEach((item, ii) => {
-      const key = tab+'-'+secId+'-'+gi+'-'+ii;
-      const v = state[key] || '';
-      const stClass = v==='ok'?'st-ok':v==='ng'?'st-ng':v==='na'?'st-na':'';
-      const naLabel = g.basic ? '— 未実施' : '◎ 問題なし';
-      html += '<div class="check-item '+stClass+'">'
-        +'<div class="state-btns">'
-        +'<button class="sbtn '+(v==='ok'?'active-ok':'')+'" onclick="setState(\''+key+'\',\'ok\',\''+tab+'\',\''+secId+'\')">✔ 記載有</button>'
-        +'<button class="sbtn '+(v==='ng'?'active-ng':'')+'" onclick="setState(\''+key+'\',\'ng\',\''+tab+'\',\''+secId+'\')">✖ 未記載</button>'
-        +'<button class="sbtn '+(v==='na'?'active-na':'')+'" onclick="setState(\''+key+'\',\'na\',\''+tab+'\',\''+secId+'\')">'+naLabel+'</button>'
-        +'</div>'
-        +'<div class="check-label">'+item+'</div>'
-        +'</div>';
-    });
-
-    html += '</div></div>';
-  });
-
-  el.innerHTML = html;
-  const pctEl = document.getElementById('pct-'+tab+'-'+secId);
-  if (pctEl) { pctEl.textContent = pct+'%'; pctEl.className = 'side-pct'+(pct===100?' done':''); }
-  updateGlobal();
+  el.scrollIntoView({ behavior:'smooth', block:'center' });
+  el.classList.add('flash');
+  setTimeout(() => el.classList.remove('flash'), 1500);
+}
+function switchTab(tab) {
+  store.tab = tab; activeSec = 's1'; save();
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
+  renderAside();
+  window.scrollTo(0, 0);
+}
+function resetTab() {
+  const tab = store.tab;
+  const name = TABS.find(t => t.id === tab).name;
+  if (!confirm('「' + name + '」のチェックとメモを消しますか？（ほかのタブは残ります）')) return;
+  Object.keys(store.state).forEach(k => { if (k.startsWith(tab + '-')) delete store.state[k]; });
+  Object.keys(store.memo).forEach(k => { if (k.startsWith(tab + '-')) delete store.memo[k]; });
+  save();
+  Object.keys(DATA[tab]).forEach(sec => renderSec(tab, sec));
+  renderAside();
 }
 
-function setState(key, val, tab, secId) {
-  state[key] = state[key]===val ? undefined : val;
-  renderSec(tab, secId);
-}
-
-function toggleGroup(tab, secId, gi) {
-  ALL_SECTIONS[tab][secId].groups[gi]._collapsed = !ALL_SECTIONS[tab][secId].groups[gi]._collapsed;
-  renderSec(tab, secId);
-}
-
-function updateNgSummary(tab) {
-  const items = [];
-  Object.keys(ALL_SECTIONS[tab]).forEach(secId => {
-    const sec = ALL_SECTIONS[tab][secId];
-    sec.groups.forEach((g, gi) => {
-      g.items.forEach((item, ii) => {
-        if (state[tab+'-'+secId+'-'+gi+'-'+ii] === 'ng') {
-          items.push({ text: item, tab, secId });
-        }
-      });
-    });
-  });
-  const cnt = document.getElementById('ng-cnt-'+tab);
-  const body = document.getElementById('ng-body-'+tab);
-  if (!cnt || !body) return;
-  cnt.textContent = items.length;
-  if (items.length === 0) {
-    body.innerHTML = '<div class="ng-empty">未記載項目はありません</div>';
-  } else {
-    body.innerHTML = items.map(it =>
-      '<div class="ng-item" onclick="jumpTo(\''+it.tab+'\',\''+it.secId+'\',document.querySelector(\'#sidebar-'+tab+' .side-item\'))">'+it.text+'</div>'
-    ).join('');
-  }
-}
-
-function toggleNg(tab) {
-  const body = document.getElementById('ng-body-'+tab);
-  if (body) body.style.display = body.style.display === 'none' ? '' : 'none';
-}
-
-function updateGlobal() {
-  let total=0, done=0;
-  Object.keys(ALL_SECTIONS).forEach(tab => {
-    Object.keys(ALL_SECTIONS[tab]).forEach(secId => {
-      const c = countSec(tab, secId);
-      total += c.total; done += c.done;
-    });
-    updateNgSummary(tab);
-  });
-  document.getElementById('g-done').textContent = done;
-  document.getElementById('g-total').textContent = total;
-}
-
-function jumpTo(tab, secId, el) {
-  document.getElementById(tab+'-'+secId).scrollIntoView({behavior:'smooth',block:'start'});
-  document.querySelectorAll('#sidebar-'+tab+' .side-item').forEach(e => e.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function switchTab(tab, btn) {
-  currentTab = tab;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-'+tab).classList.add('active');
-  ['cpa','liq','glu','dnar'].forEach(t => {
-    document.getElementById('sidebar-'+t).style.display = t===tab ? '' : 'none';
-  });
-}
-
-function resetAll() {
-  if (!confirm('すべてのタブのチェックをリセットしますか？')) return;
-  Object.keys(state).forEach(k => delete state[k]);
-  Object.keys(ALL_SECTIONS).forEach(tab => {
-    Object.keys(ALL_SECTIONS[tab]).forEach(secId => renderSec(tab, secId));
-  });
-}
-
-Object.keys(ALL_SECTIONS).forEach(tab => {
-  Object.keys(ALL_SECTIONS[tab]).forEach(secId => renderSec(tab, secId));
-});
+// ── 画面を組み立てる ──
+if (!DATA[store.tab]) store.tab = 'cpa';
+document.getElementById('tab-bar').innerHTML = TABS.map(t =>
+  '<button class="tab-btn' + (t.id === store.tab ? ' active' : '') + '" data-tab="' + t.id + '" onclick="switchTab(\'' + t.id + '\')">' + t.name + '</button>').join('');
+document.getElementById('main').innerHTML = TABS.map(t =>
+  '<div class="tab-panel' + (t.id === store.tab ? ' active' : '') + '" id="panel-' + t.id + '">'
+  + '<div class="mobile-extra" id="mx-' + t.id + '"></div>'
+  + '<p class="note">「追加」は検証で足した項目、「地域MCの決まり（要確認）」は地域の基準で確かめが必要な数値です。チェックとメモはこの端末に残ります。</p>'
+  + Object.keys(DATA[t.id]).map(sec => '<div class="section-block" id="' + t.id + '-' + sec + '"></div>').join('')
+  + '</div>').join('');
+TABS.forEach(t => Object.keys(DATA[t.id]).forEach(sec => renderSec(t.id, sec)));
+renderAside();
 </script>
 </body>
 </html>

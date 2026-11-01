@@ -27,6 +27,8 @@
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
+  html { font-size: 17px; }
+  @media (max-width: 700px) { html { font-size: 18px; } main { padding: 1rem !important; } .hero { padding: 1.5rem; } }
 
   body {
     background: var(--bg);
@@ -46,7 +48,7 @@
     backdrop-filter: blur(12px);
   }
 
-  .header-top {
+  .header-inner {
     max-width: 1400px;
     margin: 0 auto;
     display: flex;
@@ -69,7 +71,7 @@
   .header-desc {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.65rem;
-    color: #e2e4ec;
+    color: #b4bbc8;
     margin-left: 1rem;
     letter-spacing: 0.08em;
   }
@@ -87,7 +89,7 @@
   nav button {
     background: none;
     border: 1px solid transparent;
-    color: #e2e4ec;
+    color: #b4bbc8;
     padding: 5px 14px;
     border-radius: 4px;
     cursor: pointer;
@@ -170,7 +172,7 @@
   }
 
   .hero p {
-    color: #e8eaef;
+    color: #c9ced8;
     font-size: 0.9rem;
     line-height: 1.7;
     max-width: 700px;
@@ -236,7 +238,7 @@
   .framework-title.orange { color: var(--accent-orange); }
 
   .framework-subtitle {
-    color: #e8eaef;
+    color: #c9ced8;
     font-size: 0.8rem;
     margin-top: 2px;
   }
@@ -280,7 +282,7 @@
 
   .item-desc {
     font-size: 0.75rem;
-    color: #e8eaef;
+    color: #c9ced8;
     line-height: 1.4;
   }
 
@@ -322,7 +324,7 @@
 
   .detail-sub {
     font-size: 0.8rem;
-    color: #e8eaef;
+    color: #c9ced8;
   }
 
   .detail-body {
@@ -332,7 +334,7 @@
   .detail-body p {
     font-size: 0.85rem;
     line-height: 1.8;
-    color: #e8eaef;
+    color: #c9ced8;
     margin-bottom: 0.75rem;
   }
 
@@ -351,7 +353,7 @@
     padding-left: 1.1rem;
     position: relative;
     font-size: 0.85rem;
-    color: #e8eaef;
+    color: #c9ced8;
     line-height: 1.75;
     margin-bottom: 0.35rem;
   }
@@ -399,7 +401,7 @@
 
   .methane-form .form-subtitle {
     font-size: 0.85rem;
-    color: #e2e4ec;
+    color: #b4bbc8;
     margin-bottom: 2rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border);
@@ -501,11 +503,11 @@
 
   .btn-secondary {
     background: transparent;
-    color: #e2e4ec;
+    color: #b4bbc8;
     border: 1.5px solid var(--border);
   }
 
-  .btn-secondary:hover { color: var(--text); border-color: #e2e4ec; }
+  .btn-secondary:hover { color: var(--text); border-color: #b4bbc8; }
 
   /* REPORT OUTPUT */
   .report-output {
@@ -553,7 +555,7 @@
   .ctab {
     background: var(--surface);
     border: 1px solid var(--border);
-    color: #e2e4ec;
+    color: #b4bbc8;
     padding: 6px 14px;
     border-radius: 6px;
     cursor: pointer;
@@ -593,7 +595,7 @@
 
   .cbrne-panel-sub {
     font-size: 0.8rem;
-    color: #e8eaef;
+    color: #c9ced8;
     line-height: 1.5;
   }
 
@@ -631,7 +633,7 @@
   .cbrne-group-label {
     font-size: 0.75rem;
     font-weight: 700;
-    color: #e2e4ec;
+    color: #b4bbc8;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     margin-bottom: 0.6rem;
@@ -668,7 +670,7 @@
 
   .ppe-scene {
     font-size: 0.78rem;
-    color: #e8eaef;
+    color: #c9ced8;
     margin-bottom: 3px;
   }
 
@@ -748,7 +750,7 @@
 
   .triage-desc {
     font-size: 0.78rem;
-    color: #e2e4ec;
+    color: #b4bbc8;
     line-height: 1.6;
   }
 
@@ -787,7 +789,7 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.7rem;
     letter-spacing: 0.1em;
-    color: #e2e4ec;
+    color: #b4bbc8;
     border-bottom: 1px solid var(--border);
     text-transform: uppercase;
   }
@@ -795,7 +797,7 @@
   .comparison-table td {
     padding: 0.75rem 1rem;
     border-bottom: 1px solid rgba(42,45,54,0.5);
-    color: #e8eaef;
+    color: #c9ced8;
     line-height: 1.5;
   }
 
@@ -819,6 +821,15 @@
   .section.active > *:nth-child(4) { animation-delay: 0.15s; }
 
   /* PAT flow item rows */
+  .start-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media (max-width: 700px) { .start-grid { grid-template-columns:1fr; } }
+  .start-box { background:#0d0f14; border:1px solid var(--border); border-radius:8px; padding:1rem; }
+  .start-box .q { font-weight:700; color:#f0f2f8; margin-bottom:0.5rem; font-size:0.95rem; }
+  .start-box .a { font-size:0.88rem; color:#c9ced8; line-height:1.7; }
+  .src-note { margin-top: 2rem; padding: 1rem 1.25rem; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-size: 0.8rem; color: #b4bbc8; line-height: 1.7; }
+  .src-note strong { color: #f0f2f8; }
+  .copy-msg { margin-left: auto; align-self: center; font-size: 0.85rem; color: var(--accent-teal); }
+
   .pat-item-row {
     display: flex;
     align-items: baseline;
@@ -840,7 +851,7 @@
 
   .pat-item-body {
     font-size: 0.82rem;
-    color: #e2e4ec;
+    color: #b4bbc8;
     line-height: 1.6;
   }
 </style>
@@ -870,7 +881,7 @@
     <div class="hero">
       <div class="hero-label">▸ Mass Casualty Incident Reference</div>
       <h1>集団災害対応<br>フレームワーク</h1>
-      <p>CSCATTT（医療指揮・調整）と METHANE（初期報告）は、集団災害（MCI）対応における国際標準フレームワークです。本アプリは現場での迅速な参照と報告作成を支援します。</p>
+      <p>CSCATTT（医療指揮・調整）と METHANE（初期報告）は、英国のMIMMS（大事故災害への医療対応）に由来し、日本でもDMATや消防の教育で使われる枠組みです。本アプリは現場での参照と報告作成を助けます。地域の要綱・プロトコールがある場合は、そちらを優先してください。</p>
     </div>
 
     <div class="frameworks-grid">
@@ -947,8 +958,8 @@
           <div class="item-row">
             <div class="item-letter" style="color:var(--accent-orange)">M</div>
             <div class="item-info">
-              <div class="item-name">My call sign</div>
-              <div class="item-desc">報告者の識別情報・コールサイン</div>
+              <div class="item-name">My call sign / Major incident</div>
+              <div class="item-desc">報告者の名乗り＋大事故災害の宣言（待機・発生）</div>
             </div>
           </div>
           <div class="item-row">
@@ -1019,7 +1030,7 @@
         <div class="detail-body">
           <p>集団災害対応において最初に行うべきことは、明確な指揮命令系統の確立です。誰が現場の医療指揮を取るかを明確にし、全員がその指示に従う体制を作ります。</p>
           <ul class="checklist">
-            <li>現場医療指揮官（Medical Incident Commander）を明確に指名</li>
+            <li>消防の現場指揮（指揮隊）と、医療の指揮・調整（DMATなど）を区別して確認</li>
             <li>DMAT・救急隊・消防・警察との指揮系統の調整</li>
             <li>指揮所（Command Post）の設置場所の決定</li>
             <li>役割と責任の明確な割り当て</li>
@@ -1107,7 +1118,7 @@
             <li><strong>赤（I）</strong>：生命危機あり、直ちに治療が必要</li>
             <li><strong>黄（II）</strong>：重傷だが待機可能</li>
             <li><strong>緑（III）</strong>：軽傷、独歩可能</li>
-            <li><strong>黒（0）</strong>：死亡または救命不能</li>
+            <li><strong>黒（0）</strong>：死亡、または現状では救命困難（生存者は再評価の対象）</li>
             <li>START法（30秒/人）による迅速なトリアージ</li>
             <li>状況変化に応じた再トリアージの実施</li>
           </ul>
@@ -1126,8 +1137,8 @@
           <p>トリアージ区分に従い、治療エリアを設置して優先度の高い傷病者から処置を行います。現場での処置は生命維持に必要な最低限を行い、速やかに搬送します。</p>
           <ul class="checklist">
             <li>治療エリア（赤・黄・緑・黒）の設置</li>
-            <li>止血・気道確保・ショック対応を優先</li>
-            <li>止血・気道・呼吸・循環・低体温の順で処置を優先</li>
+            <li>致死的な大出血の止血を最優先し、気道・呼吸・循環の順に対応。保温（低体温の予防）も並行</li>
+            <li>救急隊は救急救命処置の範囲内で処置し、医師が行う治療（薬剤など）とは分けて考える</li>
             <li>医薬品・資器材の効率的配分</li>
             <li>DMATや専門医チームとの連携</li>
           </ul>
@@ -1146,7 +1157,7 @@
           <p>傷病者を適切な医療機関へ安全かつ迅速に搬送します。各病院の受け入れ能力を把握し、負荷が特定の病院に集中しないよう分散搬送を図ります。</p>
           <ul class="checklist">
             <li>搬送順位の決定（トリアージ区分に基づく）</li>
-            <li>救急車・ドクターヘリ・DMAT機材の効率的配置</li>
+            <li>救急車・ドクターヘリなど搬送手段の効率的な運用</li>
             <li>搬送先病院との事前調整・受け入れ確認</li>
             <li>分散搬送による特定病院への過負荷防止</li>
             <li>搬送記録（誰が・いつ・どこへ）の管理</li>
@@ -1170,13 +1181,14 @@
         <div class="detail-header">
           <div class="detail-letter" style="color:var(--accent-orange)">M</div>
           <div>
-            <div class="detail-title">My call sign — 報告者識別</div>
-            <div class="detail-sub">「私は〇〇です」から始める</div>
+            <div class="detail-title">My call sign / Major incident — 名乗りと宣言</div>
+            <div class="detail-sub">「こちらは〇〇です」から始め、大事故災害かどうかを伝える</div>
           </div>
         </div>
         <div class="detail-body">
           <p>報告の最初に自分のコールサイン・役職・所属を明確に述べます。受信側が誰からの報告かを即座に把握できることが重要です。</p>
-          <p>例：「こちらは〇〇救急隊、田中隊長です」</p>
+          <p>あわせて「大事故災害（多数傷病者事故）の待機（スタンバイ）」または「発生（宣言）」を伝えます。言葉は地域の計画に合わせます。教材によってMを「My call sign」とするものと「Major incident」とするものがあります。</p>
+          <p>例：「こちらは〇〇救急隊、田中隊長です。多数傷病者事故の発生を宣言します」</p>
         </div>
       </div>
 
@@ -1294,7 +1306,7 @@
 
     <div class="methane-form">
       <h2>現場報告フォーム</h2>
-      <div class="form-subtitle">各項目を入力して「報告文を生成」を押すと、METHANE形式の報告文が自動作成されます</div>
+      <div class="form-subtitle">各項目を入力して「報告文を生成」を押すと、METHANE形式の報告文ができます。入力した内容はこの端末に残り、「クリア」で消えます。</div>
 
       <div class="form-grid">
         <div class="form-group">
@@ -1303,6 +1315,13 @@
             報告者・コールサイン
           </label>
           <input class="form-control" type="text" id="f_m" placeholder="例：〇〇救急隊 田中隊長">
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            <span class="ltr" style="color:var(--accent-orange)">M</span>
+            大事故災害の宣言
+          </label>
+          <input class="form-control" type="text" id="f_m2" placeholder="例：多数傷病者事故の発生を宣言／待機（スタンバイ）">
         </div>
         <div class="form-group">
           <label class="form-label">
@@ -1350,7 +1369,9 @@
 
       <div class="form-actions">
         <button class="btn btn-primary" onclick="generateReport()">📋 報告文を生成</button>
+        <button class="btn btn-secondary" id="copyBtn" onclick="copyReport()" style="display:none">📄 報告文をコピー</button>
         <button class="btn btn-secondary" onclick="clearForm()">クリア</button>
+        <span class="copy-msg" id="copyMsg"></span>
       </div>
 
       <div class="report-output" id="reportOutput"></div>
@@ -1375,20 +1396,20 @@
         <div class="triage-card t2">
           <div class="triage-tag">DELAYED</div>
           <div class="triage-priority">黄</div>
-          <div class="triage-title">第二優先（中等症）</div>
+          <div class="triage-title">第二優先（待機的治療）</div>
           <div class="triage-desc">重傷だが直ちに生命危機はなく、一定時間の待機が可能。</div>
         </div>
         <div class="triage-card t3">
           <div class="triage-tag">MINOR</div>
           <div class="triage-priority">緑</div>
           <div class="triage-title">第三優先（軽症）</div>
-          <div class="triage-desc">軽傷で自力歩行可能。最後に処置を行う。自傷でも基本的観察は必要。</div>
+          <div class="triage-desc">軽傷で自力歩行可能。軽傷でも基本的な観察と再評価は必要。</div>
         </div>
         <div class="triage-card t4">
           <div class="triage-tag">EXPECTANT</div>
           <div class="triage-priority">黒</div>
           <div class="triage-title">死亡・救命不能</div>
-          <div class="triage-desc">死亡、または現在利用可能な資源では救命が見込めない状態。</div>
+          <div class="triage-desc">死亡、または現在の資源では救命が見込めない状態。死亡確認と同じではなく、生存者は資源に余裕ができれば再評価する。</div>
         </div>
       </div>
     </div>
@@ -1400,24 +1421,29 @@
 
     <div class="detail-card" style="margin-bottom:2rem">
       <div class="detail-body" style="padding:1.5rem">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-          <div style="background:#0d0f14;border:1px solid var(--border);border-radius:8px;padding:1rem">
-            <p style="font-weight:700;color:#f0f2f8;margin-bottom:0.5rem;font-size:0.9rem">① 歩行できるか？</p>
-            <p style="font-size:0.85rem;color:#e8eaef;line-height:1.7">「歩ける人はこちらへ」の呼びかけ<br>独歩可能 → <span style="color:var(--accent-green);font-weight:700">緑</span></p>
+        <div class="start-grid">
+          <div class="start-box">
+            <p class="q">① 歩けるか？</p>
+            <p class="a">「歩ける人はこちらへ」と呼びかける<br>歩ける → <span style="color:var(--accent-green);font-weight:700">緑</span><br>歩けない → ②へ</p>
           </div>
-          <div style="background:#0d0f14;border:1px solid var(--border);border-radius:8px;padding:1rem">
-            <p style="font-weight:700;color:#f0f2f8;margin-bottom:0.5rem;font-size:0.9rem">② 呼吸はあるか？（歩行不能者）</p>
-            <p style="font-size:0.85rem;color:#e8eaef;line-height:1.7">気道確保後も呼吸なし → <span style="color:#aaaaaa;font-weight:700">黒</span><br>呼吸あり → ③へ</p>
+          <div class="start-box">
+            <p class="q">② 呼吸はあるか？</p>
+            <p class="a">なし → 気道確保<br>　気道確保でも呼吸なし → <span style="color:#aaaaaa;font-weight:700">黒</span><br>　気道確保で呼吸が戻った → <span style="color:var(--accent-red);font-weight:700">赤</span><br>あり → ③へ</p>
           </div>
-          <div style="background:#0d0f14;border:1px solid var(--border);border-radius:8px;padding:1rem">
-            <p style="font-weight:700;color:#f0f2f8;margin-bottom:0.5rem;font-size:0.9rem">③ 呼吸数は？</p>
-            <p style="font-size:0.85rem;color:#e8eaef;line-height:1.7">30回/分超 → <span style="color:var(--accent-red);font-weight:700">赤</span><br>正常（10〜29回）→ ④へ</p>
+          <div class="start-box">
+            <p class="q">③ 呼吸数は？</p>
+            <p class="a">9回/分以下 または 30回/分以上 → <span style="color:var(--accent-red);font-weight:700">赤</span><br>10〜29回/分 → ④へ</p>
           </div>
-          <div style="background:#0d0f14;border:1px solid var(--border);border-radius:8px;padding:1rem">
-            <p style="font-weight:700;color:#f0f2f8;margin-bottom:0.5rem;font-size:0.9rem">④ 末梢循環・意識</p>
-            <p style="font-size:0.85rem;color:#e8eaef;line-height:1.7">橈骨動脈触知なし / CRT 2秒超 → <span style="color:var(--accent-red);font-weight:700">赤</span><br>正常かつ指示に従える → <span style="color:var(--accent-yellow);font-weight:700">黄</span></p>
+          <div class="start-box">
+            <p class="q">④ 循環は？</p>
+            <p class="a">橈骨動脈を触れない または CRT 2秒超 → <span style="color:var(--accent-red);font-weight:700">赤</span><br>触れる → ⑤へ<br><span style="font-size:0.8rem;color:#b4bbc8">CRTは寒い場所では不正確。境界（2秒以上／2秒超）は地域の基準で確認</span></p>
+          </div>
+          <div class="start-box">
+            <p class="q">⑤ 意識は？</p>
+            <p class="a">簡単な指示に従えない → <span style="color:var(--accent-red);font-weight:700">赤</span><br>従える → <span style="color:var(--accent-yellow);font-weight:700">黄</span></p>
           </div>
         </div>
+        <p style="margin-top:1rem;font-size:0.82rem;color:#b4bbc8">国内で広く使われている修正START法です（原法は呼吸数30回超のみ）。地域の基準と照らし合わせてください。</p>
       </div>
     </div>
 
@@ -1434,8 +1460,8 @@
     <div style="background:rgba(0,184,169,0.07);border:1px solid rgba(0,184,169,0.3);border-radius:10px;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
       <div style="font-size:1.8rem">🔍</div>
       <div>
-        <div style="font-weight:700;font-size:0.95rem;margin-bottom:0.3rem">PAT = 二次トリアージ（個別詳細評価）</div>
-        <div style="font-size:0.82rem;color:#e2e4ec">一次トリアージ（START法）で赤・黄タグを付けた傷病者に対し、処置優先度と搬送先を決定するために行う系統的評価。</div>
+        <div style="font-weight:700;font-size:0.95rem;margin-bottom:0.3rem">PAT法（生理学的・解剖学的評価）＝二次トリアージの方法のひとつ</div>
+        <div style="font-size:0.82rem;color:#b4bbc8">一次トリアージで分けた傷病者を、救護所などで詳しく評価し、処置と搬送の順番を決める。緑も状態が変われば対象。</div>
       </div>
     </div>
 
@@ -1452,7 +1478,7 @@
         <div style="font-size:2rem;width:60px;text-align:center">🔄</div>
         <div>
           <div class="cbrne-panel-title">二次トリアージのポイント</div>
-          <div class="cbrne-panel-sub">STARTは30秒/人の一次評価。PATで詳細評価し、タグを随時更新する。</div>
+          <div class="cbrne-panel-sub">STARTは1人30秒が目安の一次評価。PATで詳しく評価し、タグを随時更新する。</div>
         </div>
       </div>
       <div class="cbrne-body">
@@ -1460,8 +1486,8 @@
           <div class="cbrne-group-label">📌 一次 vs 二次の違い</div>
           <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.5rem">
             <div style="padding:0.6rem 0.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px">
-              <div style="font-size:0.75rem;font-weight:700;color:#e2e4ec;margin-bottom:0.25rem">一次トリアージ（START）</div>
-              <div style="font-size:0.82rem">目標30秒/人。歩行・呼吸・循環の3項目のみで迅速分類。資源配分の大枠を決める。</div>
+              <div style="font-size:0.75rem;font-weight:700;color:#b4bbc8;margin-bottom:0.25rem">一次トリアージ（START）</div>
+              <div style="font-size:0.82rem">1人30秒が目安。歩行・呼吸・循環・意識で手早く分ける。資源配分の大枠を決める。</div>
             </div>
             <div style="padding:0.6rem 0.75rem;background:rgba(0,184,169,0.06);border:1px solid rgba(0,184,169,0.25);border-radius:6px">
               <div style="font-size:0.75rem;font-weight:700;color:var(--accent-teal);margin-bottom:0.25rem">二次トリアージ（PAT）</div>
@@ -1479,15 +1505,15 @@
           <ul class="checklist">
             <li>処置（止血・気道確保）後</li>
             <li>搬送前（状態が変わっていないか）</li>
-            <li>待機中に定期的に（目安：5〜10分ごと）</li>
+            <li>待機中も定期的に（赤は特に短い間隔で。間隔は状態と資源で決める）</li>
             <li>患者自身が「悪化した」と訴えたとき</li>
             <li>救助者が異変に気づいたとき（呼吸変化・意識変化）</li>
           </ul>
           <div class="cbrne-group-label" style="margin-top:1rem">📝 タグ記録の注意点</div>
           <ul class="checklist">
-            <li>変更時は旧タグを切り取り新タグを追加（積み重ね可）</li>
+            <li>区分を変えたときの付け替え方は、使っているタグの正式な手順に従う（前の評価と時刻が分かるように残す）</li>
             <li>記録：評価者名・評価時刻・変更理由を記入</li>
-            <li>薬剤投与した場合は必ずタグに記載</li>
+            <li>行った処置（薬剤を含む）と時刻をタグに記載</li>
           </ul>
         </div>
       </div>
@@ -1500,7 +1526,7 @@
         <div style="font-size:1.8rem;width:44px;text-align:center;flex-shrink:0">📊</div>
         <div>
           <div class="cbrne-panel-title">PAT 判断フロー（二次トリアージ）</div>
-          <div class="cbrne-panel-sub">4段階で系統的に評価。目標：<strong style="color:#fff">2分以内</strong>に完了。</div>
+          <div class="cbrne-panel-sub">4段階で評価します。数値は国内で使われている一例です。<strong style="color:#fff">地域の基準と照らし合わせてください。</strong></div>
         </div>
       </div>
       <div style="padding:1rem;background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;margin-bottom:1rem">
@@ -1511,9 +1537,9 @@
             <div style="width:40px;height:40px;border-radius:50%;background:rgba(0,184,169,0.15);border:2px solid var(--accent-teal);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:var(--accent-teal);flex-shrink:0;text-align:center;line-height:1.3">開始</div>
             <div style="flex:1;min-width:0">
               <div style="font-weight:700;font-size:0.88rem;color:#fff">一次トリアージ（START法）完了後</div>
-              <div style="font-size:0.78rem;color:#e2e4ec;margin-top:2px">赤・黄タグの傷病者にPAT法を開始</div>
+              <div style="font-size:0.78rem;color:#b4bbc8;margin-top:2px">救護所などで順に評価（緑も状態が変われば対象）</div>
             </div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--accent-teal);white-space:nowrap;flex-shrink:0">目標2分</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--accent-teal);white-space:nowrap;flex-shrink:0">4段階</div>
           </div>
 
           <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
@@ -1525,30 +1551,30 @@
               <div style="font-weight:700;color:#fff;font-size:0.9rem">生理学的評価</div>
             </div>
             <div style="padding:0.85rem 1rem;display:flex;flex-direction:column;gap:0.5rem">
-              <div style="font-size:0.72rem;color:#e2e4ec;margin-bottom:0.1rem">以下の項目を確認する</div>
-              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
-                <div class="pat-item-label" style="color:#e53935">気道</div>
-                <div class="pat-item-body">開通しているか・異常呼吸音（喘鳴・いびき）</div>
-              </div>
-              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
-                <div class="pat-item-label" style="color:#e53935">呼吸</div>
-                <div class="pat-item-body">呼吸数（正常10〜29回/分）・胸郭の動き・左右差</div>
-              </div>
-              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
-                <div class="pat-item-label" style="color:#e53935">循環</div>
-                <div class="pat-item-body">橈骨動脈触知・CRT 2秒以内・外出血の有無</div>
-              </div>
-              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+              <div style="font-size:0.78rem;color:#b4bbc8;margin-bottom:0.1rem">どれか1つでも当てはまれば赤</div>
+              <div class="pat-item-row" style="border-color:#e5393533">
                 <div class="pat-item-label" style="color:#e53935">意識</div>
-                <div class="pat-item-body">JCS / GCS・指示に従えるか</div>
+                <div class="pat-item-body">JCS 2桁以上</div>
               </div>
-              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
-                <div class="pat-item-label" style="color:#e53935">体温</div>
-                <div class="pat-item-body">低体温の有無・皮膚冷感・湿潤</div>
+              <div class="pat-item-row" style="border-color:#e5393533">
+                <div class="pat-item-label" style="color:#e53935">呼吸</div>
+                <div class="pat-item-body">9回/分以下 または 30回/分以上</div>
               </div>
-              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+              <div class="pat-item-row" style="border-color:#e5393533">
+                <div class="pat-item-label" style="color:#e53935">脈拍</div>
+                <div class="pat-item-body">50回/分未満 または 120回/分以上</div>
+              </div>
+              <div class="pat-item-row" style="border-color:#e5393533">
+                <div class="pat-item-label" style="color:#e53935">血圧</div>
+                <div class="pat-item-body">収縮期 90mmHg未満 または 200mmHg以上</div>
+              </div>
+              <div class="pat-item-row" style="border-color:#e5393533">
                 <div class="pat-item-label" style="color:#e53935">SpO₂</div>
-                <div class="pat-item-body">測定可能なら確認（90%未満は要注意）</div>
+                <div class="pat-item-body">90%未満</div>
+              </div>
+              <div class="pat-item-row" style="border-color:#e5393533">
+                <div class="pat-item-label" style="color:#e53935">その他</div>
+                <div class="pat-item-body">ショック症状（冷汗・蒼白など）・体温35℃以下</div>
               </div>
             </div>
           </div>
@@ -1562,29 +1588,30 @@
               <div style="font-weight:700;color:#fff;font-size:0.9rem">全身観察による解剖学的評価</div>
             </div>
             <div style="padding:0.85rem 1rem;display:flex;flex-direction:column;gap:0.5rem">
-              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
-                <div class="pat-item-label" style="color:#e53935">頭頸部</div>
-                <div class="pat-item-body">頭部外傷・変形・頸静脈怒張・気管偏位</div>
+              <div style="font-size:0.78rem;color:#b4bbc8;margin-bottom:0.1rem">次の損傷があれば赤。圧痛や軽い骨折だけで赤にはしない</div>
+              <div class="pat-item-row" style="border-color:#e5393533">
+                <div class="pat-item-label" style="color:#e53935">頭部</div>
+                <div class="pat-item-body">開放性頭蓋骨骨折・陥没骨折</div>
               </div>
-              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
-                <div class="pat-item-label" style="color:#e53935">胸部</div>
-                <div class="pat-item-body">開放性損傷・奇異呼吸・フレイルチェスト</div>
+              <div class="pat-item-row" style="border-color:#e5393533">
+                <div class="pat-item-label" style="color:#e53935">頸・胸</div>
+                <div class="pat-item-body">外頸静脈の著しい怒張・頸部や胸部の皮下気腫・胸郭動揺（フレイルチェスト）・開放性気胸</div>
               </div>
-              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+              <div class="pat-item-row" style="border-color:#e5393533">
                 <div class="pat-item-label" style="color:#e53935">腹・骨盤</div>
-                <div class="pat-item-body">腹部膨満・圧痛・骨盤不安定性</div>
+                <div class="pat-item-body">腹部膨隆・腹壁緊張・骨盤骨折（骨盤動揺）</div>
               </div>
-              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
+              <div class="pat-item-row" style="border-color:#e5393533">
                 <div class="pat-item-label" style="color:#e53935">四肢</div>
-                <div class="pat-item-body">骨折・変形・開放創・末梢循環・感覚障害</div>
+                <div class="pat-item-body">両側大腿骨骨折・四肢の切断・四肢麻痺</div>
               </div>
-              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
-                <div class="pat-item-label" style="color:#e53935">背部</div>
-                <div class="pat-item-body">脊椎変形・圧痛・出血・開放創</div>
+              <div class="pat-item-row" style="border-color:#e5393533">
+                <div class="pat-item-label" style="color:#e53935">穿通性</div>
+                <div class="pat-item-body">頭頸部・胸部・腹部・鼠径部の穿通性外傷</div>
               </div>
-              <div class="pat-item-row" style="border-color:rgba(229,57,53,0.3)">
-                <div class="pat-item-label" style="color:#e53935">体表</div>
-                <div class="pat-item-body">熱傷の範囲・深度・貫通創・挫滅創</div>
+              <div class="pat-item-row" style="border-color:#e5393533">
+                <div class="pat-item-label" style="color:#e53935">熱傷など</div>
+                <div class="pat-item-body">15%以上の熱傷・顔面や気道の熱傷・デグロービング損傷</div>
               </div>
             </div>
           </div>
@@ -1604,13 +1631,17 @@
               <div style="font-weight:700;color:#fff;font-size:0.9rem">受傷機転の確認</div>
             </div>
             <div style="padding:0.85rem 1rem;display:flex;flex-direction:column;gap:0.5rem">
-              <div class="pat-item-row" style="border-color:rgba(255,214,0,0.3)">
+              <div class="pat-item-row" style="border-color:#ffd60033">
                 <div class="pat-item-label" style="color:#ffd600;font-size:0.7rem">高エネルギー</div>
-                <div class="pat-item-body">時速50km超の交通事故・車外放出・3m超の墜落・爆発・建物崩壊</div>
+                <div class="pat-item-body">同乗者の死亡・車外放出・車の横転や高度な変形・歩行者や自転車がはねられた・高所からの墜落（高さの基準は地域の基準で確認）・機械への巻き込まれ・体幹の挟まれ</div>
               </div>
-              <div class="pat-item-row" style="border-color:rgba(255,214,0,0.3)">
+              <div class="pat-item-row" style="border-color:#ffd60033">
+                <div class="pat-item-label" style="color:#ffd600;font-size:0.7rem">長時間の挟まれ</div>
+                <div class="pat-item-body">四肢・体幹が長時間挟まれていた（クラッシュ症候群に注意）</div>
+              </div>
+              <div class="pat-item-row" style="border-color:#ffd60033">
                 <div class="pat-item-label" style="color:#ffd600;font-size:0.7rem">特殊受傷</div>
-                <div class="pat-item-body">溺水・感電・絞扼・刺傷/銃創（頭頸部・体幹）・爆傷（一次〜四次）</div>
+                <div class="pat-item-body">溺水・感電・爆傷・有毒ガスや汚染への曝露</div>
               </div>
             </div>
           </div>
@@ -1626,15 +1657,15 @@
             <div style="padding:0.85rem 1rem;display:flex;flex-direction:column;gap:0.5rem">
               <div class="pat-item-row" style="border-color:rgba(255,214,0,0.3)">
                 <div class="pat-item-label" style="color:#ffd600">小児</div>
-                <div class="pat-item-body">15歳以下（JumpSTART使用）・体重・解剖学的差異に注意</div>
+                <div class="pat-item-body">解剖学的・生理学的な違いに注意（一次トリアージのJumpSTARTは8歳未満くらいが目安）</div>
               </div>
               <div class="pat-item-row" style="border-color:rgba(255,214,0,0.3)">
                 <div class="pat-item-label" style="color:#ffd600">高齢者</div>
-                <div class="pat-item-body">65歳以上・代償能力低下・多臓器不全リスク</div>
+                <div class="pat-item-body">代償能力が低く、見た目より重いことがある・抗凝固薬の内服に注意</div>
               </div>
               <div class="pat-item-row" style="border-color:rgba(255,214,0,0.3)">
                 <div class="pat-item-label" style="color:#ffd600">妊婦</div>
-                <div class="pat-item-body">胎児・母体の両方を評価・左側臥位（大静脈圧迫防止）</div>
+                <div class="pat-item-body">胎児・母体の両方を評価・お腹の大きい妊婦は子宮を左へ寄せるか体を左に傾け、仰臥位低血圧を防ぐ</div>
               </div>
               <div class="pat-item-row" style="border-color:rgba(255,214,0,0.3)">
                 <div class="pat-item-label" style="color:#ffd600">基礎疾患</div>
@@ -1654,7 +1685,7 @@
           <!-- ③④判定バナー -->
           <div style="margin:0.4rem 0;padding:0.8rem 1rem;background:#1a1600;border:2px solid #ffd600;border-radius:8px;display:flex;align-items:center;gap:0.75rem">
             <div style="font-size:1.3rem;flex-shrink:0">🟡</div>
-            <div style="font-size:0.85rem;color:#fff;line-height:1.5"><strong style="color:#ffd600">③・④ いずれか該当あり</strong>（①②で赤でない場合）<br>→ <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#ffd600">黄タグ</span> への変更を検討</div>
+            <div style="font-size:0.85rem;color:#fff;line-height:1.5"><strong style="color:#ffd600">③・④ いずれか該当あり</strong>（①②で赤でない場合）。年齢だけで機械的に黄にはしない<br>→ <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#ffd600">黄タグ</span> への変更を検討</div>
           </div>
 
           <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
@@ -1666,7 +1697,7 @@
               <div style="font-weight:700;font-size:0.88rem;color:#fff;margin-bottom:0.35rem">PAT法 完了 → 処置・搬送へ</div>
               <ul class="checklist" style="margin:0">
                 <li>タグを確定・記録（評価者名・時刻）</li>
-                <li>薬剤投与はタグに必ず記載</li>
+                <li>行った処置と時刻をタグに記載</li>
                 <li>状態変化があれば再評価・タグ更新</li>
               </ul>
             </div>
@@ -1688,7 +1719,7 @@
     <div style="background:#1e0e0e;border:2px solid #e53935;border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;">
       <div style="font-size:0.7rem;font-weight:700;color:#ff6b6b;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.6rem">⚠ CBRNE 基本原則</div>
       <div style="font-size:1.05rem;font-weight:700;color:#ffffff;margin-bottom:0.6rem">近づかない・触らない・吸わない</div>
-      <div style="font-size:0.88rem;color:#ffffff;line-height:1.8">通常のMCI対応に加え、<strong style="color:#ff6b6b">汚染拡大防止</strong>と<strong style="color:#ff6b6b">救助者の二次汚染防止</strong>が最優先事項。専門チーム到着まで待機が原則。</div>
+      <div style="font-size:0.88rem;color:#ffffff;line-height:1.8">通常のMCI対応に加え、<strong style="color:#ff6b6b">汚染拡大防止</strong>と<strong style="color:#ff6b6b">救助者の二次汚染防止</strong>が最優先事項。防護していない隊員は危険区域に入らない。救助は、防護・訓練・測定のできる専門の隊が指揮のもとで行う。</div>
     </div>
 
     <!-- サブタブ -->
@@ -1715,26 +1746,28 @@
         <div class="cbrne-col">
           <div class="cbrne-group-label">🔍 識別・症状</div>
           <ul class="checklist">
-            <li><strong>神経剤</strong>：縮瞳・流涎・気管支痙攣・筋肉痙攣・意識消失（SLUDGE症状）</li>
+            <li><strong>神経剤</strong>：縮瞳・鼻汁や流涎などの分泌増加・気管支の収縮と呼吸困難・筋線維束攣縮・けいれん・意識障害</li>
             <li><strong>びらん剤</strong>：皮膚水疱・眼痛・遅発性（数時間後に出現）</li>
             <li><strong>窒息剤</strong>：咳・チアノーゼ・肺水腫（塩素特有の刺激臭）</li>
-            <li><strong>血液剤</strong>：頭痛・痙攣・急速な意識消失（アーモンド臭）</li>
-            <li>HAZCHEM（危険物標識・オレンジパネル）を確認</li>
+            <li><strong>血液剤（青酸）</strong>：頭痛・けいれん・急速な意識消失</li>
+            <li>臭いで確かめるために近づかない（臭いを感じない人も多い）</li>
+            <li>危険物の標識（黄色い「危」・国連番号）やイエローカードを、安全な位置から確認</li>
           </ul>
         </div>
         <div class="cbrne-col">
           <div class="cbrne-group-label">🚨 対応手順</div>
           <ul class="checklist">
-            <li>専門チーム（Level A/B PPE）が対応するまで近づかない</li>
+            <li>防護していない隊員は近づかない（救助は専門の隊）</li>
             <li>風上・高台への避難誘導（風下は汚染リスク大）</li>
-            <li>除染ライン設置：乾式（衣服除去）→ 湿式（流水15分）</li>
-            <li>除染前に病院へ搬送しない（病院汚染防止）</li>
+            <li>除染：まず脱衣と拭き取り。水での除染は物質と付着の状態に応じて行う</li>
+            <li>重症者は最低限の除染（脱衣など）で搬送する場合がある。搬送先へ原因物質と除染の状況を事前に連絡</li>
           </ul>
-          <div class="cbrne-group-label" style="margin-top:1rem">💊 治療（専門医指示下）</div>
+          <div class="cbrne-group-label" style="margin-top:1rem">💊 医療機関などで行う治療（参考）</div>
           <ul class="checklist">
             <li>神経剤：アトロピン（繰り返し投与）＋ PAM（プラリドキシム）</li>
             <li>青酸系血液剤：ヒドロキソコバラミン（シアノキット）</li>
-            <li>窒息剤：酸素投与・PEEP換気・安静保持</li>
+            <li>窒息剤：酸素投与・安静（遅れて肺水腫が出ることがある）</li>
+            <li>救急隊は、防護と除染をしたうえで、救急救命処置の範囲内の処置を行う</li>
           </ul>
         </div>
       </div>
@@ -1757,15 +1790,15 @@
             <li>多数者の同時・類似症状発症が手がかり</li>
             <li>感染経路：接触感染・飛沫感染・空気感染（種類による）</li>
             <li>炭疽菌：皮膚型（黒色痂皮）・肺炎型（高致死率）</li>
-            <li>天然痘：発疹の分布（全身均一、四肢に多い）</li>
+            <li>天然痘：顔と手足に多い発疹（手のひら・足の裏にも）。同じ部位の発疹は同じ時期のものがそろう</li>
           </ul>
         </div>
         <div class="cbrne-col">
           <div class="cbrne-group-label">🚨 対応手順</div>
           <ul class="checklist">
-            <li>N95以上のマスク・ゴーグル・ガウン着用（Level C以上）</li>
-            <li>患者の隔離・コホーティング（感染経路別）</li>
-            <li>保健所・感染症指定医療機関へ即時報告</li>
+            <li>感染経路に応じた防護：N95マスク・ゴーグル・ガウン・手袋</li>
+            <li>原則として個別に隔離。同じ病原体の患者をまとめる（コホーティング）のは専門家の判断で</li>
+            <li>指令・指揮系統を通じて保健所と連携する（地域の計画による）</li>
             <li>曝露者リストの作成と追跡調査（接触者追跡）</li>
             <li>ワクチン・抗生物質の予防投与（専門機関指示）</li>
             <li>廃棄物・遺体の特殊管理（バイオハザード袋）</li>
@@ -1789,15 +1822,15 @@
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.5rem">
             <div style="background:rgba(255,214,0,0.08);border:1px solid rgba(255,214,0,0.25);border-radius:8px;padding:0.75rem;text-align:center">
               <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#ffd600">距離</div>
-              <div style="font-size:0.75rem;color:#e2e4ec;margin-top:0.25rem">線源から遠ざかる<br>距離²に反比例</div>
+              <div style="font-size:0.75rem;color:#b4bbc8;margin-top:0.25rem">線源から遠ざかる<br>距離²に反比例</div>
             </div>
             <div style="background:rgba(255,214,0,0.08);border:1px solid rgba(255,214,0,0.25);border-radius:8px;padding:0.75rem;text-align:center">
               <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#ffd600">遮蔽</div>
-              <div style="font-size:0.75rem;color:#e2e4ec;margin-top:0.25rem">コンクリート<br>鉛・土砂で遮蔽</div>
+              <div style="font-size:0.75rem;color:#b4bbc8;margin-top:0.25rem">コンクリート<br>鉛・土砂で遮蔽</div>
             </div>
             <div style="background:rgba(255,214,0,0.08);border:1px solid rgba(255,214,0,0.25);border-radius:8px;padding:0.75rem;text-align:center">
               <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#ffd600">時間</div>
-              <div style="font-size:0.75rem;color:#e2e4ec;margin-top:0.25rem">作業時間を<br>最短に</div>
+              <div style="font-size:0.75rem;color:#b4bbc8;margin-top:0.25rem">作業時間を<br>最短に</div>
             </div>
           </div>
           <ul class="checklist" style="margin-top:1rem">
@@ -1808,11 +1841,12 @@
         <div class="cbrne-col">
           <div class="cbrne-group-label">🚨 対応・治療</div>
           <ul class="checklist">
-            <li>甲状腺内部被曝：安定ヨウ素剤（医師指示下・曝露前後24時間以内が有効）</li>
-            <li>ARS（急性放射線症候群）監視：嘔吐発症時間が重症度指標（30分以内→最重症）</li>
-            <li>皮膚紅斑・脱毛・出血傾向は重症ARSのサイン</li>
-            <li>リンパ球数の経時測定（48〜72時間後が重要）</li>
-            <li>原子力規制委員会・保健所への通報義務</li>
+            <li>安定ヨウ素剤：放射性ヨウ素が甲状腺に取り込まれるのを防ぐだけ。国・自治体の指示で服用。目安は曝露の24時間前〜2時間後で、遅れるほど効果が落ちる。避難・屋内退避の代わりにはならない</li>
+            <li>ARS（急性放射線症候群）：被ばくから早い時間の嘔吐は、高線量被ばくを疑う手がかり（嘔吐の時刻を記録して伝える）</li>
+            <li>皮膚の紅斑・脱毛は局所の放射線障害のこともある。出た時刻と範囲を記録し、ARSは被ばく状況・血液検査と合わせて評価</li>
+            <li>医療機関でリンパ球数を早くから繰り返し測る（被ばく時刻を伝える）</li>
+            <li>連絡は指令・指揮系統を通じて、地域の計画に沿って行う</li>
+            <li>被ばくしただけの人から、ほかの人が汚染されることはない。命に関わるけがの処置を優先する</li>
           </ul>
         </div>
       </div>
@@ -1845,8 +1879,8 @@
             <li>爆発物処理班（EOD）確認後に救助活動開始</li>
             <li>フラッシュバーン（熱線熱傷）・眼球損傷の評価</li>
             <li><strong>核爆発</strong>：EMP（電磁パルス）による通信・医療機器障害に備える</li>
-            <li>核爆発の場合：爆心地から直ちに避難（距離優先）</li>
-            <li>警察・自衛隊・原子力規制委員会との連携必須</li>
+            <li>核爆発の場合：まず近くの頑丈な建物や地下に退避し、情報と指示を待ってから避難する</li>
+            <li>警察・自衛隊などの関係機関と連携する</li>
           </ul>
         </div>
       </div>
@@ -1866,41 +1900,41 @@
           <div class="cbrne-group-label">📌 通常との主な違い</div>
           <ul class="checklist">
             <li>「救命可能性」に加え<strong>汚染状況・除染完了の有無</strong>が判断軸に加わる</li>
-            <li>除染前の傷病者は医療機関への搬送が原則禁止</li>
+            <li>重症者は最低限の除染で搬送する場合がある。搬送先に事前連絡する</li>
             <li>汚染タグ（赤/黄/緑/黒 × 汚染あり/なし）を組み合わせて管理</li>
           </ul>
           <div class="cbrne-group-label" style="margin-top:1rem">🏷 汚染タグの運用</div>
           <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.5rem">
             <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0.75rem;background:rgba(229,57,53,0.08);border:1px solid rgba(229,57,53,0.3);border-radius:6px">
               <span style="color:#e53935;font-weight:700;width:60px;flex-shrink:0">赤＋汚染</span>
-              <span style="font-size:0.82rem;color:#e2e4ec">除染ライン最優先通過 → 除染後に治療</span>
+              <span style="font-size:0.82rem;color:#b4bbc8">除染を最優先（脱衣など最低限）。必要な救命処置は防護して並行</span>
             </div>
             <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0.75rem;background:rgba(255,214,0,0.08);border:1px solid rgba(255,214,0,0.3);border-radius:6px">
               <span style="color:#ffd600;font-weight:700;width:60px;flex-shrink:0">黄＋汚染</span>
-              <span style="font-size:0.82rem;color:#e2e4ec">除染ライン → 処置エリアへ順次移動</span>
+              <span style="font-size:0.82rem;color:#b4bbc8">除染ライン → 処置エリアへ順次移動</span>
             </div>
             <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0.75rem;background:rgba(0,200,83,0.08);border:1px solid rgba(0,200,83,0.3);border-radius:6px">
               <span style="color:#00c853;font-weight:700;width:60px;flex-shrink:0">緑＋汚染</span>
-              <span style="font-size:0.82rem;color:#e2e4ec">歩行除染（自己除染）ラインへ誘導</span>
+              <span style="font-size:0.82rem;color:#b4bbc8">歩行除染（自己除染）ラインへ誘導</span>
             </div>
             <div style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem 0.75rem;background:rgba(80,80,90,0.15);border:1px solid rgba(100,100,120,0.3);border-radius:6px">
               <span style="color:#888;font-weight:700;width:60px;flex-shrink:0">黒＋汚染</span>
-              <span style="font-size:0.82rem;color:#e2e4ec">汚染遺体管理区域で個別に汚染管理継続</span>
+              <span style="font-size:0.82rem;color:#b4bbc8">死亡者は汚染遺体として管理。生存している救命困難者は再評価と苦痛を和らげる対応</span>
             </div>
           </div>
         </div>
         <div class="cbrne-col">
           <div class="cbrne-group-label">⚗️ 化学剤特有の修正</div>
           <ul class="checklist">
-            <li>神経剤大量曝露 → 痙攣・無呼吸でも除染＋アトロピン投与で回復の可能性あり（<span style="color:#888">黒タグ</span>を急がない）</li>
+            <li>神経剤の大量曝露 → けいれん・無呼吸でも回復の可能性あり（<span style="color:#888">黒タグ</span>を急がない）。防護下で気道確保・補助換気・吸引を除染と並行し、医療者のアトロピン・PAM投与につなぐ</li>
             <li>歩行可能でも縮瞳・流涎があれば「<span style="color:#ffd600">黄</span>」以上に変更</li>
             <li>症状なしでも曝露確認者は「<span style="color:#00c853">緑</span>」として経過観察</li>
             <li>びらん剤：受傷後数時間で症状悪化（遅発性）→ 再トリアージ必須</li>
           </ul>
           <div class="cbrne-group-label" style="margin-top:1rem">☢️ 放射線特有の修正（ARS）</div>
           <ul class="checklist">
-            <li>嘔吐発症時間が重症度指標（30分以内→最重症）</li>
-            <li>外見正常でも高線量曝露者は「<span style="color:#ffd600">黄</span>」として管理</li>
+            <li>早い時間の嘔吐は高線量被ばくの手がかり（時刻を記録）</li>
+            <li>外見が正常でも高線量の被ばくが疑われる人は、専門家に相談して経過を見る</li>
             <li>外傷＋放射線の複合損傷は両方を同時評価</li>
           </ul>
         </div>
@@ -1913,22 +1947,24 @@
         <div style="font-size:2rem;width:60px;text-align:center">🚿</div>
         <div>
           <div class="cbrne-panel-title">除染ラインの設置と運用</div>
-          <div class="cbrne-panel-sub">ウォームゾーン内に設置。除染完了前の搬送禁止。</div>
+          <div class="cbrne-panel-sub">ウォームゾーン内に設置。方法は物質と状態で選ぶ。</div>
         </div>
       </div>
       <div class="cbrne-body">
         <div class="cbrne-col">
-          <div class="cbrne-group-label">① 乾式除染（全員に最初に実施）</div>
+          <div class="cbrne-group-label">① 脱衣・拭き取り（まず行う）</div>
           <ul class="checklist">
+            <li>腐食性の物質が皮膚や眼に付いたときは、すぐに水で洗う（脱衣を待たない）。水と反応する物質・粉体は物質ごとの手順に従う</li>
             <li>衣服・装備の除去で約80%の汚染を除去</li>
             <li>除去した衣服はビニール袋に密封して保管</li>
             <li>皮膚の粉塵・液滴はタオルや布で拭き取る（こすらない）</li>
-            <li>時間が許せば直ちに湿式除染へ移行</li>
+            <li>液体や腐食性の物質が付いているときなどは、水による除染へ</li>
           </ul>
-          <div class="cbrne-group-label" style="margin-top:1rem">② 湿式除染（乾式後に実施）</div>
+          <div class="cbrne-group-label" style="margin-top:1rem">② 水による除染（必要なときに）</div>
           <ul class="checklist">
-            <li>大量の流水で全身を洗浄（最低15分間）</li>
-            <li>眼・鼻・口腔内も流水でよく洗う</li>
+            <li>流水で全身を洗う（時間と方法は物質で決める）</li>
+            <li>眼に付いたときは眼を洗う。口や鼻に水を流し込まない</li>
+            <li>保温とプライバシーに配慮する</li>
             <li>歩行可能者：自己除染ライン（シャワー型）</li>
             <li>歩行不能者：担架・ストレッチャー除染ライン</li>
             <li>除染廃液の流出防止措置（土嚢・シート）が必要</li>
@@ -1938,12 +1974,12 @@
           <div class="cbrne-group-label">🏷 除染完了の確認と搬送</div>
           <ul class="checklist">
             <li>除染完了後に「除染済タグ／リストバンド」を装着</li>
-            <li>タグなし傷病者の搬送・病院受け入れは原則拒否</li>
+            <li>搬送先には原因物質・行った除染・残っている汚染の可能性を事前に伝える</li>
             <li>再汚染防止のため清潔毛布・タオルで体を保護してから搬送</li>
           </ul>
           <div class="cbrne-group-label" style="margin-top:1rem">🗺 ゾーニング（除染配置）</div>
           <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.5rem">
-            <div style="padding:0.5rem 0.75rem;background:rgba(229,57,53,0.1);border-left:3px solid #e53935;border-radius:4px;font-size:0.82rem"><strong style="color:#e53935">ホット</strong>：汚染源・救助不可エリア</div>
+            <div style="padding:0.5rem 0.75rem;background:rgba(229,57,53,0.1);border-left:3px solid #e53935;border-radius:4px;font-size:0.82rem"><strong style="color:#e53935">ホット</strong>：汚染源の周り。防護した専門の隊だけが入る</div>
             <div style="padding:0.5rem 0.75rem;background:rgba(255,214,0,0.1);border-left:3px solid #ffd600;border-radius:4px;font-size:0.82rem"><strong style="color:#ffd600">ウォーム</strong>：除染ライン設置エリア</div>
             <div style="padding:0.5rem 0.75rem;background:rgba(0,200,83,0.1);border-left:3px solid #00c853;border-radius:4px;font-size:0.82rem"><strong style="color:#00c853">コールド</strong>：除染完了者・指揮所・救護所</div>
           </div>
@@ -1964,7 +2000,7 @@
         <div class="ppe-row" style="border-left:4px solid #e53935">
           <div class="ppe-level" style="color:#e53935">Level A</div>
           <div class="ppe-info">
-            <div class="ppe-title">最高レベル（皮膚・呼吸器・眼を完全保護）</div>
+            <div class="ppe-title">最高レベル（皮膚・呼吸器・眼を最大限に保護）</div>
             <div class="ppe-scene">化学剤ホットゾーン内での救助・サンプリング</div>
             <div class="ppe-gear">全身封入型化学防護服（SCBA内蔵）＋化学防護手袋・ブーツ</div>
           </div>
@@ -1973,7 +2009,7 @@
           <div class="ppe-level" style="color:#ff6d00">Level B</div>
           <div class="ppe-info">
             <div class="ppe-title">呼吸器：最高 / 皮膚：中程度</div>
-            <div class="ppe-scene">化学剤ウォームゾーン・蒸気圧低い液体化学剤</div>
+            <div class="ppe-scene">呼吸器の保護が最も必要で、皮膚への危険は比較的低いとき</div>
             <div class="ppe-gear">化学防護服（非封入型）＋ SCBA ＋ 防護手袋・ブーツ</div>
           </div>
         </div>
@@ -1981,8 +2017,9 @@
           <div class="ppe-level" style="color:#ffd600">Level C</div>
           <div class="ppe-info">
             <div class="ppe-title">呼吸器：中程度 / 皮膚：中程度</div>
-            <div class="ppe-scene">除染後エリア・生物剤対応・放射線コールドゾーン</div>
-            <div class="ppe-gear">防護服 ＋ PAPR（電動ファン付）または N95 ＋ 防護手袋</div>
+            <div class="ppe-scene">物質と濃度が分かっていて、合う吸収缶を選べるとき</div>
+            <div class="ppe-gear">防護服 ＋ 物質に合った吸収缶つきの防護マスク（またはPAPR）＋ 防護手袋</div>
+            <div class="ppe-scene" style="margin-top:4px">吸収缶式マスク・PAPRは酸素を送らない。酸素濃度が十分で、濃度が使用限界内のときだけ使う。N95は粒子用で、ガス・蒸気は防げない</div>
           </div>
         </div>
         <div class="ppe-row" style="border-left:4px solid #00c853">
@@ -1998,7 +2035,8 @@
 
   </section>
 
-
+  <div class="src-note"><strong>このアプリの基準について</strong><br>
+  START法は国内で広く使われる修正START法、PAT法の数値は国内の消防で使われている一例です。除染・防護・安定ヨウ素剤は、消防庁・厚生労働省の化学災害の資料と原子力規制委員会の情報をもとにしています。<strong>地域の多数傷病者対応の要綱・プロトコールがある場合は、そちらを優先してください。</strong>（2026年11月 見直し）</div>
 </main>
 <script>
   function showPat(id, btn) {
@@ -2010,8 +2048,8 @@
   }
 
   function showCbrne(id, btn) {
-    document.querySelectorAll('.cbrne-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#cbrne .cbrne-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('#cbrne .ctab').forEach(b => b.classList.remove('active'));
     document.getElementById('cbrne-' + id).classList.add('active');
     btn.classList.add('active');
   }
@@ -2030,6 +2068,7 @@
 
   function generateReport() {
     const m = document.getElementById('f_m').value || '（未入力）';
+    const m2 = document.getElementById('f_m2').value || '（未入力）';
     const e = document.getElementById('f_e').value || '（未入力）';
     const t = document.getElementById('f_t').value || '（未入力）';
     const h = document.getElementById('f_h').value || '（未入力）';
@@ -2046,8 +2085,9 @@
       '生成日時：' + timeStr,
       '╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏╏',
       '',
-      '[M] 報告者',
+      '[M] 報告者・宣言',
       '　' + m,
+      '　' + m2,
       '',
       '[E] 位置',
       '　' + e,
@@ -2075,15 +2115,48 @@
     const out = document.getElementById('reportOutput');
     out.textContent = report;
     out.classList.add('show');
+    document.getElementById('copyBtn').style.display = '';
+    document.getElementById('copyMsg').textContent = '';
   }
 
+  function copyReport() {
+    const text = document.getElementById('reportOutput').textContent;
+    const msg = document.getElementById('copyMsg');
+    const done = () => { msg.textContent = 'コピーしました'; };
+    const fallback = () => {
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { msg.textContent = 'コピーできませんでした。長押しで選んでください'; }
+      ta.remove();
+    };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  }
+
+  // 入力した内容はこの端末に残す（クリアで消す）
+  const FIELDS = ['f_m','f_m2','f_e','f_t','f_h','f_a','f_n','f_e2'];
+  const LS = 'tasuu_methane';
+  try {
+    const saved = JSON.parse(localStorage.getItem(LS) || '{}');
+    FIELDS.forEach(id => { if (saved[id]) document.getElementById(id).value = saved[id]; });
+  } catch (e) {}
+  FIELDS.forEach(id => document.getElementById(id).addEventListener('input', () => {
+    const data = {};
+    FIELDS.forEach(f => { data[f] = document.getElementById(f).value; });
+    try { localStorage.setItem(LS, JSON.stringify(data)); } catch (e) {}
+  }));
+
   function clearForm() {
-    ['f_m','f_e','f_t','f_h','f_a','f_n','f_e2'].forEach(function(id) {
+    if (!confirm('入力した内容と報告文を消しますか？')) return;
+    FIELDS.forEach(function(id) {
       document.getElementById(id).value = '';
     });
+    try { localStorage.removeItem(LS); } catch (e) {}
     const out = document.getElementById('reportOutput');
     out.textContent = '';
     out.classList.remove('show');
+    document.getElementById('copyBtn').style.display = 'none';
+    document.getElementById('copyMsg').textContent = '';
   }
 </script>
 </body>

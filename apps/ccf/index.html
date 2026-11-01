@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>/* まとめアプリ内：オフライン保存はまとめアプリ側で行う */if('serviceWorker' in navigator){try{Object.defineProperty(navigator.serviceWorker,'register',{value:function(){return Promise.reject(new Error('suite'))}})}catch(e){}}</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>CCF中断時間ストップウォッチ</title>
+<style>
+  :root{
+    --navy:#1F2D3D; --orange:#D9531E; --green:#2E8B57; --red:#C0392B; --dark-red:#7a1010;
+    --ink:#16212b; --muted:#5b6672; --line:#d5dbe1; --bg:#f4f5f6;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:"BIZ UDPゴシック","Meiryo","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;}
+  body{min-height:100vh;}
+  .screen{display:none;max-width:760px;margin:0 auto;padding:16px 16px 40px;}
+  .screen.active{display:block;}
+  h1{font-size:26px;margin:4px 0 2px;color:var(--navy);}
+  .sub{font-size:15px;color:var(--muted);margin:0 0 14px;line-height:1.6;}
+  h2{font-size:18px;margin:22px 0 10px;color:var(--navy);}
+  .btn{display:block;width:100%;border:none;border-radius:14px;font-size:22px;font-weight:700;
+    padding:18px 10px;margin-top:16px;color:#fff;background:var(--navy);cursor:pointer;
+    touch-action:manipulation;font-family:inherit;}
+  .btn.sub-btn{background:#fff;color:var(--navy);border:2px solid var(--navy);}
+  .btn.ghost{background:transparent;color:var(--muted);border:none;font-size:16px;font-weight:400;padding:12px;}
+  .btn.end{background:#fff;color:var(--navy);border:2px solid var(--navy);font-size:20px;padding:14px 10px;}
+  .setting{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:16px;
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .setting input{width:70px;font-size:20px;padding:6px 8px;border:2px solid var(--line);border-radius:8px;font-family:inherit;}
+  .timer{font-size:72px;font-weight:700;text-align:center;margin:10px 0 0;color:var(--navy);
+    font-variant-numeric:tabular-nums;}
+  .timer-label{text-align:center;color:var(--muted);font-size:16px;margin:0;}
+  .live{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:10px 0 0;font-size:20px;font-weight:700;
+    color:var(--navy);font-variant-numeric:tabular-nums;}
+  .live span{background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 12px;}
+  #toggleBtn{display:flex;width:100%;min-height:46vh;border:none;border-radius:20px;
+    margin-top:14px;color:#fff;font-weight:700;font-family:inherit;cursor:pointer;
+    touch-action:manipulation;user-select:none;-webkit-user-select:none;
+    flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+  #toggleBtn .big{font-size:56px;line-height:1.1;}
+  #toggleBtn .small{font-size:22px;font-weight:400;}
+  #toggleBtn .cur{font-size:30px;font-variant-numeric:tabular-nums;min-height:1.2em;}
+  #toggleBtn.pause{background:var(--red);}
+  #toggleBtn.compress{background:var(--green);}
+  #startBtn{min-height:40vh;font-size:44px;border-radius:20px;background:var(--navy);}
+  .key{font-size:13px;color:var(--muted);text-align:center;margin:8px 0 0;}
+  .result{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:12px;}
+  .main-num{font-size:80px;font-weight:700;color:var(--navy);text-align:center;margin:6px 0 0;
+    font-variant-numeric:tabular-nums;line-height:1.1;}
+  .main-num small{font-size:28px;margin-left:6px;}
+  .main-label{text-align:center;color:var(--muted);font-size:16px;margin:0 0 14px;}
+  .row{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);
+    padding:12px 0;font-size:19px;}
+  .row span:first-child{color:var(--muted);}
+  .row b{color:var(--navy);text-align:right;}
+  table{border-collapse:collapse;width:100%;font-size:18px;font-variant-numeric:tabular-nums;}
+  th,td{border-bottom:1px solid var(--line);padding:9px 6px;text-align:left;}
+  th{font-size:14px;color:var(--muted);font-weight:400;}
+  td.num,th.num{text-align:right;}
+  tr.first td{color:var(--muted);}
+  .mark{display:inline-block;background:var(--dark-red);color:#fff;border-radius:4px;padding:0 6px;font-size:14px;}
+  .bar{position:relative;height:36px;background:var(--green);border:1px solid #555;border-radius:4px;overflow:hidden;margin-top:6px;}
+  .bar .seg{position:absolute;top:0;bottom:0;background:var(--red);}
+  .bar .seg.long{background:var(--dark-red);}
+  .bar .seg.first{background:#9aa3ab;}
+  .ticks{position:relative;height:22px;font-size:12px;color:var(--muted);}
+  .ticks span{position:absolute;transform:translateX(-50%);white-space:nowrap;}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);}
+  .legend i{display:inline-block;width:16px;height:12px;vertical-align:-1px;margin-right:4px;border:1px solid #555;}
+  .msg{border-radius:12px;padding:12px 14px;margin-top:12px;font-size:16px;background:#fff4e5;color:#8a4b00;}
+  .notice{font-size:14px;color:var(--muted);margin-top:18px;line-height:1.6;}
+  .overlay{position:fixed;inset:0;background:rgba(22,33,43,.55);display:none;align-items:center;
+    justify-content:center;padding:20px;z-index:50;}
+  .overlay.on{display:flex;}
+  .dialog{background:#fff;border-radius:16px;padding:22px;max-width:420px;width:100%;}
+  .dialog p{font-size:20px;line-height:1.6;margin:0 0 6px;}
+  .dialog .btn{margin-top:12px;}
+  @media (min-width:700px){
+    .timer{font-size:96px;}
+    #toggleBtn .big{font-size:72px;}
+  }
+  @media print{
+    body{background:#fff;}
+    .screen{padding:0;max-width:none;}
+    .noprint,.btn{display:none !important;}
+    .result{border:1px solid #999;padding:10px;break-inside:avoid;}
+    .main-num{font-size:44px;}
+    table{font-size:13px;} th,td{padding:4px;}
+    .row{font-size:14px;padding:6px 0;}
+    .bar,.bar .seg,.legend i,.mark{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+
+<!-- 画面1:開始前 -->
+<div id="screen1" class="screen active">
+  <h1>CCF中断時間ストップウォッチ</h1>
+  <p class="sub">AEDの音声を聞きながら、胸骨圧迫の「圧迫中」と「中断中」をボタンで切り替えます。終わると、中断時間の合計と、いつ中断したかのタイムテーブルが出ます。入力はどこにも保存されません。</p>
+  <div class="setting noprint">長い中断の目印:<input id="longSec" inputmode="numeric" value="10">秒を超えたら印をつける</div>
+  <p class="sub" style="margin-top:14px">音声の始まりに合わせて「開始」を押します。始まりは「中断中」です。</p>
+  <button class="btn" id="startBtn">開始</button>
+</div>
+
+<!-- 画面2:測定 -->
+<div id="screen2" class="screen">
+  <div class="timer" id="timer">0:00</div>
+  <p class="timer-label">開始からの時間</p>
+  <div class="live">
+    <span>中断合計 <b id="liveTotal">0</b>秒</span>
+    <span>中断 <b id="liveCount">0</b>回</span>
+  </div>
+  <button id="toggleBtn" class="pause" type="button">
+    <span class="big" id="stateText">中断中</span>
+    <span class="cur" id="curText"></span>
+    <span class="small" id="stateHint">圧迫を始めたら押す</span>
+  </button>
+  <p class="key">パソコンでは、スペースキーでも切り替えられます。</p>
+  <button class="btn end" id="endBtn">終了</button>
+  <button class="btn ghost" id="abortBtn">測定をやめて最初に戻る</button>
+</div>
+
+<!-- 画面3:結果 -->
+<div id="screen3" class="screen">
+  <h1>結果</h1>
+  <div class="result">
+    <p class="main-num" id="rTotal">--</p>
+    <p class="main-label">中断時間合計(秒)</p>
+    <div class="row"><span>測定時間</span><b id="rDuration"></b></div>
+    <div class="row"><span>CCF</span><b id="rCcf"></b></div>
+    <div class="row"><span>うち、開始から最初の圧迫まで</span><b id="rFirst"></b></div>
+    <div class="row"><span>中断の回数(最初の圧迫の後)</span><b id="rCount"></b></div>
+    <div class="row"><span>いちばん長い中断</span><b id="rMax"></b></div>
+    <div class="row"><span id="rLongLab">10秒を超えた中断</span><b id="rLong"></b></div>
+  </div>
+  <div id="rMsg"></div>
+  <p class="notice">様式2のCPAタブ欄外に入れるときは、「心停止中の活動時間(秒)」に測定時間の秒数、「中断時間合計(秒)」に上の合計を入れます(自己心拍が再開していた時間がある場合は、その分を測定時間から除いてください)。</p>
+
+  <div class="result">
+    <h2 style="margin-top:0">タイムテーブル</h2>
+    <table>
+      <thead><tr><th>No</th><th>開始から</th><th class="num">長さ(秒)</th><th></th></tr></thead>
+      <tbody id="rTable"></tbody>
+    </table>
+    <h2>時間の帯</h2>
+    <div class="legend">
+      <span><i style="background:var(--green)"></i>圧迫中</span>
+      <span><i style="background:#9aa3ab"></i>開始から最初の圧迫まで</span>
+      <span><i style="background:var(--red)"></i>中断</span>
+      <span><i style="background:var(--dark-red)"></i>目印を超えた中断</span>
+    </div>
+    <div class="bar" id="bar"></div>
+    <div class="ticks" id="ticks"></div>
+  </div>
+
+  <button class="btn" id="printBtn">印刷する</button>
+  <button class="btn sub-btn" id="againBtn">もう一度測る</button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="dialog">
+    <p id="dialogMsg"></p>
+    <button class="btn" id="dialogYes">はい</button>
+    <button class="btn sub-btn" id="dialogNo">いいえ</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+
+  // toggles: 状態を切り替えた時刻(開始からのms、昇順)。開始時は「中断中」。
+  var t0 = 0, toggles = [], running = false, tick = null, endMs = 0, wakeLock = null;
+
+  function now() { return performance.now() - t0; }
+  function isPause() { return toggles.length % 2 === 0; }
+  function mmss(sec) { var m = Math.floor(sec / 60), s = Math.floor(sec % 60); return m + ":" + (s < 10 ? "0" : "") + s; }
+  function elapsedJa(sec) { var m = Math.floor(sec / 60), s = sec % 60; return m + "分" + (s < 10 ? "0" : "") + s + "秒"; }
+
+  function show(id) {
+    ["screen1", "screen2", "screen3"].forEach(function (s) { $(s).classList.toggle("active", s === id); });
+    window.scrollTo(0, 0);
+  }
+
+  // 中断の区間([始まり, 終わり] ms)を作る。最初の区間は「開始から最初の圧迫まで」
+  function pauseSegments(endAt) {
+    var segs = [], start = 0;
+    for (var i = 0; i < toggles.length; i++) {
+      if (i % 2 === 0) { segs.push([start, toggles[i]]); }
+      else { start = toggles[i]; }
+    }
+    if (toggles.length % 2 === 0) segs.push([start, endAt]);
+    return segs;
+  }
+
+  function render() {
+    var t = now();
+    $("timer").textContent = mmss(t / 1000);
+    var segs = pauseSegments(t), total = 0;
+    segs.forEach(function (s) { total += s[1] - s[0]; });
+    $("liveTotal").textContent = Math.floor(total / 1000);
+    $("liveCount").textContent = Math.floor(toggles.length / 2); // 最初の圧迫の後に止まった回数
+    if (isPause()) {
+      var cur = t - (toggles.length ? toggles[toggles.length - 1] : 0);
+      $("curText").textContent = Math.floor(cur / 1000) + "秒";
+    } else {
+      $("curText").textContent = "";
+    }
+  }
+
+  function setState() {
+    var p = isPause(), b = $("toggleBtn");
+    b.className = p ? "pause" : "compress";
+    $("stateText").textContent = p ? "中断中" : "圧迫中";
+    $("stateHint").textContent = p ? "圧迫を再開したら押す" : "圧迫が止まったら押す";
+    if (p && toggles.length === 0) $("stateHint").textContent = "圧迫を始めたら押す";
+  }
+
+  function start() {
+    toggles = []; t0 = performance.now(); running = true;
+    setState(); show("screen2"); render();
+    tick = setInterval(render, 200);
+    try { if (navigator.wakeLock) navigator.wakeLock.request("screen").then(function (w) { wakeLock = w; }, function () {}); } catch (e) {}
+  }
+
+  function toggle() {
+    if (!running) return;
+    var t = now();
+    if (toggles.length && t - toggles[toggles.length - 1] < 250) return; // 二度押し防止
+    toggles.push(t);
+    setState(); render();
+  }
+
+  function stop() {
+    running = false; endMs = now();
+    clearInterval(tick);
+    try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch (e) {}
+  }
+
+  function finish() {
+    stop();
+    // 切り替えの時刻を1秒単位にそろえてから計算する(長さの合計と表示が必ず一致するように)
+    var endS = Math.round(endMs / 1000);
+    var ts = toggles.map(function (x) { return Math.min(endS, Math.round(x / 1000)); });
+    var segs = [], st = 0;
+    for (var i = 0; i < ts.length; i++) {
+      if (i % 2 === 0) segs.push([st, ts[i]]); else st = ts[i];
+    }
+    if (ts.length % 2 === 0) segs.push([st, endS]);
+
+    var longSec = parseInt($("longSec").value, 10); if (isNaN(longSec) || longSec < 0) longSec = 10;
+    var compressed = ts.length > 0;
+    var first = segs[0], rest = segs.slice(1).filter(function (s) { return s[1] - s[0] > 0; });
+    var firstLen = first[1] - first[0];
+    var total = firstLen + rest.reduce(function (a, s) { return a + s[1] - s[0]; }, 0);
+
+    $("rTotal").innerHTML = total + "<small>秒</small>";
+    $("rDuration").textContent = endS + "秒(" + elapsedJa(endS) + ")";
+    $("rCcf").textContent = endS > 0 ? ((endS - total) / endS * 100).toFixed(1) + "%" : "—";
+    $("rFirst").textContent = compressed ? firstLen + "秒" : "圧迫開始なし";
+    $("rCount").textContent = rest.length + "回";
+    var mx = rest.reduce(function (m, s) { return (s[1] - s[0]) > (m[1] - m[0]) ? s : m; }, [0, 0]);
+    $("rMax").textContent = rest.length ? (mx[1] - mx[0]) + "秒(開始から" + elapsedJa(mx[0]) + ")" : "—";
+    var longs = rest.filter(function (s) { return s[1] - s[0] > longSec; });
+    $("rLongLab").textContent = longSec + "秒を超えた中断";
+    $("rLong").textContent = longs.length + "回(計" + longs.reduce(function (a, s) { return a + s[1] - s[0]; }, 0) + "秒)";
+    $("rMsg").innerHTML = compressed ? "" : '<div class="msg">「圧迫中」に一度も切り替わらなかったため、測定時間のすべてを中断として数えています。</div>';
+
+    // タイムテーブル
+    var tb = $("rTable"); tb.innerHTML = "";
+    var tr = document.createElement("tr"); tr.className = "first";
+    tr.innerHTML = "<td>—</td><td>開始から最初の圧迫まで</td><td class='num'>" + firstLen + "</td><td></td>";
+    tb.appendChild(tr);
+    rest.forEach(function (s, i) {
+      var len = s[1] - s[0], r = document.createElement("tr");
+      r.innerHTML = "<td>" + (i + 1) + "</td><td>" + elapsedJa(s[0]) + "</td><td class='num'>" + len + "</td><td>" +
+        (len > longSec ? "<span class='mark'>" + longSec + "秒超</span>" : "") + "</td>";
+      tb.appendChild(r);
+    });
+    var sum = document.createElement("tr");
+    sum.innerHTML = "<td></td><td><b>合計</b></td><td class='num'><b>" + total + "</b></td><td></td>";
+    tb.appendChild(sum);
+
+    // 時間の帯
+    var bar = $("bar"), ticks = $("ticks"); bar.innerHTML = ""; ticks.innerHTML = "";
+    if (endS > 0) {
+      segs.forEach(function (s, i) {
+        if (s[1] - s[0] <= 0) return;
+        var d = document.createElement("div");
+        d.className = "seg" + (i === 0 ? " first" : (s[1] - s[0] > longSec ? " long" : ""));
+        d.style.left = (s[0] / endS * 100) + "%";
+        d.style.width = Math.max(0.3, (s[1] - s[0]) / endS * 100) + "%";
+        bar.appendChild(d);
+      });
+      var step = endS <= 600 ? 60 : endS <= 1800 ? 120 : endS <= 3600 ? 300 : 600;
+      for (var t = 0; t <= endS; t += step) {
+        var sp = document.createElement("span"); sp.style.left = (t / endS * 100) + "%"; sp.textContent = (t / 60) + "分";
+        ticks.appendChild(sp);
+      }
+    }
+    show("screen3");
+  }
+
+  // 確認ダイアログ
+  var onYes = null;
+  function ask(msg, yes) { $("dialogMsg").textContent = msg; onYes = yes; $("overlay").classList.add("on"); }
+  $("dialogYes").addEventListener("click", function () { $("overlay").classList.remove("on"); var f = onYes; onYes = null; if (f) f(); });
+  $("dialogNo").addEventListener("click", function () { $("overlay").classList.remove("on"); onYes = null; });
+
+  $("startBtn").addEventListener("click", start);
+  $("toggleBtn").addEventListener("pointerdown", function (e) { e.preventDefault(); toggle(); });
+  $("toggleBtn").addEventListener("click", function (e) { e.preventDefault(); });
+  $("endBtn").addEventListener("click", function () {
+    if (!running) return;
+    ask("測定を終了して、結果を出しますか?", finish);
+  });
+  $("abortBtn").addEventListener("click", function () {
+    ask("測定をやめて最初に戻りますか?(結果は残りません)", function () { stop(); show("screen1"); });
+  });
+  $("printBtn").addEventListener("click", function () { window.print(); });
+  $("againBtn").addEventListener("click", function () {
+    ask("結果を消して、最初に戻りますか?", function () { show("screen1"); });
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.code === "Space" && running && !$("overlay").classList.contains("on")) { e.preventDefault(); toggle(); }
+  });
+  window.addEventListener("beforeunload", function (e) {
+    if (running) { e.preventDefault(); e.returnValue = ""; }
+  });
+})();
+</script>
+</body>
+</html>

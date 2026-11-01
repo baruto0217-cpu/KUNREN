@@ -92,6 +92,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
       <div class="app-desc">活動の時刻を記録・PDF出力</div>
       <div class="app-tag">TIME</div>
     </div>
+    <div class="app-card" style="--c:#2E8B57" onclick="openApp('ccf')">
+      <div class="app-icon">⏸️</div>
+      <div class="app-name">CCF中断時間</div>
+      <div class="app-desc">AEDの音声を聞いて中断を測る</div>
+      <div class="app-tag">CCF</div>
+    </div>
     </div>
   </div>
   <div class="group">
@@ -180,6 +186,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
   <div class="frame-body"><iframe id="iframe-time" src="" title="タイムスタンプ記録"></iframe></div>
 </div>
 
+<div class="app-frame" id="frame-ccf">
+  <div class="frame-header" style="background:#2E8B57">
+    <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
+    <span class="frame-title">⏸️ CCF中断時間</span>
+  </div>
+  <div class="frame-body"><iframe id="iframe-ccf" src="" title="CCF中断時間"></iframe></div>
+</div>
+
 <div class="app-frame" id="frame-check">
   <div class="frame-header" style="background:#15803d">
     <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
@@ -228,6 +242,7 @@ const APP_SRCS = {
   jitsugi: 'apps/jitsugi/index.html',
   gaisho: 'apps/gaisho/index.html',
   time: 'apps/time/index.html',
+  ccf: 'apps/ccf/index.html',
   check: 'apps/check/index.html',
   drag: 'apps/drag/index.html',
   tasuu: 'apps/tasuu/index.html',

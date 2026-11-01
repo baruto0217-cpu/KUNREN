@@ -1,7 +1,7 @@
 {
   "name": "救急 訓練・現場ツール",
   "short_name": "訓練・現場",
-  "description": "救急シミュレーション管理、PEMECシミュレーション、CPA Training、実技試験評価、外傷観察評価、タイムスタンプ記録、活動記録票チェック、薬剤逆引き警戒、集団災害対応、自火報対応ガイド、搬送先検索",
+  "description": "救急シミュレーション管理、PEMECシミュレーション、CPA Training、実技試験評価、外傷観察評価、タイムスタンプ記録、CCF中断時間、活動記録票チェック、薬剤逆引き警戒、集団災害対応、自火報対応ガイド、搬送先検索",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0d1321",

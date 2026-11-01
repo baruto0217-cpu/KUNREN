@@ -1,9 +1,10 @@
 // Service Worker — 救急 訓練・現場ツール
 // 同じ公開先(baruto0217-cpu.github.io)のほかのアプリの保存には触らない（kunren- で始まるものだけ扱う）
 const CACHE_PREFIX = 'kunren-';
-const CACHE_NAME = CACHE_PREFIX + 'v3';
+const CACHE_NAME = CACHE_PREFIX + 'v4';
 const FILES = [
   './',
+  './apps/ccf/index.html',
   './apps/check/index.html',
   './apps/cpa/index.html',
   './apps/drag/index.html',

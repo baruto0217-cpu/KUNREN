@@ -143,6 +143,15 @@ button:active{opacity:0.7;}
 .rec-ts{font-size:10px;color:#94a3b8;margin-bottom:2px;}
 .rec-name{font-weight:700;font-size:13px;color:#1e293b;}
 .rec-btns{display:flex;gap:6px;}
+.rec-tabs{display:flex;gap:6px;margin-bottom:10px;}
+.rec-tab{flex:1;padding:8px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+.rec-tab.on{background:#1e293b;color:#fff;border-color:#1e293b;}
+.rec-note{font-size:11px;color:#64748b;margin-bottom:8px;line-height:1.6;}
+.rec-badge{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:5px;vertical-align:1px;}
+.rec-badge.wait{background:#fef3c7;color:#92400e;}
+.rec-badge.sent{background:#dcfce7;color:#166534;}
+.rec-badge.mine{background:#dbeafe;color:#1e40af;}
+.rec-who{font-size:10px;color:#64748b;margin-top:1px;}
 .rec-load{padding:7px 13px;background:#eff6ff;color:#1d4ed8;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;}
 .cf-msg{font-size:13px;font-weight:600;color:#1e293b;text-align:center;margin-bottom:20px;white-space:pre-wrap;line-height:1.7;}
 .cf-btns{display:flex;justify-content:center;gap:10px;}
@@ -320,10 +329,16 @@ svg{flex-shrink:0;}
 <div class="modal-bg ht" id="modal-rec">
   <div class="modal">
     <div class="modal-hd">
-      <span class="modal-title">保存された記録一覧</span>
+      <span class="modal-title">保存された記録</span>
       <button onclick="closeModal('modal-rec')" style="background:none;border:none;cursor:pointer;color:#94a3b8;display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div class="modal-body" id="rec-list"></div>
+    <div class="modal-body">
+      <div class="rec-tabs">
+        <button class="rec-tab on" id="rt-local" onclick="showRecTab('local')">この端末の記録</button>
+        <button class="rec-tab" id="rt-shared" onclick="showRecTab('shared')">みんなの記録</button>
+      </div>
+      <div id="rec-list"></div>
+    </div>
   </div>
 </div>
 <div class="modal-bg ht" id="modal-cf">
@@ -559,69 +574,161 @@ function updateResult(){
   });
 }
 
-/* ── 保存・呼び出し（localStorage） ── */
+/* ── 保存・呼び出し ──
+   この端末：localStorage（電波なしでも使える）。みんなの記録：GAS（SHARE_URL）に送り、どの端末からでも読み込める。
+   電波がないときは「未送信」として残し、電波が戻ったら送る。削除・上書きは保存した端末（端末ID）からだけ。 */
+const SHARE_URL='';
+const LS_DEVICE='cpa_device_id',LS_RECORDER='cpa_recorder',LS_DELQ='cpa_delete_queue';
+function deviceId(){
+  let d=null;try{d=localStorage.getItem(LS_DEVICE);}catch{}
+  if(!d){d='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,10);try{localStorage.setItem(LS_DEVICE,d);}catch{}}
+  return d;
+}
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function shareCall(body){
+  const r=await fetch(SHARE_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
+  const j=await r.json();
+  if(!j.ok)throw new Error(j.error||'error');
+  return j;
+}
+let syncing=false;
+async function syncShared(){
+  if(!SHARE_URL||syncing||!navigator.onLine)return;
+  syncing=true;
+  try{
+    // 消した記録を先に消す
+    let q=[];try{q=JSON.parse(localStorage.getItem(LS_DELQ)||'[]');}catch{}
+    for(const id of q.slice()){
+      try{await shareCall({action:'delete',id,device:deviceId()});q=q.filter(x=>x!==id);}catch(e){if(/not owner/.test(e.message))q=q.filter(x=>x!==id);}
+    }
+    try{localStorage.setItem(LS_DELQ,JSON.stringify(q));}catch{}
+    // 未送信の記録を送る
+    for(const r of loadSaved().filter(r=>r.device===deviceId()&&!r.sent)){
+      try{
+        const{sent,...rec}=r;
+        await shareCall({action:'save',record:rec,device:deviceId()});
+        saveSavedToLS(loadSaved().map(x=>x.id===r.id?Object.assign({},x,{sent:true}):x));
+      }catch(e){if(/not owner|too large/.test(e.message))saveSavedToLS(loadSaved().map(x=>x.id===r.id?Object.assign({},x,{sent:'ng'}):x));}
+    }
+  }finally{syncing=false;}
+}
 function saveRecord(){
   const def=gv('f-dispatch')||new Date().toLocaleDateString()+'の記録';
   showPrompt('保存する記録の名前を入力してください',def,name=>{
-    const saved=loadSaved();
-    const entry={
-      id:Date.now().toString(),name,timestamp:Date.now(),
-      rec:getFormData(),cats:JSON.parse(JSON.stringify(S.cats)),
-      ev:Object.assign({},S.ev),time:S.time,cvUrl:S.cvUrl
-    };
-    saveSavedToLS([entry,...saved]);
-    showAlert('記録を保存しました。');
+    let last='';try{last=localStorage.getItem(LS_RECORDER)||'';}catch{}
+    setTimeout(()=>showPrompt('記録者の名前（任意・空欄でも保存できます）',last,recorder=>{
+      recorder=(recorder||'').trim();
+      try{localStorage.setItem(LS_RECORDER,recorder);}catch{}
+      const entry={
+        id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),name,recorder,timestamp:Date.now(),
+        rec:getFormData(),cats:JSON.parse(JSON.stringify(S.cats)),
+        ev:Object.assign({},S.ev),time:S.time,cvUrl:S.cvUrl,
+        device:deviceId(),sent:false
+      };
+      saveSavedToLS([entry,...loadSaved()]);
+      if(!SHARE_URL){showAlert('この端末に記録を保存しました。');return;}
+      if(!navigator.onLine){showAlert('この端末に保存しました。電波が戻ったら「みんなの記録」へ送ります。');return;}
+      showAlert('保存しました。「みんなの記録」へ送っています…');
+      syncShared().then(()=>{
+        const r=loadSaved().find(x=>x.id===entry.id);
+        g('cf-msg').textContent=r&&r.sent===true?'保存しました。「みんなの記録」にも送りました。':'この端末に保存しました。送れなかった分は、あとで自動で送ります。';
+      });
+    }),150);
   });
 }
-function openRecModal(){
-  const saved=loadSaved();
-  const list=g('rec-list');list.innerHTML='';
-  if(!saved.length){
-    list.innerHTML='<div style="text-align:center;color:#94a3b8;padding:32px 0;font-size:12px">保存された記録はありません</div>';
-    g('modal-rec').classList.remove('ht');return;
+function applyRecord(r){
+  try{
+    if(r.rec) setFormData(r.rec);
+    const IC=[{id:'cp',title:'接触前',items:[]},{id:'c1',title:'1ピリオド',items:[]},
+      {id:'c2',title:'2ピリオド',items:[]},{id:'c3',title:'3ピリオド',items:[]},
+      {id:'c4',title:'4ピリオド',items:[]},{id:'c5',title:'5ピリオド',items:[]}];
+    S.cats=JSON.parse(JSON.stringify(r.cats||IC));
+    S.ev=r.ev?Object.assign({},r.ev):{};
+    S.time=Number(r.time)||0;
+    S.cvUrl=r.cvUrl||null;
+    renderChecklist();
+    updateTimerDisp();
+    setTimeout(()=>initCanvases(),150);
+    closeModal('modal-rec');
+    setTimeout(()=>showAlert('データを読み込みました。'),50);
+  }catch(e){
+    console.error('読み込みエラー:',e);
+    closeModal('modal-rec');
+    setTimeout(()=>showAlert('読み込みに失敗しました。'),50);
   }
-  saved.forEach(r=>{
-    const row=document.createElement('div');row.className='rec-row';
-    row.innerHTML=`<div><div class="rec-ts">${new Date(r.timestamp).toLocaleString()}</div><div class="rec-name">${r.name||r.rec.dispatch||'無題の記録'}</div></div>`;
-    const btns=document.createElement('div');btns.className='rec-btns';
-    const lb=document.createElement('button');lb.className='rec-load';lb.textContent='読み込む';
-    lb.onclick=()=>{
-      try{
-        // フォームデータ復元
-        if(r.rec) setFormData(r.rec);
-        // チェックリスト復元
-        const IC=[{id:'cp',title:'接触前',items:[]},{id:'c1',title:'1ピリオド',items:[]},
-          {id:'c2',title:'2ピリオド',items:[]},{id:'c3',title:'3ピリオド',items:[]},
-          {id:'c4',title:'4ピリオド',items:[]},{id:'c5',title:'5ピリオド',items:[]}];
-        S.cats=JSON.parse(JSON.stringify(r.cats||IC));
-        // 評価・タイマー・キャンバス復元
-        S.ev=r.ev?Object.assign({},r.ev):{};
-        S.time=Number(r.time)||0;
-        S.cvUrl=r.cvUrl||null;
-        // UI再描画
-        renderChecklist();
-        updateTimerDisp();
-        setTimeout(()=>initCanvases(),150);
-        // モーダルを閉じてアラート表示
-        closeModal('modal-rec');
-        setTimeout(()=>showAlert('データを読み込みました。'),50);
-      }catch(e){
-        console.error('読み込みエラー:',e);
-        closeModal('modal-rec');
-        setTimeout(()=>showAlert('読み込みに失敗しました。'),50);
-      }
-    };
+}
+const TRASH='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>';
+function recRow(r,badge,onLoad,onDel){
+  const row=document.createElement('div');row.className='rec-row';
+  row.innerHTML=`<div><div class="rec-ts">${new Date(r.timestamp||r.ts).toLocaleString()}</div>`
+    +`<div class="rec-name">${esc(r.name||(r.rec&&r.rec.dispatch)||'無題の記録')}${badge||''}</div>`
+    +(r.recorder?`<div class="rec-who">記録者：${esc(r.recorder)}</div>`:'')+`</div>`;
+  const btns=document.createElement('div');btns.className='rec-btns';
+  const lb=document.createElement('button');lb.className='rec-load';lb.textContent='読み込む';lb.onclick=onLoad;btns.appendChild(lb);
+  if(onDel){
     const db=document.createElement('button');
     db.style.cssText='padding:6px;background:transparent;border:none;cursor:pointer;color:#94a3b8;display:flex';
-    db.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>';
-    db.onclick=()=>showConfirm('この記録を削除しますか？',()=>{
-      saveSavedToLS(loadSaved().filter(s=>s.id!==r.id));
-      openRecModal();
-    });
-    btns.appendChild(lb);btns.appendChild(db);row.appendChild(btns);list.appendChild(row);
-  });
-  g('modal-rec').classList.remove('ht');
+    db.innerHTML=TRASH;db.onclick=onDel;btns.appendChild(db);
+  }
+  row.appendChild(btns);return row;
 }
+let recTab='local';
+function openRecModal(){showRecTab(recTab);g('modal-rec').classList.remove('ht');syncShared();}
+function showRecTab(tab){
+  recTab=tab;
+  g('rt-local').classList.toggle('on',tab==='local');
+  g('rt-shared').classList.toggle('on',tab==='shared');
+  tab==='local'?renderLocal():renderShared();
+}
+function deleteMine(id,after){
+  showConfirm('この記録を削除しますか？「みんなの記録」からも消えます。',()=>{
+    saveSavedToLS(loadSaved().filter(s=>s.id!==id));
+    if(SHARE_URL){
+      let q=[];try{q=JSON.parse(localStorage.getItem(LS_DELQ)||'[]');}catch{}
+      if(!q.includes(id))q.push(id);
+      try{localStorage.setItem(LS_DELQ,JSON.stringify(q));}catch{}
+      syncShared().then(after);
+    }
+    after();
+  });
+}
+function renderLocal(){
+  const list=g('rec-list');list.innerHTML='';
+  const saved=loadSaved();
+  if(!saved.length){list.innerHTML='<div style="text-align:center;color:#94a3b8;padding:32px 0;font-size:12px">この端末に保存された記録はありません</div>';return;}
+  saved.forEach(r=>{
+    const mine=!r.device||r.device===deviceId();
+    let badge='';
+    if(SHARE_URL&&r.device===deviceId())badge=r.sent===true?'<span class="rec-badge sent">送信済み</span>':r.sent==='ng'?'<span class="rec-badge wait">送れません</span>':'<span class="rec-badge wait">未送信</span>';
+    list.appendChild(recRow(r,badge,()=>applyRecord(r),
+      mine?()=>deleteMine(r.id,renderLocal):()=>showConfirm('この端末から削除しますか？（みんなの記録には残ります）',()=>{saveSavedToLS(loadSaved().filter(s=>s.id!==r.id));renderLocal();})));
+  });
+}
+async function renderShared(){
+  const list=g('rec-list');
+  if(!SHARE_URL){list.innerHTML='<div class="rec-note">「みんなの記録」はまだ準備中です。</div>';return;}
+  if(!navigator.onLine){list.innerHTML='<div class="rec-note">電波がないため「みんなの記録」を開けません。前に読み込んだ記録は「この端末の記録」にあります。</div>';return;}
+  list.innerHTML='<div class="rec-note">読み込んでいます…</div>';
+  let recs;
+  try{recs=(await shareCall({action:'list',device:deviceId()})).records;}
+  catch(e){if(recTab==='shared')list.innerHTML='<div class="rec-note">「みんなの記録」を読み込めませんでした。電波を確かめて、もう一度開いてください。</div>';return;}
+  if(recTab!=='shared')return;
+  list.innerHTML='<div class="rec-note">どの端末で保存した記録も読み込めます。削除できるのは、保存した端末だけです。読み込んだ記録は「この端末の記録」にも残ります。</div>';
+  if(!recs.length){list.innerHTML+='<div style="text-align:center;color:#94a3b8;padding:24px 0;font-size:12px">まだ記録はありません</div>';return;}
+  recs.forEach(r=>{
+    list.appendChild(recRow(r,r.mine?'<span class="rec-badge mine">この端末</span>':'',async()=>{
+      try{
+        const full=(await shareCall({action:'get',id:r.id})).record;
+        // 電波がなくても開けるよう、この端末にも残す（自分の端末で保存したものとは区別する）
+        const keep=Object.assign({},full,{sent:full.device===deviceId()?true:'other'});
+        saveSavedToLS([keep,...loadSaved().filter(x=>x.id!==full.id)]);
+        applyRecord(full);
+      }catch(e){showAlert('読み込みに失敗しました。電波を確かめてください。');}
+    },r.mine?()=>deleteMine(r.id,renderShared):null));
+  });
+}
+window.addEventListener('online',()=>syncShared());
+window.addEventListener('load',()=>setTimeout(syncShared,1500));
 function closeModal(id){g(id).classList.add('ht');}
 
 /* ── PDF ── */

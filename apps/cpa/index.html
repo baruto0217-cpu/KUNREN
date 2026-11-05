@@ -39,6 +39,25 @@ button:active{opacity:0.7;}
 /* メイン */
 #main{flex:1;min-height:0;overflow:hidden;padding:8px;box-sizing:border-box;display:flex;flex-direction:column;}
 .panel{display:flex;flex:1;min-height:0;gap:8px;}
+/* 資料 */
+#panel-d{flex-direction:column;background:#fff;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden;}
+#sy-lock{margin:auto;max-width:340px;width:100%;padding:28px 22px;text-align:center;}
+#sy-lock h3{font-size:15px;color:#1e293b;margin-bottom:6px;}
+#sy-lock p{font-size:12px;color:#64748b;line-height:1.6;margin-bottom:14px;}
+#sy-pass{width:100%;font-size:22px;letter-spacing:8px;text-align:center;padding:10px;border:1px solid #cbd5e1;border-radius:9px;outline:none;font-family:inherit;}
+#sy-pass:focus{border-color:#3b82f6;}
+#sy-open{margin-top:12px;width:100%;padding:11px;font-size:14px;font-weight:700;color:#fff;background:#2563eb;border:none;border-radius:9px;cursor:pointer;font-family:inherit;}
+#sy-msg{min-height:18px;margin-top:10px;font-size:12px;color:#dc2626;}
+#sy-view{display:flex;flex-direction:column;flex:1;min-height:0;}
+#sy-bar{display:flex;align-items:center;gap:6px;padding:7px 9px;border-bottom:1px solid #e2e8f0;background:#f8fafc;flex-wrap:wrap;}
+#sy-title{font-size:11px;font-weight:700;color:#334155;flex:1;min-width:160px;}
+.sy-btn{padding:5px 11px;font-size:13px;font-weight:700;border:1px solid #cbd5e1;background:#fff;border-radius:7px;cursor:pointer;color:#1e293b;font-family:inherit;}
+#sy-page{padding:5px;font-size:12px;border:1px solid #cbd5e1;border-radius:7px;font-family:inherit;}
+#sy-pages{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;background:#e2e8f0;padding:10px;}
+.sy-pg{margin:0 auto 10px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15);position:relative;}
+.sy-pg img{display:block;width:100%;height:auto;}
+.sy-pg .sy-no{position:absolute;top:4px;right:6px;font-size:10px;color:#64748b;background:rgba(255,255,255,.85);padding:1px 6px;border-radius:8px;}
+.sy-ph{aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:12px;}
 /* カード */
 .card{display:flex;flex-direction:column;min-height:0;background:#fff;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden;}
 .card-hd{padding:6px 12px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:6px;background:#f8fafc;flex-shrink:0;font-weight:800;font-size:12px;}
@@ -190,7 +209,8 @@ svg{flex-shrink:0;}
     </div>
     <div id="tabs">
       <button class="tab-btn on" id="tab-s" onclick="switchTab('scenario')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>想定票（入力）</button>
-      <button class="tab-btn" id="tab-r" onclick="switchTab('result')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>結果レポート</button>
+            <button class="tab-btn" id="tab-r" onclick="switchTab('result')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>結果レポート</button>
+      <button class="tab-btn" id="tab-d" onclick="switchTab('doc')">📖 資料</button>
     </div>
   </div>
 
@@ -275,6 +295,24 @@ svg{flex-shrink:0;}
     </div>
 
     <!-- 結果レポートパネル -->
+    <div class="panel ht" id="panel-d">
+      <div id="sy-lock">
+        <h3>📖 資料（パスワードが必要です）</h3>
+        <p>愛知県救急隊 心肺蘇生法プロトコール（第18版）</p>
+        <input id="sy-pass" type="password" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="パスワード" onkeydown="if(event.key==='Enter')openShiryo()">
+        <button id="sy-open" onclick="openShiryo()">開く</button>
+        <div id="sy-msg"></div>
+      </div>
+      <div id="sy-view" class="ht">
+        <div id="sy-bar">
+          <span id="sy-title"></span>
+          <select id="sy-page" onchange="goShiryoPage(this.value)"></select>
+          <button class="sy-btn" onclick="zoomShiryo(-1)">−</button>
+          <button class="sy-btn" onclick="zoomShiryo(1)">＋</button>
+        </div>
+        <div id="sy-pages"></div>
+      </div>
+    </div>
     <div class="panel ht" id="panel-r">
       <div class="card" id="result-left" style="display:flex;flex-direction:column;">
         <div class="card-hd" style="background:#1e293b;color:#fff;border-bottom:1px solid #334155;">
@@ -403,6 +441,8 @@ function switchTab(t){
   S.tab=t;
   g('panel-s').classList.toggle('ht',t!=='scenario');
   g('panel-r').classList.toggle('ht',t!=='result');
+  g('panel-d').classList.toggle('ht',t!=='doc');
+  g('tab-d').classList.toggle('on',t==='doc');
   g('tab-s').classList.toggle('on',t==='scenario');
   g('tab-r').classList.toggle('on',t==='result');
   if(t==='result'){updateResult();}
@@ -724,6 +764,75 @@ async function exportPDF(){
   }catch(e){console.error(e);showAlert('PDF生成に失敗しました。');}
   finally{document.body.removeChild(con);}
 }
+
+/* ── 資料（暗号化した画像をパスワードで開く。パスワードは保存しない） ── */
+let syKey=null,syMeta=null,syZoom=100;
+const hex2u8=h=>new Uint8Array(h.match(/../g).map(x=>parseInt(x,16)));
+async function syDecrypt(buf){
+  const u=new Uint8Array(buf);
+  return crypto.subtle.decrypt({name:'AES-GCM',iv:u.slice(0,12)},syKey,u.slice(12));
+}
+async function openShiryo(){
+  const pw=g('sy-pass').value;const msg=g('sy-msg');
+  if(!pw){msg.textContent='パスワードを入れてください。';return;}
+  if(!(window.crypto&&crypto.subtle)){msg.textContent='この画面では開けません（https で開いてください）。';return;}
+  msg.style.color='#64748b';msg.textContent='確かめています…';
+  try{
+    if(!syMeta)syMeta=await (await fetch('shiryo/meta.json')).json();
+    const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+    syKey=await crypto.subtle.deriveKey({name:'PBKDF2',salt:hex2u8(syMeta.salt),iterations:syMeta.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
+    await syDecrypt(hex2u8(syMeta.check));
+  }catch(e){
+    syKey=null;msg.style.color='#dc2626';
+    msg.textContent=syMeta?'パスワードが違います。':'資料を読み込めませんでした。';
+    return;
+  }
+  g('sy-pass').value='';msg.textContent='';
+  g('sy-lock').classList.add('ht');g('sy-view').classList.remove('ht');
+  buildShiryo();
+}
+function buildShiryo(){
+  g('sy-title').textContent=syMeta.title;
+  const sel=g('sy-page');sel.innerHTML='';
+  const box=g('sy-pages');box.innerHTML='';
+  for(let i=1;i<=syMeta.pages;i++){
+    const o=document.createElement('option');o.value=i;o.textContent=i+' / '+syMeta.pages+' ページ';sel.appendChild(o);
+    const d=document.createElement('div');d.className='sy-pg';d.id='sy-p'+i;d.dataset.n=i;
+    d.innerHTML='<div class="sy-ph">'+i+'ページ 読み込み中…</div><span class="sy-no">'+i+'</span>';
+    box.appendChild(d);
+  }
+  applyZoom();
+  let tm=null;
+  box.onscroll=()=>{clearTimeout(tm);tm=setTimeout(syVisible,80);};
+  syVisible();
+}
+// 見えているページ（前後1画面ぶんを含む）だけを読み込み、今のページ番号を出す
+function syVisible(){
+  const box=g('sy-pages'),r=box.getBoundingClientRect(),h=box.clientHeight;let cur=1;
+  box.querySelectorAll('.sy-pg').forEach(d=>{
+    const q=d.getBoundingClientRect();
+    if(q.top-r.top<h/3)cur=+d.dataset.n;
+    if(q.bottom>r.top-h&&q.top<r.bottom+h&&!d.dataset.loading){d.dataset.loading='1';loadShiryoPage(d);}
+  });
+  g('sy-page').value=cur;
+}
+async function loadShiryoPage(d){
+  const n=String(d.dataset.n).padStart(2,'0');
+  try{
+    const buf=await (await fetch('shiryo/p'+n+'.bin')).arrayBuffer();
+    const jpg=await syDecrypt(buf);
+    const img=new Image();img.alt=d.dataset.n+'ページ';img.src=URL.createObjectURL(new Blob([jpg],{type:'image/jpeg'}));
+    d.querySelector('.sy-ph').replaceWith(img);
+  }catch(e){d.querySelector('.sy-ph').textContent='このページを開けませんでした';}
+}
+function applyZoom(){document.querySelectorAll('.sy-pg').forEach(d=>{d.style.width=syZoom+'%';});}
+function zoomShiryo(s){
+  const box=g('sy-pages');const r=box.scrollTop/(box.scrollHeight||1);
+  syZoom=Math.min(300,Math.max(50,syZoom+s*25));applyZoom();
+  box.scrollTop=r*box.scrollHeight;
+  syVisible();
+}
+function goShiryoPage(n){const d=g('sy-p'+n),box=g('sy-pages');if(d){box.scrollTop+=d.getBoundingClientRect().top-box.getBoundingClientRect().top-8;syVisible();}}
 
 /* ── ダイアログ ── */
 function showAlert(msg){

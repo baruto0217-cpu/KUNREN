@@ -577,7 +577,7 @@ function updateResult(){
 /* ── 保存・呼び出し ──
    この端末：localStorage（電波なしでも使える）。みんなの記録：GAS（SHARE_URL）に送り、どの端末からでも読み込める。
    電波がないときは「未送信」として残し、電波が戻ったら送る。削除・上書きは保存した端末（端末ID）からだけ。 */
-const SHARE_URL='';
+const SHARE_URL='https://script.google.com/macros/s/AKfycbx1SDcp0MqhDuhsYG8gdQS9b3D-1_e6y5KySQ-mJvSgCxqK_cjSRso-RXbpb0m8pbbx/exec';
 const LS_DEVICE='cpa_device_id',LS_RECORDER='cpa_recorder',LS_DELQ='cpa_delete_queue';
 function deviceId(){
   let d=null;try{d=localStorage.getItem(LS_DEVICE);}catch{}

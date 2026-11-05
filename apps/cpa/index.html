@@ -115,14 +115,8 @@ button:active{opacity:0.7;}
 .add-cat-btn{width:100%;padding:8px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:8px;color:#64748b;font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;font-family:inherit;}
 .del-btn{background:none;border:none;cursor:pointer;color:#94a3b8;display:flex;padding:3px;}
 .no-items{padding:8px 12px;font-size:10px;color:#94a3b8;text-align:center;font-style:italic;}
-/* 手書き */
-#draw-card{flex-shrink:0;background:#fff;border-radius:10px;border:1px solid #e2e8f0;padding:8px;}
-#draw-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
-#draw-lbl{font-size:9px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;}
-#draw-area{border:1px solid #e2e8f0;border-radius:7px;overflow:hidden;background:#fff;}
-#cs{width:100%;display:block;}
 /* 結果レポート */
-#result-left{width:33%;min-height:0;display:flex;flex-direction:column;overflow:hidden;}
+#result-left{flex:1;width:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden;}
 #result-right{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;}
 #xlist{flex:1;}
 #rate-box{margin-top:14px;padding:14px;background:#0f172a;border-radius:12px;text-align:center;flex-shrink:0;}
@@ -130,8 +124,6 @@ button:active{opacity:0.7;}
 #rate-val{font-size:44px;font-weight:900;font-family:monospace;letter-spacing:2px;line-height:1;}
 #rate-sub{font-size:11px;color:#475569;margin-top:4px;}
 /* 結果キャンバス */
-#draw-result-wrap{flex:1;min-height:0;padding:12px;display:flex;flex-direction:column;overflow:hidden;}
-#cr-wrap{flex:1;min-height:0;background:#fff;border-radius:14px;overflow:hidden;border:2px solid #f1f5f9;}
 #cr{width:100%;display:block;}
 /* モーダル */
 .modal-bg{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.55);}
@@ -168,10 +160,6 @@ button:active{opacity:0.7;}
   #main{padding:5px;}
   .panel{gap:5px;}
   #top-fixed{max-height:55%;overflow-y:auto;}
-  #draw-area{height:160px;}
-}
-@media(orientation:portrait){
-  #draw-area{height:240px;}
 }
 /* SVGアイコン */
 svg{flex-shrink:0;}
@@ -283,14 +271,6 @@ svg{flex-shrink:0;}
           </div>
           <div id="cl-body"></div>
         </div>
-        <!-- 手書き -->
-        <div id="draw-card">
-          <div id="draw-hd">
-            <span id="draw-lbl"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:3px"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>手書きメモ</span>
-            <button onclick="clearCanvas()" style="background:none;border:none;cursor:pointer;color:#94a3b8;display:flex;padding:2px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l10-10 7 7-3.5 3.5"/><path d="M6.5 17.5l-4-4"/></svg></button>
-          </div>
-          <div id="draw-area"><canvas id="cs"></canvas></div>
-        </div>
       </div>
     </div>
 
@@ -308,19 +288,6 @@ svg{flex-shrink:0;}
             <div id="rate-val">0%</div>
             <div id="rate-sub">0 / 0 項目達成</div>
           </div>
-        </div>
-      </div>
-      <div class="card" id="result-right" style="display:flex;flex-direction:column;">
-        <div class="card-hd" style="background:#1e293b;color:#fff;border-bottom:1px solid #334155;justify-content:space-between;">
-          <div style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;text-transform:uppercase;">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
-            手書きメモ・フィードバック
-          </div>
-          <button onclick="clearCanvas()" style="display:flex;align-items:center;gap:3px;background:rgba(255,255,255,0.07);border:1px solid #334155;border-radius:6px;padding:4px 9px;color:#94a3b8;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l10-10 7 7-3.5 3.5"/><path d="M6.5 17.5l-4-4"/></svg>クリア</button>
-        </div>
-        <div id="draw-result-wrap">
-          <div id="cr-wrap"><canvas id="cr"></canvas></div>
-          <div style="margin-top:7px;display:flex;justify-content:space-between;font-size:9px;font-weight:700;color:#cbd5e1;font-style:italic"><span>※想定票タブの内容が自動で同期されます</span><span>愛知県救急隊シミュレーション記録</span></div>
         </div>
       </div>
     </div>
@@ -382,7 +349,7 @@ let S={
   ],
   ev:{},editMode:false,
   time:0,running:false,metro:false,bpm:110,
-  cvUrl:null
+  cvUrl:null  // 手書きメモは2026-11-05に廃止（古い記録のデータは読み込まない）
 };
 let timerInt=null,metroInt=null,audioCtx=null,cfCb=null,prCb=null,drawingActive=false;
 
@@ -438,7 +405,7 @@ function switchTab(t){
   g('panel-r').classList.toggle('ht',t!=='result');
   g('tab-s').classList.toggle('on',t==='scenario');
   g('tab-r').classList.toggle('on',t==='result');
-  if(t==='result'){updateResult();setTimeout(()=>syncCanvas('cr'),100);}
+  if(t==='result'){updateResult();}
 }
 
 /* ── タイマー ── */
@@ -481,25 +448,6 @@ function toggleMetro(){
 function updateBpm(v){S.bpm=Number(v);g('bpm-disp').textContent=v+' BPM';if(S.metro){clearInterval(metroInt);metroInt=setInterval(playClick,60000/S.bpm);}}
 
 /* ── キャンバス ── */
-function syncCanvas(id){
-  const c=g(id);if(!c)return;
-  const p=c.parentElement;if(!p||!p.clientWidth)return;
-  c.width=p.clientWidth;c.height=p.clientHeight||150;
-  const ctx=c.getContext('2d');ctx.lineCap='round';ctx.lineWidth=3;ctx.strokeStyle='#1e293b';
-  ctx.clearRect(0,0,c.width,c.height);
-  if(S.cvUrl){const img=new Image();img.onload=()=>ctx.drawImage(img,0,0,c.width,c.height);img.src=S.cvUrl;}
-}
-function initCanvases(){setTimeout(()=>{syncCanvas('cs');syncCanvas('cr');},100);}
-function attachDraw(canvasId){
-  const c=g(canvasId);if(!c)return;
-  const getXY=e=>{const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*sx,y:(t.clientY-r.top)*sy};};
-  const onStart=e=>{e.preventDefault();const{x,y}=getXY(e);const ctx=c.getContext('2d');ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=3;ctx.strokeStyle='#1e293b';ctx.beginPath();ctx.moveTo(x,y);drawingActive=true;};
-  const onMove=e=>{if(!drawingActive)return;e.preventDefault();const{x,y}=getXY(e);const ctx=c.getContext('2d');ctx.lineTo(x,y);ctx.stroke();};
-  const onEnd=()=>{if(!drawingActive)return;drawingActive=false;S.cvUrl=c.toDataURL();const other=canvasId==='cs'?'cr':'cs';syncCanvas(other);};
-  c.addEventListener('mousedown',onStart);c.addEventListener('mousemove',onMove);c.addEventListener('mouseup',onEnd);c.addEventListener('mouseleave',onEnd);
-  c.addEventListener('touchstart',onStart,{passive:false});c.addEventListener('touchmove',onMove,{passive:false});c.addEventListener('touchend',onEnd);
-}
-function clearCanvas(){showConfirm('手書き内容を消去しますか？',()=>{S.cvUrl=null;['cs','cr'].forEach(id=>{const c=g(id);if(c)c.getContext('2d').clearRect(0,0,c.width,c.height);});});}
 
 /* ── チェックリスト ── */
 function renderChecklist(){
@@ -638,7 +586,7 @@ function saveRecord(){
       const entry={
         id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),name,recorder,timestamp:Date.now(),
         rec:getFormData(),cats:JSON.parse(JSON.stringify(S.cats)),
-        ev:Object.assign({},S.ev),time:S.time,cvUrl:S.cvUrl,
+        ev:Object.assign({},S.ev),time:S.time,
         device:deviceId(),sent:false
       };
       saveSavedToLS([entry,...loadSaved()]);
@@ -661,10 +609,8 @@ function applyRecord(r){
     S.cats=JSON.parse(JSON.stringify(r.cats||IC));
     S.ev=r.ev?Object.assign({},r.ev):{};
     S.time=Number(r.time)||0;
-    S.cvUrl=r.cvUrl||null;
     renderChecklist();
     updateTimerDisp();
-    setTimeout(()=>initCanvases(),150);
     closeModal('modal-rec');
     setTimeout(()=>showAlert('データを読み込みました。'),50);
   }catch(e){
@@ -823,16 +769,10 @@ function resetAll(){showConfirm('すべての記録をリセットしますか�
 window.addEventListener('DOMContentLoaded',()=>{
   buildTable();
   renderChecklist();
-  initCanvases();
-  attachDraw('cs');
-  attachDraw('cr');
   // ピンチズーム・ダブルタップ防止
   let lastTouch=0;
   document.addEventListener('touchend',e=>{const now=Date.now();if(now-lastTouch<300)e.preventDefault();lastTouch=now;},{passive:false});
   document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault();},{passive:false});
-  // 向き変更時にキャンバスを再描画
-  window.addEventListener('resize',()=>{setTimeout(()=>{syncCanvas(S.tab==='scenario'?'cs':'cr');},200);});
-  window.addEventListener('orientationchange',()=>{setTimeout(()=>{syncCanvas('cs');syncCanvas('cr');},300);});
 });
 </script>
 

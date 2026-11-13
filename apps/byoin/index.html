@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script>/* まとめアプリ内：オフライン保存はまとめアプリ側で行う */if('serviceWorker' in navigator){try{Object.defineProperty(navigator.serviceWorker,'register',{value:function(){return Promise.reject(new Error('suite'))}})}catch(e){}}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>第一報 1分練習</title>
+<style>
+:root{
+  --navy:#1F2D3D; --navy-tint:#E1E8F0; --pale:#E1EAF2;
+  --orange:#D9531E; --orange-txt:#C44816; --orange-tint:#FBE6DC; --orange-lt:#F4B79C;
+  --bg:#FBFCFD; --ink:#2B3036; --gray:#5E6670; --line:#CFD8E3;
+  --ok:#2E7D4F; --ok-tint:#E3F2E8; --yellow:#E0A100;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:"游ゴシック Medium","Yu Gothic Medium","YuGothic","Hiragino Sans","ヒラギノ角ゴシック","Meiryo",sans-serif;
+  font-size:18px;line-height:1.6;-webkit-text-size-adjust:100%}
+header.top{background:var(--navy);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:5}
+header.top h1{font-size:20px;margin:0;flex:1;letter-spacing:.05em}
+header.top button{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5);border-radius:8px;padding:6px 12px;font-size:15px;font-family:inherit;cursor:pointer}
+main{max-width:860px;margin:0 auto;padding:16px 16px 48px}
+.screen{display:none}.screen.on{display:block}
+h2{font-size:22px;color:var(--navy);margin:8px 0 12px;border-left:6px solid var(--orange);padding-left:10px}
+.lead{color:var(--gray);margin:0 0 16px}
+.order{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:18px}
+.order ol{margin:0;padding:0;list-style:none}
+.order li{display:flex;gap:10px;align-items:flex-start;padding:4px 0}
+.num{flex:0 0 30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;font-weight:bold;display:flex;align-items:center;justify-content:center;font-size:16px;margin-top:1px}
+.num.first{background:var(--orange)}
+.cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.casebtn{background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px 16px;text-align:left;font-family:inherit;font-size:18px;color:var(--ink);cursor:pointer}
+.casebtn:hover{border-color:var(--orange)}
+.casebtn b{display:block;font-size:20px;color:var(--navy)}
+.casebtn span{font-size:15px;color:var(--gray)}
+.big{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:22px;font-weight:bold;font-family:inherit;cursor:pointer;margin-top:14px}
+.b-orange{background:var(--orange);color:#fff}
+.b-navy{background:var(--navy);color:#fff}
+.b-white{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:12px}
+.card h3{margin:0 0 6px;font-size:21px;color:var(--navy)}
+.card ul{margin:0;padding-left:1.2em}
+.card li{margin:3px 0}
+.timerbox{background:var(--navy);color:#fff;border-radius:16px;text-align:center;padding:14px 10px 10px;margin-bottom:12px;transition:background .3s}
+.timerbox.warn{background:#8A6400}
+.timerbox.over{background:#A8341A}
+.timerbox .t{font-size:72px;font-weight:bold;line-height:1.1;font-variant-numeric:tabular-nums}
+.timerbox .s{font-size:16px;opacity:.9}
+.bar{height:10px;background:rgba(255,255,255,.25);border-radius:6px;overflow:hidden;margin:8px 6px 4px}
+.bar i{display:block;height:100%;width:0;background:var(--orange-lt)}
+.sticky{position:sticky;top:56px;z-index:4;background:var(--bg);padding-bottom:4px}
+.stopb{margin:-4px 0 10px;border:3px solid var(--orange-lt)}
+.hint{background:var(--orange-tint);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:17px}
+.grp{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.grp .gh{display:flex;align-items:center;gap:10px;background:var(--navy-tint);padding:8px 12px;font-weight:bold;color:var(--navy)}
+label.ck{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-top:1px solid var(--line);cursor:pointer}
+label.ck input{width:26px;height:26px;flex:0 0 26px;margin-top:2px;accent-color:var(--orange)}
+label.ck.na{color:var(--gray);cursor:default}
+label.ck small{display:block;color:var(--gray);font-size:15px}
+.result-time{font-size:20px;margin:0 0 10px}
+.result-time b{font-size:28px}
+.miss{background:var(--orange-tint);border:2px solid var(--orange-lt);border-radius:12px;padding:12px 16px;margin-bottom:14px}
+.miss h3{margin:0 0 6px;color:var(--orange-txt);font-size:20px}
+.miss ul{margin:0;padding-left:1.2em}
+.allok{background:var(--ok-tint);border:2px solid #9BCFAE;border-radius:12px;padding:12px 16px;margin-bottom:14px;color:var(--ok);font-weight:bold;font-size:20px}
+.model .row{display:flex;gap:10px;padding:6px 0;border-top:1px dashed var(--line)}
+.model .row:first-of-type{border-top:0}
+.model .row .num{flex-basis:30px}
+.note{font-size:15px;color:var(--gray);margin-top:8px}
+.foot{font-size:14px;color:var(--gray);text-align:center;margin-top:24px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.two .big{margin-top:6px}
+@media (max-width:520px){
+  body{font-size:17px}
+  .timerbox .t{font-size:60px}
+  .two{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>第一報 1分練習</h1>
+  <button id="homeBtn" type="button" hidden>症例一覧へ</button>
+</header>
+<main>
+
+<!-- ===== 1. 症例を選ぶ ===== -->
+<section class="screen on" id="sHome">
+  <h2>伝える順番（5つ）</h2>
+  <div class="order"><ol id="orderList"></ol>
+    <p class="note">愛知県搬送基準の伝達基準（ファーストコールの7項目）を参考に、5つに整理したものです。順番は状況に合わせて変えて構いません。練習では、隊名などの名乗りは省いています。</p>
+  </div>
+  <h2>症例を選ぶ</h2>
+  <p class="lead">症例を読んで最初のひと言を決めたら、60秒で伝えます。</p>
+  <div class="cases" id="caseList"></div>
+  <button class="big b-orange" id="randomBtn" type="button">おまかせで出す</button>
+</section>
+
+<!-- ===== 2. 読む・話す ===== -->
+<section class="screen" id="sCase">
+  <div class="sticky">
+    <div class="timerbox" id="timerBox">
+      <div class="s" id="timerLabel">まず読んで、最初のひと言を決める</div>
+      <div class="t" id="timerNum">60</div>
+      <div class="bar"><i id="timerBar"></i></div>
+    </div>
+    <button class="big b-navy stopb" id="stopBtn" type="button" hidden>言い終えた</button>
+  </div>
+  <div class="card" id="caseCard"></div>
+  <div class="hint" id="caseHint">最初のひと言＝<b>年齢・性別</b>、<b>疑っていること</b>、<b>受け入れのお願い</b><br><small>60秒を過ぎても計測は続きます。言い終えたらボタンを押してください。</small></div>
+  <button class="big b-orange" id="startBtn" type="button">話し始める（60秒）</button>
+</section>
+
+<!-- ===== 3. ふりかえり ===== -->
+<section class="screen" id="sCheck">
+  <h2>言えたものにチェック</h2>
+  <p class="result-time" id="timeResult"></p>
+  <p class="lead">2人で練習しているときは、病院役がチェックしても構いません。</p>
+  <div id="checkList"></div>
+  <button class="big b-orange" id="judgeBtn" type="button">結果を見る</button>
+</section>
+
+<!-- ===== 4. 結果 ===== -->
+<section class="screen" id="sResult">
+  <h2 id="resultTitle">結果</h2>
+  <div id="resultBox"></div>
+  <div class="card model">
+    <h3>伝え方の一例</h3>
+    <div id="modelBox"></div>
+    <p class="note" id="modelNote"></p>
+  </div>
+  <div class="two">
+    <button class="big b-orange" id="againBtn" type="button">同じ症例でもう一度</button>
+    <button class="big b-white" id="nextBtn" type="button">ほかの症例へ</button>
+  </div>
+</section>
+
+<p class="foot">この画面では記録は残りません。処置や器具は一例です。実際はプロトコール・活動基準に従ってください。<br>数値の単位（回/分、mg/dL、L/分など）は省いています。</p>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  var ORDER = [
+    "最初のひと言（年齢・性別、疑っていること、お願い）",
+    "状況（いつ、何をしていて、どうなったか）",
+    "所見（命に関わる異常 → 疑った根拠）",
+    "行った処置",
+    "既往・かかりつけ → 到着時間"
+  ];
+
+  // 共通のチェック項目（step: 何番目の順番か）
+  var COMMON = [
+    {id: "age",   step: 1, t: "年齢・性別"},
+    {id: "sus",   step: 1, t: "疑っていること（病名・状態）"},
+    {id: "req",   step: 1, t: "受け入れのお願い"},
+    {id: "when",  step: 2, t: "いつ・どうなったか", sub: "時刻が分からないときは「不明」と言えたか"},
+    {id: "life",  step: 3, t: "命に関わる異常（あれば）を先に言えた"},
+    {id: "basis", step: 3, t: "疑った根拠"},
+    {id: "tx",    step: 4, t: "行った処置"},
+    {id: "hx",    step: 5, t: "既往・かかりつけ", sub: "なければ「なし」と言えたか"},
+    {id: "eta",   step: 5, t: "到着見込み時間"}
+  ];
+
+  var CASES = [
+    {
+      id: "bike", title: "バイクの事故", tag: "外傷・胸部",
+      info: [
+        "45歳　男性　バイクの単独事故",
+        "約20分前、時速40kmほどでガードレールに衝突（目撃者の話）",
+        "「左の胸が痛い。息がしにくい」",
+        "左胸に打撲のあと。左の呼吸音が弱い",
+        "JCS 1　呼吸28　脈拍112　血圧108／70",
+        "SpO2 90％（酸素なし）",
+        "リザーバー付きマスクで酸素10L　→　SpO2 95％",
+        "活動基準でロード＆ゴーと判断。バックボードで固定",
+        "既往なし。到着まで12分"
+      ],
+      extra: [
+        {id: "lg", step: 1, t: "最初に「ロード＆ゴー」と伝えた", sub: "活動基準でロード＆ゴーと判断した外傷のとき"}
+      ],
+      model: [
+        [1, "ロード＆ゴー事案です。45歳男性、バイク事故による左胸部の外傷です。受け入れをお願いします。"],
+        [2, "約20分前、時速40kmほどで、ガードレールに衝突しています。"],
+        [3, "呼吸が苦しく、呼吸28、SpO2は酸素なしで90％。左の呼吸音が弱く、左胸に打撲痕があります。JCS 1、脈拍112、血圧108の70。"],
+        [4, "リザーバー付きマスクで酸素10L、SpO2 95％。バックボードで固定しています。"],
+        [5, "既往はありません。12分で到着します。"]
+      ],
+      note: "2〜4番は、受傷機転、けがの場所と程度、バイタル、処置の順です（MISTの並び）。3番は、呼吸が苦しいことと酸素なしのSpO2を先に言います。固定は活動基準に沿って行い、呼吸を妨げないようにします。"
+    },
+    {
+      id: "fs", title: "子どものけいれん", tag: "小児・発熱",
+      info: [
+        "1歳6か月　男児",
+        "母親から通報「けいれんしている」",
+        "朝から熱がある",
+        "15分前、全身ががくがくと震え、3分ほどで止まった",
+        "左右同じ動き。これまでに確認できたのは1回",
+        "今は泣いていて、母親と目が合う",
+        "呼吸32　脈拍150　SpO2 98％　体温39.2℃",
+        "けいれんは初めて。持病なし",
+        "母親が同乗。到着まで8分"
+      ],
+      noTx: true,
+      extra: [
+        {id: "neg", step: 3, t: "「ないこと」を伝えた", sub: "左右差なし・確認できたのは1回・今は止まっている"}
+      ],
+      model: [
+        [1, "1歳6か月の男児、熱性けいれんの疑いです。受け入れをお願いします。"],
+        [2, "朝から発熱があり、15分前に全身のけいれんが約3分ありました。左右差はなく、確認できたのは1回です。"],
+        [3, "現在は止まっており、泣いて母親と目が合います。呼吸32、脈拍150、SpO2 98％、体温39.2度。"],
+        [5, "けいれんは初めてで、既往はありません。母親が同乗し、8分で到着します。"]
+      ],
+      note: "特別な処置をしていないときは、4番は言わなくて構いません。目が合っていても安心はせず、搬送中もふだんの反応に戻ったか、けいれんがまた起きないか、呼吸に変わりがないかを見続けます。"
+    },
+    {
+      id: "stroke", title: "言葉が出にくい", tag: "脳卒中の疑い",
+      info: [
+        "72歳　女性　夫が通報",
+        "40分前、夫と話している最中に、急に言葉が出にくくなった（夫が目撃）",
+        "その直前まで、ふだんどおりだった",
+        "顔の右側が下がっている。右腕が上がらない",
+        "JCS 1　呼吸18　脈拍88（不整）　血圧178／96",
+        "SpO2 96％　血糖値128",
+        "けいれんなし。頭は打っていない",
+        "既往：心房細動。抗凝固薬（アピキサバン）を内服、最後に飲んだのは今朝8時（お薬手帳と夫の話）",
+        "かかりつけは市民病院。到着まで15分"
+      ],
+      noTx: true,
+      extra: [
+        {id: "lkw", step: 2, t: "発症時刻（目撃あり）", sub: "目撃がなければ、ふだんどおりだった最後の時刻（最終健常時刻）"},
+        {id: "ac", step: 5, t: "抗凝固薬の名前と、最後に飲んだ時刻"}
+      ],
+      model: [
+        [1, "72歳女性、脳卒中の疑いです。発症は40分前で、目撃があります。受け入れをお願いします。"],
+        [2, "40分前、夫と会話中に、急に言葉が出にくくなりました。直前まではふだんどおりでした。"],
+        [3, "右の顔面の下垂、右上肢の麻痺、言語障害があります。JCS 1、血圧178の96、脈拍88で不整、呼吸18、SpO2 96％、血糖値128。けいれんはなく、頭部の打撲もありません。"],
+        [5, "既往は心房細動で、抗凝固薬アピキサバンを内服、最終内服は今朝8時です。かかりつけは市民病院です。15分で到着します。"]
+      ],
+      note: "脳卒中では、時刻が治療を決める大事な情報です。発症を目撃していればその時刻を、目撃がなければふだんどおりだった最後の時刻（最終健常時刻）を伝えます。どちらも分からないときは「不明」と伝えます。実際の連絡では「10時20分」のように時刻で伝えます。薬は「血液をさらさらにする薬」で止めず、薬の名前と最後に飲んだ時刻を確かめます。"
+    },
+    {
+      id: "hypo", title: "呼びかけへの反応がにぶい", tag: "低血糖",
+      info: [
+        "58歳　男性　妻が通報",
+        "糖尿病でインスリンを使っている。今朝は朝食を食べていない",
+        "30分前、妻が呼びかけても反応がにぶいことに気づいた",
+        "JCS 20　冷や汗あり　呼吸18　脈拍96　血圧142／80　SpO2 98％",
+        "血糖値42",
+        "指示医の指示で、静脈路を確保し、50％ブドウ糖40mLを投与",
+        "投与5分後：JCS 1　血糖値112",
+        "かかりつけは中央クリニック（糖尿病）。到着まで15分"
+      ],
+      extra: [
+        {id: "after", step: 4, t: "処置のあとの変化（意識と血糖値）"},
+        {id: "ins", step: 5, t: "インスリンを使っていること"}
+      ],
+      model: [
+        [1, "58歳男性、低血糖による意識障害の疑いです。ブドウ糖投与後、意識は改善しています。受け入れをお願いします。"],
+        [2, "インスリン使用中の糖尿病で、今朝は食事をとっていません。30分前、妻が反応のにぶさに気づいています。"],
+        [3, "接触時はJCS 20、冷汗あり、血糖値42。呼吸18、脈拍96、血圧142の80、SpO2 98％。"],
+        [4, "指示医の指示で静脈路を確保し、50％ブドウ糖40mLを投与。5分後の再評価でJCS 1、血糖値112です。"],
+        [5, "かかりつけは中央クリニックです。15分で到着します。"]
+      ],
+      note: "処置をしたときは、「何を、どれだけ、いつしたか」と「そのあとどう変わったか」をセットで伝えます。ブドウ糖の投与は、認定を受けた救急救命士が指示医の具体的指示のもとで行います。量や手順は地域のプロトコールに従ってください。"
+    },
+    {
+      id: "ana", title: "食事のあとの息苦しさ", tag: "アナフィラキシー",
+      info: [
+        "24歳　女性　同僚が通報",
+        "25分前に、昼食でエビの入った料理を食べた",
+        "15分前から、全身のじんましん、息苦しさ、のどのつまる感じ",
+        "エビのアレルギーがあり、エピペン®を処方されている",
+        "10分前に、本人がエピペン®を使った",
+        "JCS 0　呼吸28（ゼーゼーという音あり）　脈拍120",
+        "血圧88／50　SpO2 93％",
+        "リザーバー付きマスクで酸素10L　→　SpO2 97％",
+        "到着まで10分"
+      ],
+      extra: [
+        {id: "epi", step: 4, t: "エピペン®を使った時刻", sub: "「10分前に本人が使用」"},
+        {id: "food", step: 2, t: "何を、いつ食べたか"}
+      ],
+      model: [
+        [1, "24歳女性、エビによるアナフィラキシーショックの疑いです。エピペン®使用後も、血圧低下と呼吸苦が続いています。受け入れをお願いします。"],
+        [2, "25分前にエビを含む昼食をとり、15分前から全身のじんましん、呼吸苦、のどのつまる感じが出ています。"],
+        [3, "血圧88の50、脈拍120、呼吸28で喘鳴あり、SpO2 93％。意識は清明です。"],
+        [4, "10分前に本人がエピペン®を使用しています。リザーバー付きマスクで酸素10L、SpO2 97％。"],
+        [5, "既往はエビアレルギーです。10分で到着します。"]
+      ],
+      note: "エピペン®を使ったときは、使った時刻を必ず伝えます。この症例は、使ったあとも血圧低下と呼吸苦が続く重い状態です。搬送中も繰り返し観察し、追加の対応は地域のプロトコールに従って指示医に相談します。"
+    },
+    {
+      id: "hip", title: "転んで立てない", tag: "高齢者・転倒",
+      info: [
+        "85歳　女性　本人が通報",
+        "1時間前、自宅の居間でつまずいて右側に転んだ",
+        "右の股関節が痛くて立てない",
+        "右足が短くなり、外側を向いている",
+        "本人は、頭は打っていないと話す。意識ははっきりしている",
+        "JCS 0　呼吸20　脈拍84　血圧150／84　SpO2 97％",
+        "お薬手帳には、抗凝固薬・抗血小板薬の記載なし",
+        "右足は無理に伸ばさず、毛布で支えて固定",
+        "既往：骨粗しょう症。かかりつけは近くの整形外科。到着まで15分"
+      ],
+      extra: [
+        {id: "nohead", step: 3, t: "頭を打っていないこと（本人が否定）"}
+      ],
+      model: [
+        [1, "85歳女性、右大腿骨近位部骨折の疑いです。受け入れをお願いします。"],
+        [2, "1時間前、自宅でつまずいて右側に転倒し、立てなくなっています。"],
+        [3, "右股関節の痛みがあり、右下肢は短縮・外旋しています。本人は頭部の打撲を否定し、意識清明。呼吸20、脈拍84、血圧150の84、SpO2 97％。"],
+        [4, "右下肢は無理に伸ばさず、毛布で支えて固定しています。"],
+        [5, "既往は骨粗しょう症で、お薬手帳には抗凝固薬・抗血小板薬の記載はありません。かかりつけは近くの整形外科です。15分で到着します。"]
+      ],
+      note: "「本人は頭部打撲を否定」「お薬手帳に記載なし」のように、どこまで確かめたかが分かる言い方で、なかったことも伝えます。確かめていないことは「ない」と言わず、「確認できていません」と伝えます。"
+    }
+  ];
+
+  // ---------- 画面の切り替え ----------
+  var $ = function (id) { return document.getElementById(id); };
+  var screens = ["sHome", "sCase", "sCheck", "sResult"];
+  function show(id) {
+    screens.forEach(function (s) { $(s).classList.toggle("on", s === id); });
+    $("homeBtn").hidden = (id === "sHome");
+    window.scrollTo(0, 0);
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;"}[c];
+    });
+  }
+
+  // ---------- 1. 一覧 ----------
+  $("orderList").innerHTML = ORDER.map(function (t, i) {
+    return '<li><span class="num' + (i === 0 ? " first" : "") + '">' + (i + 1) + '</span><span>' + esc(t) + '</span></li>';
+  }).join("");
+  $("caseList").innerHTML = CASES.map(function (c, i) {
+    return '<button class="casebtn" type="button" data-i="' + i + '"><b>' + esc(c.title) + '</b><span>' + esc(c.tag) + '</span></button>';
+  }).join("");
+  $("caseList").addEventListener("click", function (e) {
+    var b = e.target.closest(".casebtn");
+    if (b) openCase(+b.getAttribute("data-i"));
+  });
+  var lastIdx = -1;
+  $("randomBtn").addEventListener("click", function () {
+    var i;
+    do { i = Math.floor(Math.random() * CASES.length); } while (CASES.length > 1 && i === lastIdx);
+    openCase(i);
+  });
+  $("homeBtn").addEventListener("click", function () { stopTimer(); show("sHome"); });
+
+  // ---------- 2. 症例とタイマー ----------
+  var cur = null, curIdx = -1, t0 = 0, raf = 0, elapsed = 0, running = false;
+  var LIMIT = 60;
+
+  function openCase(i) {
+    stopTimer();
+    curIdx = i; lastIdx = i; cur = CASES[i];
+    $("caseCard").innerHTML = '<h3>' + esc(cur.title) + '</h3><ul>' +
+      cur.info.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join("") + '</ul>';
+    elapsed = 0;
+    setTimer(0, false);
+    $("timerLabel").textContent = "まず読んで、最初のひと言を決める";
+    $("startBtn").hidden = false;
+    $("stopBtn").hidden = true;
+    show("sCase");
+  }
+
+  function setTimer(sec, live) {
+    var left = LIMIT - sec;
+    var box = $("timerBox");
+    box.classList.toggle("warn", live && sec >= 40 && sec < LIMIT);
+    box.classList.toggle("over", sec >= LIMIT);
+    $("timerNum").textContent = left >= 0 ? Math.ceil(left - 1e-9) : "+" + Math.floor(-left);
+    $("timerBar").style.width = Math.min(100, sec / LIMIT * 100) + "%";
+    if (live) {
+      $("timerLabel").textContent = sec < LIMIT ? (sec >= 40 ? "そろそろ到着時間で終える" : "話している…") : "60秒を過ぎました";
+    }
+  }
+  function tick() {
+    elapsed = (performance.now() - t0) / 1000;
+    setTimer(elapsed, true);
+    raf = requestAnimationFrame(tick);
+  }
+  function stopTimer() {
+    running = false;
+    if (raf) cancelAnimationFrame(raf);
+    raf = 0;
+  }
+  $("startBtn").addEventListener("click", function () {
+    t0 = performance.now(); running = true;
+    $("startBtn").hidden = true; $("stopBtn").hidden = false;
+    tick();
+  });
+  $("stopBtn").addEventListener("click", function () {
+    if (!running) return;
+    elapsed = (performance.now() - t0) / 1000;
+    stopTimer();
+    buildCheck();
+    show("sCheck");
+  });
+
+  // ---------- 3. チェック ----------
+  function itemsFor(c) {
+    var list = COMMON.map(function (x) {
+      var y = {id: x.id, step: x.step, t: x.t, sub: x.sub};
+      if (x.id === "tx" && c.noTx) { y.na = true; y.sub = "この症例は特別な処置なし（言わなくてよい）"; }
+      return y;
+    });
+    (c.extra || []).forEach(function (x) { list.push({id: x.id, step: x.step, t: x.t, sub: x.sub, extra: true}); });
+    return list;
+  }
+  function buildCheck() {
+    var sec = Math.round(elapsed);
+    $("timeResult").innerHTML = "かかった時間：<b>" + sec + "秒</b>　" +
+      (elapsed <= LIMIT ? "（60秒以内）" : '<span style="color:var(--orange-txt)">（' + Math.max(1, sec - LIMIT) + "秒オーバー）</span>");
+    var items = itemsFor(cur), html = "";
+    for (var st = 1; st <= 5; st++) {
+      var g = items.filter(function (x) { return x.step === st; });
+      if (!g.length) continue;
+      html += '<div class="grp"><div class="gh"><span class="num' + (st === 1 ? " first" : "") + '">' + st + '</span>' + esc(ORDER[st - 1]) + '</div>';
+      g.forEach(function (x) {
+        html += '<label class="ck' + (x.na ? " na" : "") + '"><input type="checkbox" data-id="' + x.id + '"' + (x.na ? " disabled" : "") + '>' +
+          '<span>' + (x.extra ? "【この症例】" : "") + esc(x.t) + (x.sub ? "<small>" + esc(x.sub) + "</small>" : "") + '</span></label>';
+      });
+      html += '</div>';
+    }
+    $("checkList").innerHTML = html;
+  }
+
+  // ---------- 4. 結果 ----------
+  $("judgeBtn").addEventListener("click", function () {
+    var items = itemsFor(cur).filter(function (x) { return !x.na; });
+    var done = {};
+    Array.prototype.forEach.call($("checkList").querySelectorAll("input:checked"), function (el) {
+      done[el.getAttribute("data-id")] = true;
+    });
+    var missed = items.filter(function (x) { return !done[x.id]; })
+      .map(function (x, i) { return [x, i]; })
+      .sort(function (p, q) { return p[0].step - q[0].step || p[1] - q[1]; })
+      .map(function (p) { return p[0]; });
+    var sec = Math.round(elapsed);
+    var html = "";
+    if (!missed.length) {
+      html += '<div class="allok">自己チェックでは、全部言えました。' + (elapsed <= LIMIT ? "60秒以内です。" : "次は60秒以内を目指しましょう。") + '</div>';
+    } else {
+      html += '<div class="miss"><h3>言えなかったこと（' + missed.length + 'つ）</h3><ul>' +
+        missed.map(function (x) { return '<li>' + x.step + '番：' + esc(x.t) + '</li>'; }).join("") + '</ul></div>';
+    }
+    if (elapsed > LIMIT) {
+      html += '<div class="hint">' + sec + '秒かかりました。最初のひと言を先に決めてから話すと、短くなります。</div>';
+    }
+    $("resultBox").innerHTML = html;
+    $("modelBox").innerHTML = cur.model.map(function (r) {
+      return '<div class="row"><span class="num' + (r[0] === 1 ? " first" : "") + '">' + r[0] + '</span><span>' + esc(r[1]) + '</span></div>';
+    }).join("");
+    $("modelNote").textContent = "正解は1つではありません。" + (cur.note || "");
+    show("sResult");
+  });
+  $("againBtn").addEventListener("click", function () { openCase(curIdx); });
+  $("nextBtn").addEventListener("click", function () { show("sHome"); });
+})();
+</script>
+</body>
+</html>

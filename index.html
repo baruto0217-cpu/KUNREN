@@ -105,6 +105,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
       <div class="app-desc">AEDの音声を聞いて中断を測る</div>
       <div class="app-tag">CCF</div>
     </div>
+    <div class="app-card" style="--c:#D9531E" onclick="openApp('byoin')">
+      <div class="app-icon">📞</div>
+      <div class="app-name">第一報<br>1分練習</div>
+      <div class="app-desc">病院連絡を60秒で・6症例</div>
+      <div class="app-tag">CALL</div>
+    </div>
     </div>
   </div>
   <div class="group">
@@ -208,6 +214,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
   <div class="frame-body"><iframe id="iframe-ccf" src="" title="CCF中断時間"></iframe></div>
 </div>
 
+<div class="app-frame" id="frame-byoin">
+  <div class="frame-header" style="background:#D9531E">
+    <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
+    <span class="frame-title">📞 第一報1分練習</span>
+  </div>
+  <div class="frame-body"><iframe id="iframe-byoin" src="" title="第一報1分練習"></iframe></div>
+</div>
+
 <div class="app-frame" id="frame-check">
   <div class="frame-header" style="background:#15803d">
     <button class="back-btn" onclick="closeApp()" aria-label="メニューへ戻る">←</button>
@@ -257,6 +271,7 @@ const APP_SRCS = {
   gaisho: 'apps/gaisho/index.html',
   time: 'apps/time/index.html',
   ccf: 'apps/ccf/index.html',
+  byoin: 'apps/byoin/index.html',
   check: 'apps/check/index.html',
   drag: 'apps/drag/index.html',
   tasuu: 'apps/tasuu/index.html',
